@@ -3,14 +3,14 @@ package cookiedragon.obfuscator.processors.string
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.configuration.ConfigurationManager
-import cookiedragon.obfuscator.kotlin.*
+import cookiedragon.obfuscator.kotlin.internalName
+import cookiedragon.obfuscator.kotlin.wrap
+import cookiedragon.obfuscator.kotlin.xor
 import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
-import java.lang.IllegalStateException
-import java.lang.NullPointerException
 import kotlin.random.Random
 
 /**
@@ -117,28 +117,87 @@ object StringObfuscator: IClassProcessor {
 		decryptorMethod.exceptions.add("java/lang/Math")
 		
 		// First check if the value is cached
-		decryptorMethod.instructions.add(FieldInsnNode(GETSTATIC, classNode.name, storageField.name, storageField.desc))
-		decryptorMethod.instructions.add(IntInsnNode(ILOAD, 0))
-		// Multiply by 2
-		decryptorMethod.instructions.add(ldcInt(2))
-		decryptorMethod.instructions.add(InsnNode(IMUL))
-		// Add 1
-		decryptorMethod.instructions.add(ldcInt(1))
-		decryptorMethod.instructions.add(InsnNode(IADD))
-		decryptorMethod.instructions.add(InsnNode(AALOAD))
-		decryptorMethod.instructions.add(InsnNode(DUP))
-		// Return if not null
-		val afterRet = LabelNode(Label())
-		decryptorMethod.instructions.add(JumpInsnNode(IFNULL, afterRet))
-		decryptorMethod.instructions.add(InsnNode(ARETURN))
-		decryptorMethod.instructions.add(afterRet)
-		// Decrypt
-		//decryptorMethod.instructions.add(-)
-		
-		decryptorMethod.instructions.add(LdcInsnNode(""))
-		decryptorMethod.instructions.add(InsnNode(ARETURN))
-		classNode.methods.add(decryptorMethod)
-		return decryptorMethod
+		decryptorMethod.instructions.also {
+			it.add(FieldInsnNode(GETSTATIC, classNode.name, storageField.name, storageField.desc))
+			it.add(IntInsnNode(ILOAD, 0))
+			// Multiply by 2
+			it.add(ldcInt(2))
+			it.add(InsnNode(IMUL))
+			// Add 1
+			it.add(ldcInt(1))
+			it.add(InsnNode(IADD))
+			it.add(InsnNode(AALOAD))
+			it.add(InsnNode(DUP))
+			// Return if not null
+			val afterRet = LabelNode(Label())
+			it.add(JumpInsnNode(IFNULL, afterRet))
+			it.add(InsnNode(ARETURN))
+			it.add(afterRet)
+			
+			it.add(LdcInsnNode(""))
+			it.add(InsnNode(ARETURN))
+			
+			val fakeEnd = LabelNode(Label())
+			val start = LabelNode(Label())
+			val handler = LabelNode(Label())
+			val end = LabelNode(Label())
+			val secondCatch = LabelNode(Label())
+			
+			val threadOther = LabelNode(Label())
+			val firstSwitch = LabelNode(Label())
+			
+			it.add(ldcInt(0))
+			it.add(firstSwitch)
+			//it.add(LookupSwitchInsnNode(
+			//	afterRet,
+			//	intArrayOf( 0, 1),
+			//	arrayOf(start, threadOther)
+			//))
+			it.add(InsnNode(DUP))
+			it.add(ldcInt(0))
+			it.add(JumpInsnNode(IFEQ, start))
+			it.add(ldcInt(1))
+			it.add(JumpInsnNode(IFEQ, threadOther))
+			
+			// Get Stack Trace
+			it.add(MethodInsnNode(INVOKESTATIC, Thread::class.internalName, "currentThread", "()Ljava/lang/Thread;", false))
+			it.add(VarInsnNode(ASTORE, 3))
+			it.add(ldcInt(1))
+			it.add(JumpInsnNode(GOTO, firstSwitch))
+			it.add(threadOther)
+			it.add(VarInsnNode(ALOAD, 3))
+			it.add(MethodInsnNode(INVOKEVIRTUAL, Thread::class.internalName, "getStackTrace", "()[Ljava/lang/StackTraceElement;", false))
+			it.add(InsnNode(POP))
+			it.add(LdcInsnNode(""))
+			it.add(InsnNode(ARETURN))
+			
+			// Fake try catch
+			it.add(start)
+			it.add(InsnNode(ACONST_NULL))
+			it.add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
+			it.add(InsnNode(L2I))
+			it.add(InsnNode(INEG))
+			it.add(JumpInsnNode(IFGE, secondCatch))
+			it.add(InsnNode(POP))
+			it.add(InsnNode(ACONST_NULL))
+			it.add(JumpInsnNode(GOTO, handler))
+			it.add(fakeEnd)
+			it.add(InsnNode(ATHROW))
+			it.add(secondCatch)
+			it.add(InsnNode(POP))
+			it.add(end)
+			
+			// Center
+			it.add(LdcInsnNode(""))
+			it.add(InsnNode(ARETURN))
+			
+			it.add(handler)
+			it.add(InsnNode(POP))
+			it.add(InsnNode(ACONST_NULL))
+			it.add(JumpInsnNode(GOTO, fakeEnd))
+		}
+			classNode.methods.add(decryptorMethod)
+			return decryptorMethod
 	}
 	
 	private fun generateStaticBlock(classNode: ClassNode, storageField: FieldNode, strings: ArrayList<EncryptedString>): MethodNode {var staticInit: MethodNode? = null

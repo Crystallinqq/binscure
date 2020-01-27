@@ -7,7 +7,7 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.processors.flow.trycatch.UnderRunStack
+import cookiedragon.obfuscator.processors.string.StringObfuscator
 import me.tongfei.progressbar.CustomProcessRenderer
 import me.tongfei.progressbar.ProgressBar
 import me.tongfei.progressbar.ProgressBarStyle
@@ -67,8 +67,8 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
+			StringObfuscator
 			//FakeTryCatch
-			UnderRunStack
 			/*SourceStripper,
 			KotlinMetadataStripper,
 			
@@ -78,8 +78,6 @@ object CObfuscator {
 			MethodRenamer,
 			FieldRenamer,
 			ClassRenamer,
-			
-			StringObfuscator,
 			
 			InvalidSignatureExploit,
 			

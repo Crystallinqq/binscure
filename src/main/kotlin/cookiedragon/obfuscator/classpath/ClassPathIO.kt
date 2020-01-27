@@ -1,6 +1,7 @@
 package cookiedragon.obfuscator.classpath
 
 import cookiedragon.obfuscator.CObfuscator
+import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.kotlin.wrap
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -61,10 +62,12 @@ object ClassPathIO {
 		CObfuscator.getProgressBar("Writing Output").use { progressBar ->
 			progressBar.maxHint((ClassPath.passThrough.size + ClassPath.classes.size).toLong())
 			JarOutputStream(FileOutputStream(file)).use {
-				val field = ZipOutputStream::class.java.getDeclaredField("crc")
-				field.isAccessible = true
 				val crc = DummyCRC(0xDEADBEEF)
-				field.set(it, crc)
+				if (rootConfig.crasher.enabled) {
+					val field = ZipOutputStream::class.java.getDeclaredField("crc")
+					field.isAccessible = true
+					field.set(it, crc)
+				}
 				
 				for ((name, bytes) in ClassPath.passThrough) {
 					crc.overwrite = false
@@ -78,10 +81,10 @@ object ClassPathIO {
 						crc.overwrite = true
 					
 					var name = "${classNode.name}.class"
-					//if (!CObfuscator.isExcluded(classNode)) {
-					//	name += "/"
-					//	crc.overwrite = true
-					//}
+					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
+						name += "/"
+						crc.overwrite = true
+					}
 					
 					val entry = ZipEntry(name)
 					it.putNextEntry(entry)

@@ -2,11 +2,9 @@ package cookiedragon.obfuscator.processors.flow.trycatch
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
-import cookiedragon.obfuscator.kotlin.random
-import cookiedragon.obfuscator.kotlin.wrap
-import cookiedragon.obfuscator.utils.ldcInt
+import cookiedragon.obfuscator.kotlin.internalName
+import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 
 /**
@@ -14,68 +12,52 @@ import org.objectweb.asm.tree.*
  */
 object FakeTryCatch: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (classNode in CObfuscator.getProgressBar("Merging Try Catch Blocks").wrap(classes)) {
-			if (CObfuscator.isExcluded(classNode))
-				continue
-			
-			for (method in classNode.methods) {
-				if (method.tryCatchBlocks.size > 0) {// && CObfuscator.randomWeight(2)) {
-					val tryCatch = method.tryCatchBlocks.random(CObfuscator.random)
-					println("Selected $tryCatch in ${classNode.name}")
+		for (classNode in classes) {
+			if (!CObfuscator.isExcluded(classNode) && classNode.methods.size > 0) {
+				for (method in classNode.methods) {
+					if (CObfuscator.noMethodInsns(method))// || !CObfuscator.randomWeight(5))
+						continue
 					
-					if (method.localVariables == null)
-						method.localVariables = ArrayList(1)
+					val fakeEnd = LabelNode(Label())
+					val start = LabelNode(Label())
+					val handler = LabelNode(Label())
+					val end = LabelNode(Label())
+					val secondCatch = LabelNode(Label())
 					
-					val lastVar = method.localVariables.stream().max(Comparator.comparingInt{v -> v.index}).orElse(null)
-					val newIndex = if (lastVar != null) {
-						if (lastVar.desc.matches(Regex("[JD]"))) {
-							lastVar.index + 2
-						} else {
-							lastVar.index + 1
-						}
-					} else {
-						0
-					}
+					method.tryCatchBlocks.add(TryCatchBlockNode(start, end, handler, null))
+					method.tryCatchBlocks.add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
 					
-					val localVar = LocalVariableNode(
-						"d",
-						Type.getDescriptor(Int::class.javaPrimitiveType),
-						null,
-						tryCatch.start,
-						tryCatch.end,
-						newIndex
-					).also { method.localVariables.add(it) }
-					method.maxLocals++
-					
-					for (localVariable in method.localVariables) {
-						println("\t${localVariable.name} : ${localVariable.desc} : ${localVariable.index}")
-					}
-					
-					val startList = InsnList()
+					val list = InsnList()
 						.also {
-							it.add(VarInsnNode(Type.getType(localVar.desc).getOpcode(ILOAD), localVar.index))
-							it.add(ldcInt(1))
-							it.add(JumpInsnNode(IF_ICMPGT, tryCatch.handler))
-							it.add(ldcInt(1))
-							it.add(VarInsnNode(Type.getType(localVar.desc).getOpcode(ISTORE), localVar.index))
+							it.add(start)
+							it.add(InsnNode(ACONST_NULL))
+							it.add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
+							it.add(InsnNode(L2I))
+							it.add(InsnNode(INEG))
+							it.add(JumpInsnNode(IFGE, secondCatch))
+							it.add(InsnNode(POP))
+							it.add(InsnNode(ACONST_NULL))
+							it.add(JumpInsnNode(GOTO, handler))
+							it.add(fakeEnd)
+							it.add(InsnNode(ATHROW))
+							it.add(secondCatch)
+							it.add(InsnNode(POP))
+							it.add(end)
 						}
 					
-					val afterList = InsnList()
+					val endList = InsnList()
 						.also {
-							it.add(ldcInt(0))
-							it.add(VarInsnNode(Type.getType(localVar.desc).getOpcode(ISTORE), localVar.index))
+							it.add(handler)
+							it.add(InsnNode(POP))
+							it.add(InsnNode(ACONST_NULL))
+							it.add(JumpInsnNode(GOTO, fakeEnd))
 						}
 					
-					method.instructions.insert(
-						tryCatch.start,
-						startList
-					)
-					method.instructions.insertBefore(
-						tryCatch.handler,
-						afterList
-					)
+					method.instructions.insert(list)
+					method.instructions.add(endList)
 				}
 			}
 		}
 	}
+	
 }
