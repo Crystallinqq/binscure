@@ -2,6 +2,7 @@ package cookiedragon.obfuscator.processors.resources
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
+import cookiedragon.obfuscator.kotlin.wrap
 import org.objectweb.asm.tree.ClassNode
 
 /**
@@ -9,15 +10,15 @@ import org.objectweb.asm.tree.ClassNode
  */
 object ManifestResourceProcessor: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (entry in passThrough) {
-			if (entry.key.endsWith(".json") || entry.key.endsWith(".MF")) {
-				var contents = String(entry.value)
+		for ((name, bytes) in CObfuscator.getProgressBar("Remapping Manifest").wrap(passThrough)) {
+			if (name.endsWith(".json") || name.endsWith(".MF")) {
+				var contents = String(bytes)
 				for (mapping in CObfuscator.mappings) {
 					if (!mapping.key.contains('.')) {
 						contents = contents.replace(mapping.key.replace('/', '.'), mapping.value.replace('/', '.'))
 					}
 				}
-				passThrough[entry.key] = contents.toByteArray()
+				passThrough[name] = contents.toByteArray()
 			}
 		}
 	}

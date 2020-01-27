@@ -18,6 +18,7 @@ import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
 import cookiedragon.obfuscator.processors.renaming.impl.LocalVariableRenamer
 import cookiedragon.obfuscator.processors.renaming.impl.MethodRenamer
 import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
+import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
 import cookiedragon.obfuscator.processors.string.StringObfuscator
 import me.tongfei.progressbar.*
 import org.objectweb.asm.tree.ClassNode
@@ -90,7 +91,8 @@ object CObfuscator {
 			InvalidSignatureExploit,
 			
 			
-			ManifestResourceProcessor
+			ManifestResourceProcessor,
+			MixinResourceProcessor
 		)
 		
 		val classes = mutableListOf<ClassNode>()

@@ -76,6 +76,10 @@ fun <T> ProgressBar.wrap(it: Iterable<T>): Iterable<T> {
 	return ProgressBarIterable(it, this)
 }
 
+fun <K, V> ProgressBar.wrap(it: Map<K, V>): Iterator<Map.Entry<K, V>> {
+	return ProgressBarWrappedIterator(it.iterator(), this)
+}
+
 fun String.clampStart(length: Int, padding: Char = ' '): String {
 	return when {
 		this.length == length -> this
