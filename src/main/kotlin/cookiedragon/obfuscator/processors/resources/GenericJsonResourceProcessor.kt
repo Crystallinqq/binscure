@@ -18,7 +18,7 @@ object GenericJsonResourceProcessor: IClassProcessor {
 		for ((name, bytes) in CObfuscator.getProgressBar("Remapping Generic Jsons").wrap(passThrough)) {
 			if (name.endsWith(".json") && name.contains("mixin")) {
 				//ContainerNode
-				val node = mapper.readValue<ContainerNode>(bytes, ContainerNode::class.java)
+			//	val node = mapper.readValue<ContainerNode>(bytes, ContainerNode::class.java)
 			}
 		}
 	}

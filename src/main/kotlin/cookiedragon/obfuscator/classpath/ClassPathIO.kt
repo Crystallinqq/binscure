@@ -26,6 +26,9 @@ object ClassPathIO {
 						val classNode = ClassNode()
 						ClassReader(it.getInputStream(entry).readBytes())
 							.accept(classNode, ClassReader.EXPAND_FRAMES)
+						classNode.fields.shuffle(CObfuscator.random)
+						classNode.methods.shuffle(CObfuscator.random)
+						
 						ClassPath.classes[classNode.name] = classNode
 						ClassPath.classPath[classNode.name] = classNode
 						ClassPath.originalNames[classNode] = classNode.name

@@ -2,18 +2,13 @@ package cookiedragon.obfuscator.kotlin
 
 import cookiedragon.obfuscator.classpath.ClassPath
 import me.tongfei.progressbar.ProgressBar
-import me.tongfei.progressbar.ProgressBarBuilder
 import me.tongfei.progressbar.ProgressBarIterable
-import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterable
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterator
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedSpliterator
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
-import java.lang.reflect.Field
 import java.security.SecureRandom
 import java.util.*
-import java.util.function.Supplier
-import kotlin.random.Random
 import kotlin.reflect.KClass
 
 /**
@@ -114,3 +109,12 @@ fun <K, V> Map<K, V>.toPrettyString(): String {
 
 val ClassNode.originalName: String?
 	get() = ClassPath.originalNames[this]
+
+fun <T> Collection<T>.random(random: SecureRandom): T {
+	if (isEmpty())
+		throw NoSuchElementException("Collection is empty.")
+	return elementAt(random.nextInt(size))
+}
+
+val <T: Any> KClass<T>.internalName: String
+	get() = Type.getInternalName(this.java)

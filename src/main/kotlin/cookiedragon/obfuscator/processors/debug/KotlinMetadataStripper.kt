@@ -6,6 +6,7 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.kotlin.wrap
 import org.objectweb.asm.tree.ClassNode
 import kotlinx.metadata.jvm.KotlinClassHeader
+import kotlinx.metadata.jvm.KotlinClassMetadata
 import org.objectweb.asm.tree.AnnotationNode
 import java.util.stream.Collectors
 
@@ -28,7 +29,7 @@ object KotlinMetadataStripper: IClassProcessor {
 					val header = createHeader(annotation)
 					val metadata = KotlinClassMetadata.read(header)
 					if (metadata is KotlinClassMetadata.Class) {
-						metadata.toKmClass()
+						val kClass = metadata.toKmClass()
 					}
 				}
 			}*/

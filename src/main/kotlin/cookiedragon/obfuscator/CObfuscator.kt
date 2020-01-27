@@ -1,33 +1,24 @@
 package cookiedragon.obfuscator
 
 import cookiedragon.obfuscator.classpath.ClassPath
-import cookiedragon.obfuscator.classpath.ClassPath.classes
 import cookiedragon.obfuscator.classpath.ClassPath.passThrough
 import cookiedragon.obfuscator.classpath.ClassPathIO
 import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.configuration.exclusions.PackageWhitelistExcluder
-import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
-import cookiedragon.obfuscator.processors.debug.SourceStripper
-import cookiedragon.obfuscator.processors.exploit.InvalidSignatureExploit
-import cookiedragon.obfuscator.processors.indirection.MethodIndirection
-import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
-import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
-import cookiedragon.obfuscator.processors.renaming.impl.LocalVariableRenamer
-import cookiedragon.obfuscator.processors.renaming.impl.MethodRenamer
-import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
-import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
-import cookiedragon.obfuscator.processors.string.StringObfuscator
-import me.tongfei.progressbar.*
+import cookiedragon.obfuscator.processors.flow.trycatch.UnderRunStack
+import me.tongfei.progressbar.CustomProcessRenderer
+import me.tongfei.progressbar.ProgressBar
+import me.tongfei.progressbar.ProgressBarStyle
+import me.tongfei.progressbar.getConsoleConsumer
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
-import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileWriter
 import java.io.PrintWriter
+import java.lang.reflect.Modifier
 import java.security.SecureRandom
 import java.text.DecimalFormat
 import java.time.Duration
@@ -76,7 +67,9 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
-			SourceStripper,
+			//FakeTryCatch
+			UnderRunStack
+			/*SourceStripper,
 			KotlinMetadataStripper,
 			
 			MethodIndirection,
@@ -92,7 +85,7 @@ object CObfuscator {
 			
 			
 			ManifestResourceProcessor,
-			MixinResourceProcessor
+			MixinResourceProcessor*/
 		)
 		
 		val classes = mutableListOf<ClassNode>()
@@ -142,5 +135,12 @@ object CObfuscator {
 				return true
 		}
 		return false
+	}
+	
+	fun noMethodInsns(methodNode: MethodNode) =
+		Modifier.isAbstract(methodNode.access) || Modifier.isNative(methodNode.access)
+	
+	fun randomWeight(weight: Int): Boolean {
+		return random.nextInt(weight) == 0
 	}
 }

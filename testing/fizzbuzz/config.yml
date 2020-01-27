@@ -1,0 +1,6 @@
+input: fizzbuzz.jar
+
+
+# Disable "WARNING: class was not found in the classpath" warnings
+# Default is false
+ignoreClassPathNotFound: true
