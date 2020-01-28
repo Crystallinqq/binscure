@@ -114,10 +114,40 @@ object StringObfuscator: IClassProcessor {
 			null,
 			null
 		)
-		decryptorMethod.exceptions.add("java/lang/Math")
+		
+		val fakeEnd = LabelNode(Label())
+		val start = LabelNode(Label())
+		val handler = LabelNode(Label())
+		val end = LabelNode(Label())
+		val secondCatch = LabelNode(Label())
+		val stackGet2 = LabelNode(Label())
+		val throw2 = LabelNode(Label())
+		val endThrow = LabelNode(Label())
+		
+		decryptorMethod.tryCatchBlocks.also {
+			it.add(TryCatchBlockNode(start, end, handler, null))
+			it.add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
+		}
 		
 		// First check if the value is cached
-		decryptorMethod.instructions.also {
+		val insnList = InsnList().also {
+			
+			it.add(start)
+			it.add(InsnNode(ACONST_NULL))
+			it.add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
+			it.add(InsnNode(L2I))
+			it.add(InsnNode(INEG))
+			it.add(JumpInsnNode(IFGE, secondCatch))
+			it.add(InsnNode(POP))
+			it.add(InsnNode(ACONST_NULL))
+			it.add(JumpInsnNode(GOTO, handler))
+			it.add(fakeEnd)
+			it.add(InsnNode(ATHROW))
+			it.add(secondCatch)
+			it.add(InsnNode(POP))
+			it.add(end)
+			
+			
 			it.add(FieldInsnNode(GETSTATIC, classNode.name, storageField.name, storageField.desc))
 			it.add(IntInsnNode(ILOAD, 0))
 			// Multiply by 2
@@ -134,70 +164,36 @@ object StringObfuscator: IClassProcessor {
 			it.add(InsnNode(ARETURN))
 			it.add(afterRet)
 			
-			it.add(LdcInsnNode(""))
-			it.add(InsnNode(ARETURN))
-			
-			val fakeEnd = LabelNode(Label())
-			val start = LabelNode(Label())
-			val handler = LabelNode(Label())
-			val end = LabelNode(Label())
-			val secondCatch = LabelNode(Label())
-			
-			val threadOther = LabelNode(Label())
-			val firstSwitch = LabelNode(Label())
-			
-			it.add(ldcInt(0))
-			it.add(firstSwitch)
-			//it.add(LookupSwitchInsnNode(
-			//	afterRet,
-			//	intArrayOf( 0, 1),
-			//	arrayOf(start, threadOther)
-			//))
-			it.add(InsnNode(DUP))
-			it.add(ldcInt(0))
-			it.add(JumpInsnNode(IFEQ, start))
-			it.add(ldcInt(1))
-			it.add(JumpInsnNode(IFEQ, threadOther))
+			//it.add(LdcInsnNode(""))
+			//it.add(InsnNode(ARETURN))
 			
 			// Get Stack Trace
 			it.add(MethodInsnNode(INVOKESTATIC, Thread::class.internalName, "currentThread", "()Ljava/lang/Thread;", false))
+			it.add(InsnNode(DUP))
 			it.add(VarInsnNode(ASTORE, 3))
-			it.add(ldcInt(1))
-			it.add(JumpInsnNode(GOTO, firstSwitch))
-			it.add(threadOther)
-			it.add(VarInsnNode(ALOAD, 3))
-			it.add(MethodInsnNode(INVOKEVIRTUAL, Thread::class.internalName, "getStackTrace", "()[Ljava/lang/StackTraceElement;", false))
-			it.add(InsnNode(POP))
-			it.add(LdcInsnNode(""))
-			it.add(InsnNode(ARETURN))
-			
-			// Fake try catch
-			it.add(start)
+			it.add(JumpInsnNode(IFNONNULL, stackGet2))
 			it.add(InsnNode(ACONST_NULL))
-			it.add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
-			it.add(InsnNode(L2I))
-			it.add(InsnNode(INEG))
-			it.add(JumpInsnNode(IFGE, secondCatch))
-			it.add(InsnNode(POP))
-			it.add(InsnNode(ACONST_NULL))
-			it.add(JumpInsnNode(GOTO, handler))
-			it.add(fakeEnd)
-			it.add(InsnNode(ATHROW))
-			it.add(secondCatch)
-			it.add(InsnNode(POP))
-			it.add(end)
-			
-			// Center
-			it.add(LdcInsnNode(""))
-			it.add(InsnNode(ARETURN))
+			it.add(VarInsnNode(ASTORE, 3))
+			it.add(JumpInsnNode(GOTO, stackGet2))
 			
 			it.add(handler)
 			it.add(InsnNode(POP))
 			it.add(InsnNode(ACONST_NULL))
 			it.add(JumpInsnNode(GOTO, fakeEnd))
+			
+			
+			it.add(stackGet2)
+			it.add(VarInsnNode(ALOAD, 3))
+			//it.add(InsnNode(DUP))
+			//it.add(JumpInsnNode(IFNULL, handler))
+			it.add(MethodInsnNode(INVOKEVIRTUAL, Thread::class.internalName, "getStackTrace", "()[Ljava/lang/StackTraceElement;", false))
+			it.add(InsnNode(POP))
+			it.add(LdcInsnNode("b"))
+			it.add(InsnNode(ARETURN))
 		}
-			classNode.methods.add(decryptorMethod)
-			return decryptorMethod
+		decryptorMethod.instructions.add(insnList)
+		classNode.methods.add(decryptorMethod)
+		return decryptorMethod
 	}
 	
 	private fun generateStaticBlock(classNode: ClassNode, storageField: FieldNode, strings: ArrayList<EncryptedString>): MethodNode {var staticInit: MethodNode? = null
