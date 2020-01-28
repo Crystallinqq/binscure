@@ -176,20 +176,22 @@ object StringObfuscator: IClassProcessor {
 			it.add(VarInsnNode(ASTORE, 3))
 			it.add(JumpInsnNode(GOTO, stackGet2))
 			
-			it.add(handler)
-			it.add(InsnNode(POP))
-			it.add(InsnNode(ACONST_NULL))
-			it.add(JumpInsnNode(GOTO, fakeEnd))
-			
 			
 			it.add(stackGet2)
 			it.add(VarInsnNode(ALOAD, 3))
 			//it.add(InsnNode(DUP))
 			//it.add(JumpInsnNode(IFNULL, handler))
+			it.add(InsnNode(ACONST_NULL))
 			it.add(MethodInsnNode(INVOKEVIRTUAL, Thread::class.internalName, "getStackTrace", "()[Ljava/lang/StackTraceElement;", false))
+			it.add(JumpInsnNode(IFNULL, handler))
 			it.add(InsnNode(POP))
 			it.add(LdcInsnNode("b"))
 			it.add(InsnNode(ARETURN))
+			
+			it.add(handler)
+			it.add(InsnNode(POP))
+			it.add(InsnNode(ACONST_NULL))
+			it.add(JumpInsnNode(GOTO, fakeEnd))
 		}
 		decryptorMethod.instructions.add(insnList)
 		classNode.methods.add(decryptorMethod)
