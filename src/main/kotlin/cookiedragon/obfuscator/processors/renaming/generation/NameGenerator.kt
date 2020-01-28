@@ -13,7 +13,7 @@ class NameGenerator(val prefix: String = "") {
 		/**
 		 * @param index A unique positive integer
 		 * @param charset A dictionary to permutate through
-		 * @return A unique string from for the given integer using permutations of the given charset
+		 * @return A unique constants from for the given integer using permutations of the given charset
 		 */
 		private fun intToStr(index: Int, charset: CharArray): String {
 			var i = index

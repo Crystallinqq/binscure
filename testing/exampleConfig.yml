@@ -63,7 +63,7 @@ crasher:
 indirection:
     enabled: false
 
-# Encrypts string constants and decrypts them dynamically at runtime
+# Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
 stringObfuscation:
     enabled: false

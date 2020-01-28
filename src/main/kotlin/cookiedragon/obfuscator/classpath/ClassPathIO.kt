@@ -43,6 +43,9 @@ object ClassPathIO {
 	}
 	
 	fun loadClassPath(files: Collection<File>) {
+		if (files.isEmpty())
+			return
+		
 		for (file in CObfuscator.getProgressBar("Loading Libraries").wrap(files)) {
 			JarFile(file).use {
 				for (entry in it.entries()) {

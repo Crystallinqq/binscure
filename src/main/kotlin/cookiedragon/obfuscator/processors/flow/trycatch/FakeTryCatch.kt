@@ -18,46 +18,65 @@ object FakeTryCatch: IClassProcessor {
 					if (CObfuscator.noMethodInsns(method))// || !CObfuscator.randomWeight(5))
 						continue
 					
-					val fakeEnd = LabelNode(Label())
-					val start = LabelNode(Label())
-					val handler = LabelNode(Label())
-					val end = LabelNode(Label())
-					val secondCatch = LabelNode(Label())
-					
-					method.tryCatchBlocks.add(TryCatchBlockNode(start, end, handler, null))
-					method.tryCatchBlocks.add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
-					
-					val list = InsnList()
-						.also {
-							it.add(start)
-							it.add(InsnNode(ACONST_NULL))
-							it.add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
-							it.add(InsnNode(L2I))
-							it.add(InsnNode(INEG))
-							it.add(JumpInsnNode(IFGE, secondCatch))
-							it.add(InsnNode(POP))
-							it.add(InsnNode(ACONST_NULL))
-							it.add(JumpInsnNode(GOTO, handler))
-							it.add(fakeEnd)
-							it.add(InsnNode(ATHROW))
-							it.add(secondCatch)
-							it.add(InsnNode(POP))
-							it.add(end)
-						}
-					
-					val endList = InsnList()
-						.also {
-							it.add(handler)
-							it.add(InsnNode(POP))
-							it.add(InsnNode(ACONST_NULL))
-							it.add(JumpInsnNode(GOTO, fakeEnd))
-						}
-					
-					method.instructions.insert(list)
-					method.instructions.add(endList)
+					addFakeTryCatches(method)
 				}
 			}
 		}
 	}
 	
+	fun addFakeTryCatches(methodNode: MethodNode) {
+		methodNode.tryCatchBlocks.addAll(
+			addFakeTryCatches(methodNode.instructions)
+		)
+	}
+	
+	fun addFakeTryCatches(insnList: InsnList): Array<TryCatchBlockNode> {
+		val switchStart = LabelNode(Label())
+		val fakeEnd = LabelNode(Label())
+		val start = LabelNode(Label())
+		val handler = LabelNode(Label())
+		val end = LabelNode(Label())
+		val secondCatch = LabelNode(Label())
+		
+		val list = InsnList()
+			.apply {
+				add(switchStart)
+				add(start)
+				add(InsnNode(ACONST_NULL))
+				add(MethodInsnNode(INVOKESTATIC, Runtime::class.internalName, "getRuntime", "()Ljava/lang/Runtime;"))
+				add(JumpInsnNode(IFNONNULL, secondCatch))
+				add(InsnNode(ACONST_NULL))
+				add(InsnNode(DUP))
+				add(TypeInsnNode(CHECKCAST, "give up"))
+				add(MethodInsnNode(INVOKESTATIC, "null", "super", "()Ljava/lang/YourMum;"))
+				add(InsnNode(POP2))
+				add(InsnNode(POP))
+				add(JumpInsnNode(GOTO, handler))
+				add(fakeEnd)
+				add(InsnNode(ATHROW))
+				add(end)
+			}
+		
+		val endList = InsnList()
+			.apply {
+				add(handler)
+				add(InsnNode(POP))
+				add(InsnNode(ACONST_NULL))
+				add(JumpInsnNode(GOTO, fakeEnd))
+				add(secondCatch)
+				add(JumpInsnNode(IFNULL, end))
+				add(InsnNode(ACONST_NULL))
+				add(JumpInsnNode(GOTO, fakeEnd))
+			}
+		
+		insnList.insert(list)
+		insnList.add(endList)
+		return arrayOf(
+			TryCatchBlockNode(start, end, handler, RuntimeException::class.internalName),
+			TryCatchBlockNode(fakeEnd, end, secondCatch, Error::class.internalName),
+			TryCatchBlockNode(handler, secondCatch, handler, StringIndexOutOfBoundsException::class.internalName),
+			TryCatchBlockNode(start, fakeEnd, secondCatch, StackOverflowError::class.internalName)
+		
+		)
+	}
 }
