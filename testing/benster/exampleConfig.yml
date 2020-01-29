@@ -1,0 +1,66 @@
+input: nigganigganigga.jar
+#output: ## Output not required, defaults to [input]-obf.jar
+
+# Not Required, but use this if prompted by the obfuscator
+#libraries:
+#    - "exampleLibrary.jar"
+
+# The mappings created by the obfuscator are saved to this csv file
+mappingFile: mappings.csv
+
+# These packages will not be targeted by the obfuscator
+exclusions:
+    "cookiedragon/"
+
+# Handles renaming
+remap:
+    # Must be specified, strategies are by default disabled
+    enabled: true
+    # Renamed classes will be prefixed with this
+    # You can use unicode escape sequences, for example here to add the null character which is illegal on certain file systems
+    classPrefix: "cookie"
+    methodPrefix: ""
+    fieldPrefix: ""
+    # Sets the names of local veriables for methods, including parameters
+    # Set to empty to remove them (they are not required), which will reduce file size but be less confusing
+    localVariableName: ""
+    # Default value is true, but you can disable them if you wish
+    classes: true
+    methods: true
+    fields: true
+    localVariables: true
+    # Classes/Methods/Fields containing these annotations will not be remapped
+    annotationExclude:
+        - "org/spongepowered/asm/mixin/gen/Accessor"
+        - "org/spongepowered/asm/mixin/gen/Invoker"
+        - "org/spongepowered/asm/mixin/gen/Invoker"
+        - "org/spongepowered/asm/mixin/Shadow"
+        - "org/spongepowered/asm/mixin/Overwrite"
+
+# Strip source file information
+sourceStrip:
+    enabled: true
+    # Default is REMOVE, options [KEEP/REMOVE]
+    lineNumbers: KEEP
+
+# Removes additional data created by the kotlin compiler
+# WARNING: Can break the kotlin.reflect library
+kotlinMetadata:
+    enabled: true
+
+# Employs various tactics to limit or remove functionality from reverse engineering libraries
+crasher:
+    enabled: true
+
+# Attempts to conceal method invocations
+indirection:
+    enabled: false
+
+# Encrypts constants constants and decrypts them dynamically at runtime
+# Uses Context checking and may also impact application startup time
+stringObfuscation:
+    enabled: true
+
+# Disable "WARNING: class was not found in the classpath" warnings
+# Default is false
+ignoreClassPathNotFound: false

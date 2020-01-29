@@ -80,12 +80,12 @@ object ClassPathIO {
 					progressBar.step()
 				}
 				for (classNode in ClassPath.classes.values) {
-					if (!CObfuscator.isExcluded(classNode))
-						crc.overwrite = true
+					crc.overwrite = false
 					
 					var name = "${classNode.name}.class"
-					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
-						name += "/"
+					println(classNode.name)
+					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled && classNode.name != "cookied") {
+						//name += "/"
 						crc.overwrite = true
 					}
 					

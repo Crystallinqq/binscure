@@ -7,7 +7,15 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.processors.flow.jump.IfJumpProxy
+import cookiedragon.obfuscator.processors.constants.StringObfuscator
+import cookiedragon.obfuscator.processors.debug.SourceStripper
+import cookiedragon.obfuscator.processors.flow.BadInvoke
+import cookiedragon.obfuscator.processors.flow.trycatch.FakeTryCatch
+import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.LocalVariableRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.MethodRenamer
+import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
 import me.tongfei.progressbar.CustomProcessRenderer
 import me.tongfei.progressbar.ProgressBar
 import me.tongfei.progressbar.ProgressBarStyle
@@ -67,24 +75,20 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
-			//BadInvoke,
-			IfJumpProxy
-			//FakeTryCatch,
-			//StringObfuscator
-			//FakeTryCatch
-			/*SourceStripper,
-			KotlinMetadataStripper,
-			
-			MethodIndirection,
-			
+			SourceStripper,
+			BadInvoke,
+			//IfJumpProxy,
+			FakeTryCatch,
 			LocalVariableRenamer,
 			MethodRenamer,
 			FieldRenamer,
 			ClassRenamer,
-			
-			InvalidSignatureExploit,
-			
-			
+			StringObfuscator,
+			//InvalidSignatureExploit,
+			ManifestResourceProcessor
+			/*,
+			KotlinMetadataStripper,
+			MethodIndirection,
 			ManifestResourceProcessor,
 			MixinResourceProcessor*/
 		)
