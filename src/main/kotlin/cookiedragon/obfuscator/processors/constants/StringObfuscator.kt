@@ -11,6 +11,7 @@ import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
+import java.util.*
 
 /**
  * @author cookiedragon234 20/Jan/2020
@@ -270,37 +271,53 @@ object StringObfuscator: IClassProcessor {
 			))
 			
 			add(l0) // xor 2
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
 			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
 			add(ldcInt(2))
 			add(InsnNode(IXOR))
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			add(l1) // xor key
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
 			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
 			add(VarInsnNode(ILOAD, 1)) // key
 			add(InsnNode(IXOR))
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			add(l2) // xor classhash
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
 			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
 			add(VarInsnNode(ILOAD, 6)) // classhash
 			add(InsnNode(IXOR))
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			add(l3) // xor methodhash
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
 			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
 			add(VarInsnNode(ILOAD, 7)) // methodhash
 			add(InsnNode(IXOR))
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			add(l4) // xor methodhash + classhash
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
 			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
+			add(VarInsnNode(ILOAD, 7)) // methodhash
 			add(VarInsnNode(ILOAD, 6)) // classhash
-			add(VarInsnNode(ILOAD, 7)) // classhash
 			add(InsnNode(IADD))
 			add(InsnNode(IXOR))
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			add(l5) // xor i
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
 			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
 			add(VarInsnNode(ILOAD, 10)) // index
 			add(InsnNode(IXOR))
 			add(JumpInsnNode(GOTO, setCharArrVal))
+			
+			add(switchEnd)
+			add(InsnNode(ACONST_NULL))
+			add(InsnNode(ATHROW))
 			
 			add(setCharArrVal)
 			add(InsnNode(I2C))
@@ -309,7 +326,6 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ILOAD, 10)) // Index
 			add(InsnNode(SWAP))
 			add(InsnNode(CASTORE))
-			add(switchEnd)
 			// Increment and go to top of loop
 			add(IincInsnNode(10, 1))
 			add(JumpInsnNode(GOTO, loopStart))
@@ -329,7 +345,7 @@ object StringObfuscator: IClassProcessor {
 			
 			add(getMethodName)
 			add(VarInsnNode(ALOAD, 5))
-			add(ldcInt(1))
+			add(ldcInt(2))
 			add(InsnNode(AALOAD))
 			add(MethodInsnNode(INVOKEVIRTUAL, StackTraceElement::class.internalName, "getMethodName", "()Ljava/lang/String;", false))
 			add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/Object", "hashCode", "()I", false))
@@ -457,49 +473,26 @@ object StringObfuscator: IClassProcessor {
 			}
 		}
 		
-		if (StringObfuscator.decryptString(String(new), key, classNode, methodNode, insn) != original) {
-			throw IllegalStateException()
+		val asString = String(new)
+		val decryptedAgain = decryptString(asString, key, classHash, methodHash)
+		if (decryptedAgain != original) {
+			throw IllegalStateException("Enc did not match {$asString} -> {$decryptedAgain}")
 		}
 		
-		return EncryptedString(original, String(new), key, classNode, methodNode, insn)
+		return EncryptedString(original, asString, key, classNode, methodNode, insn)
 	}
 	
-	
-	private fun decryptString(original: String, key: Int, classNode: ClassNode, methodNode: MethodNode, insn: LdcInsnNode): String {
-		val classHash = classNode.name.replace('/', '.').hashCode()
-		val methodHash = methodNode.name.replace('/', '.').hashCode()
+	private fun decryptString(first: String, key: Int, classHash: Int, methodHash: Int): String {
+		val old = first.toCharArray()
+		val new = CharArray(first.length)
 		
-		val old = original.toCharArray()
-		val new = CharArray(original.length)
-		
-		for (i in 0..old.size) {
+		for (i in 0 until (old.size)) {
 			when (i % 5) {
 				0 -> new[i] = old[i] xor 2
 				1 -> new[i] = old[i] xor key
 				2 -> new[i] = old[i] xor classHash
 				3 -> new[i] = old[i] xor methodHash
-				4 -> new[i] = old[i] xor  (methodHash + classHash)
-				5 -> new[i] = old[i] xor i
-			}
-		}
-		return String(new)
-	}
-	
-	private fun decryptString(encrypted: String, key: Int): String {
-		val stackTrace = Thread.currentThread().stackTrace
-		val classHash = stackTrace[1].className.hashCode()
-		val methodHash = stackTrace[1].methodName.hashCode()
-		
-		val old = encrypted.toCharArray()
-		val new = CharArray(encrypted.length)
-		
-		for (i in 0..old.size) {
-			when (i % 5) {
-				0 -> new[i] = old[i] xor 2
-				1 -> new[i] = old[i] xor key
-				2 -> new[i] = old[i] xor classHash
-				3 -> new[i] = old[i] xor methodHash
-				4 -> new[i] = old[i] xor  (methodHash + classHash)
+				4 -> new[i] = old[i] xor (methodHash + classHash)
 				5 -> new[i] = old[i] xor i
 			}
 		}
