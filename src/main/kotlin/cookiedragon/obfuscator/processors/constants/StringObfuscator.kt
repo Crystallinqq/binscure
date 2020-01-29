@@ -2,10 +2,12 @@ package cookiedragon.obfuscator.processors.constants
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
+import cookiedragon.obfuscator.classpath.ClassPath
 import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.kotlin.xor
+import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Label
@@ -21,18 +23,17 @@ object StringObfuscator: IClassProcessor {
 		if (!ConfigurationManager.rootConfig.stringObfuscation.enabled)
 			return
 		
+		val stringInsns = arrayListOf<EncryptedString>()
 		for (classNode in CObfuscator.getProgressBar("Obfuscating Strings").wrap(classes)) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			
-			val stringInsns = arrayListOf<EncryptedString>()
 			for (method in classNode.methods) {
 				if (CObfuscator.isExcluded(classNode, method))
 					continue
 				
 				for (insn in method.instructions) {
 					if (insn is LdcInsnNode && insn.cst is String) {
-						
 						val encryptedString = encryptString(
 							insn.cst as String,
 							Math.round(CObfuscator.random.nextFloat() * 100),
@@ -44,71 +45,80 @@ object StringObfuscator: IClassProcessor {
 					}
 				}
 			}
-			
-			if (stringInsns.size > 0) {
-				
-				val storageField = FieldNode(
-					ACC_PRIVATE + ACC_STATIC + ACC_FINAL,
-					"\$binscureDecryption",
-					"[Ljava/lang/String;",
-					null,
-					null
-				)
-				classNode.fields.add(storageField)
-				
-				generateStaticBlock(classNode, storageField, stringInsns)
-				
-				val decryptorMethod = generateDecrypterMethod(classNode, storageField, stringInsns)
-				
-				for ((index, string) in stringInsns.withIndex()) {
-					
-					val modifier = InstructionModifier()
-					
-					val list = InsnList()
-					
-					if (CObfuscator.random.nextInt(21) == 1) {
-						list.add(ldcInt(string.key))
-						list.add(ldcInt(index))
-						list.add(InsnNode(SWAP))
-					} else {
-						list.add(ldcInt(index))
-						list.add(ldcInt(string.key))
-					}
-					when (CObfuscator.random.nextInt(40)) {
-						1 -> {
-							list.add(InsnNode(ICONST_M1))
-							list.add(InsnNode(POP))
-						}
-						2 -> {
-							list.add(LdcInsnNode(classNode.name))
-							list.add(InsnNode(POP))
-						}
-						3 -> {
-							list.add(InsnNode(ACONST_NULL))
-							list.add(InsnNode(POP))
-						}
-						4 -> {
-							list.add(InsnNode(NOP))
-						}
-					}
-					list.add(MethodInsnNode(
-						INVOKESTATIC,
-						classNode.name,
-						decryptorMethod.name,
-						decryptorMethod.desc,
-						false
-					))
-					
-					modifier.replace(string.insn, list)
-					modifier.apply(string.methodNode)
+		}
+		if (stringInsns.size > 0) {
+			val classNode = ClassNode()
+				.apply {
+					this.access = ACC_PUBLIC + ACC_FINAL
+					this.version = stringInsns[0].classNode.version
+					this.name = ClassRenamer.namer.uniqueRandomString()
+					this.signature = null
+					this.superName = "java/lang/Object"
+					classes.add(this)
+					ClassPath.classes[this.name] = this
+					ClassPath.classPath[this.name] = this
 				}
+			val storageField = FieldNode(
+				ACC_PRIVATE + ACC_STATIC + ACC_FINAL,
+				"\u0000",
+				"[Ljava/lang/String;",
+				null,
+				null
+			)
+			classNode.fields.add(storageField)
+			
+			generateStaticBlock(classNode, storageField, stringInsns)
+			
+			val decryptorMethod = generateDecrypterMethod(classNode, storageField, stringInsns)
+			
+			for ((index, string) in stringInsns.withIndex()) {
+				
+				val modifier = InstructionModifier()
+				
+				val list = InsnList()
+				
+				if (CObfuscator.random.nextInt(21) == 1) {
+					list.add(ldcInt(string.key))
+					list.add(ldcInt(index))
+					list.add(InsnNode(SWAP))
+				} else {
+					list.add(ldcInt(index))
+					list.add(ldcInt(string.key))
+				}
+				when (CObfuscator.random.nextInt(40)) {
+					1 -> {
+						list.add(InsnNode(ICONST_M1))
+						list.add(InsnNode(POP))
+					}
+					2 -> {
+						list.add(LdcInsnNode(classNode.name))
+						list.add(InsnNode(POP))
+					}
+					3 -> {
+						list.add(InsnNode(ACONST_NULL))
+						list.add(InsnNode(POP))
+					}
+					4 -> {
+						list.add(InsnNode(NOP))
+					}
+				}
+				list.add(MethodInsnNode(
+					INVOKESTATIC,
+					classNode.name,
+					decryptorMethod.name,
+					decryptorMethod.desc,
+					false
+				))
+				
+				modifier.replace(string.insn, list)
+				modifier.apply(string.methodNode)
 			}
 		}
 	}
 	
 	private fun generateDecrypterMethod(classNode: ClassNode, storageField: FieldNode, strings: ArrayList<EncryptedString>): MethodNode {
 		val decryptorMethod = MethodNode(
-			ACC_PRIVATE + ACC_STATIC,
+			ACC_PUBLIC + ACC_STATIC,
 			"\$binscureDecryptor",
 			"(II)Ljava/lang/String;",
 			null,
@@ -336,7 +346,7 @@ object StringObfuscator: IClassProcessor {
 			
 			add(getClassName)
 			add(VarInsnNode(ALOAD, 5))
-			add(ldcInt(1))
+			add(ldcInt(2))
 			add(InsnNode(AALOAD))
 			add(MethodInsnNode(INVOKEVIRTUAL, StackTraceElement::class.internalName, "getClassName", "()Ljava/lang/String;", false))
 			add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/Object", "hashCode", "()I", false))
