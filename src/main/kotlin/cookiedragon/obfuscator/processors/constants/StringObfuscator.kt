@@ -49,7 +49,7 @@ object StringObfuscator: IClassProcessor {
 				
 				val storageField = FieldNode(
 					ACC_PRIVATE + ACC_STATIC + ACC_FINAL,
-					"decryptionStorage${CObfuscator.random.nextInt(5000)}",
+					"\$binscureDecryption",
 					"[Ljava/lang/String;",
 					null,
 					null
@@ -109,12 +109,13 @@ object StringObfuscator: IClassProcessor {
 	private fun generateDecrypterMethod(classNode: ClassNode, storageField: FieldNode, strings: ArrayList<EncryptedString>): MethodNode {
 		val decryptorMethod = MethodNode(
 			ACC_PRIVATE + ACC_STATIC,
-			"stringDecrypter${CObfuscator.random.nextInt(5000)}",
+			"\$binscureDecryptor",
 			"(II)Ljava/lang/String;",
 			null,
 			null
 		)
 		
+		val realStart = LabelNode(Label())
 		val fakeEnd = LabelNode(Label())
 		val start = LabelNode(Label())
 		val handler = LabelNode(Label())
@@ -135,12 +136,26 @@ object StringObfuscator: IClassProcessor {
 		val createCharArrays = LabelNode(Label())
 		val xors = LabelNode(Label())
 		
+		// XOR SWITCH LABELS
+		val loopStart = LabelNode(Label())
+		val exitLoop = LabelNode(Label())
+		val switchEnd = LabelNode(Label())
+		val setCharArrVal = LabelNode(Label())
+		val l0 = LabelNode(Label())
+		val l1 = LabelNode(Label())
+		val l2 = LabelNode(Label())
+		val l3 = LabelNode(Label())
+		val l4 = LabelNode(Label())
+		val l5 = LabelNode(Label())
+		
 		decryptorMethod.tryCatchBlocks.apply {
-			//add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, null))
-			//add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
-			//add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, null))
-			//add(TryCatchBlockNode(start, end, handler, null))
-			//add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
+			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
+			add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
+			add(TryCatchBlockNode(start, end, handler, null))
+			add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
+			add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Throwable"))
+			add(TryCatchBlockNode(getCurrentThread, xors, secondCatch, null))
 		}
 		
 		// First check if the value is cached
@@ -151,9 +166,32 @@ object StringObfuscator: IClassProcessor {
 			add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
 			add(InsnNode(POP))
 			
+			add(l5) // xor i
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
+			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
+			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(IXOR))
+			add(JumpInsnNode(GOTO, setCharArrVal))
+			
+			add(loopStart)
+			add(VarInsnNode(ILOAD, 10))
+			add(VarInsnNode(ALOAD, 8))
+			add(InsnNode(ARRAYLENGTH))
+			add(JumpInsnNode(IF_ICMPGE, exitLoop))
+			
+			add(VarInsnNode(ILOAD, 10))
+			add(ldcInt(5))
+			add(InsnNode(IREM))
+			add(LookupSwitchInsnNode(
+				switchEnd,
+				intArrayOf(0, 1, 2, 3, 4, 5),
+				arrayOf(l0, l1, l2, l3, l4, l5)
+			))
+			
 			// Fake try catch start
 			add(start)
-			/*add(InsnNode(ACONST_NULL))
+			add(InsnNode(ACONST_NULL))
 			add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
 			add(InsnNode(L2I))
 			add(InsnNode(INEG))
@@ -164,58 +202,11 @@ object StringObfuscator: IClassProcessor {
 			add(fakeEnd)
 			add(InsnNode(ATHROW))
 			add(secondCatch)
-			add(InsnNode(POP))*/
+			add(InsnNode(POP))
 			add(end)
 			// Fake try catch start half end
 			
-			
-			add(InsnNode(ACONST_NULL))
-			add(VarInsnNode(ASTORE, 3)) // Switch control
-			add(InsnNode(ACONST_NULL))
-			add(VarInsnNode(ASTORE, 4)) // Thread
-			add(InsnNode(ACONST_NULL))
-			add(VarInsnNode(ASTORE, 5)) // StackTrace Element Arr
-			add(ldcInt(0))
-			add(VarInsnNode(ISTORE, 6)) // ClassName hashcode
-			add(ldcInt(0))
-			add(VarInsnNode(ISTORE, 7)) // MethodName hashcode
-			add(InsnNode(ACONST_NULL))
-			add(VarInsnNode(ASTORE, 8)) // Encrypted Char Array
-			add(InsnNode(ACONST_NULL))
-			add(VarInsnNode(ASTORE, 9)) // Decrypted Char Array
-			add(ldcInt(0))
-			add(VarInsnNode(ISTORE, 10)) // Char array for index
-			
-			
-			add(ldcInt(0))
-			add(VarInsnNode(ISTORE, 2))
-			add(switch)
-			add(VarInsnNode(ILOAD, 2))
-			add(LookupSwitchInsnNode(
-				switchDefault,
-				intArrayOf(
-					0,
-					1,
-					2,
-					3,
-					4,
-					5,
-					6,
-					7,
-					8
-				),
-				arrayOf(
-					checkCache,
-					finalReturn,
-					getCurrentThread,
-					getStackTrace,
-					getClassName,
-					getMethodName,
-					checkCache,
-					createCharArrays,
-					xors
-				)
-			))
+			add(JumpInsnNode(GOTO, realStart))
 			
 			add(getCurrentThread)
 			add(MethodInsnNode(INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;", false))
@@ -240,85 +231,6 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ISTORE, 2))
 			add(JumpInsnNode(GOTO, switch)) // GOTO xors
 			
-			add(xors)
-			val loopStart = LabelNode(Label())
-			val exitLoop = LabelNode(Label())
-			add(ldcInt(0))
-			add(VarInsnNode(ISTORE, 10))
-			add(loopStart)
-			add(VarInsnNode(ILOAD, 10))
-			add(VarInsnNode(ALOAD, 8))
-			add(InsnNode(ARRAYLENGTH))
-			add(JumpInsnNode(IF_ICMPGE, exitLoop))
-			
-			add(VarInsnNode(ILOAD, 10))
-			add(ldcInt(5))
-			add(InsnNode(IREM))
-			
-			val switchEnd = LabelNode(Label())
-			val setCharArrVal = LabelNode(Label())
-			val l0 = LabelNode(Label())
-			val l1 = LabelNode(Label())
-			val l2 = LabelNode(Label())
-			val l3 = LabelNode(Label())
-			val l4 = LabelNode(Label())
-			val l5 = LabelNode(Label())
-			
-			add(LookupSwitchInsnNode(
-				switchEnd,
-				intArrayOf(0, 1, 2, 3, 4, 5),
-				arrayOf(l0, l1, l2, l3, l4, l5)
-			))
-			
-			add(l0) // xor 2
-			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
-			add(VarInsnNode(ILOAD, 10)) // index
-			add(InsnNode(CALOAD))
-			add(ldcInt(2))
-			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
-			add(l1) // xor key
-			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
-			add(VarInsnNode(ILOAD, 10)) // index
-			add(InsnNode(CALOAD))
-			add(VarInsnNode(ILOAD, 1)) // key
-			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
-			add(l2) // xor classhash
-			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
-			add(VarInsnNode(ILOAD, 10)) // index
-			add(InsnNode(CALOAD))
-			add(VarInsnNode(ILOAD, 6)) // classhash
-			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
-			add(l3) // xor methodhash
-			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
-			add(VarInsnNode(ILOAD, 10)) // index
-			add(InsnNode(CALOAD))
-			add(VarInsnNode(ILOAD, 7)) // methodhash
-			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
-			add(l4) // xor methodhash + classhash
-			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
-			add(VarInsnNode(ILOAD, 10)) // index
-			add(InsnNode(CALOAD))
-			add(VarInsnNode(ILOAD, 7)) // methodhash
-			add(VarInsnNode(ILOAD, 6)) // classhash
-			add(InsnNode(IADD))
-			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
-			add(l5) // xor i
-			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
-			add(VarInsnNode(ILOAD, 10)) // index
-			add(InsnNode(CALOAD))
-			add(VarInsnNode(ILOAD, 10)) // index
-			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
-			
-			add(switchEnd)
-			add(InsnNode(ACONST_NULL))
-			add(InsnNode(ATHROW))
-			
 			add(setCharArrVal)
 			add(InsnNode(I2C))
 			add(VarInsnNode(ALOAD, 9)) // Decrypted Char Array
@@ -334,6 +246,37 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ISTORE, 2))
 			add(JumpInsnNode(GOTO, switch)) // GOTO finalReturn
 			
+			add(l3) // xor methodhash
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
+			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
+			add(VarInsnNode(ILOAD, 7)) // methodhash
+			add(InsnNode(IXOR))
+			add(JumpInsnNode(GOTO, setCharArrVal))
+			
+			add(xors)
+			add(ldcInt(0))
+			add(VarInsnNode(ISTORE, 10))
+			add(JumpInsnNode(GOTO, loopStart))
+			
+			add(l0) // xor 2
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
+			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
+			add(ldcInt(2))
+			add(InsnNode(IXOR))
+			add(JumpInsnNode(GOTO, setCharArrVal))
+			
+			add(l4) // xor methodhash + classhash
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
+			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
+			add(VarInsnNode(ILOAD, 7)) // methodhash
+			add(VarInsnNode(ILOAD, 6)) // classhash
+			add(InsnNode(IADD))
+			add(InsnNode(IXOR))
+			add(JumpInsnNode(GOTO, setCharArrVal))
+			
 			add(finalReturn)
 			//add(LdcInsnNode("b"))
 			//add(VarInsnNode(ALOAD, 6))
@@ -342,6 +285,14 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ALOAD, 9)) // Decrypted Char Array
 			add(MethodInsnNode(INVOKESPECIAL, "java/lang/String", "<init>", "([C)V"))
 			add(InsnNode(ARETURN))
+			
+			add(l2) // xor classhash
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
+			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
+			add(VarInsnNode(ILOAD, 6)) // classhash
+			add(InsnNode(IXOR))
+			add(JumpInsnNode(GOTO, setCharArrVal))
 			
 			add(getMethodName)
 			add(VarInsnNode(ALOAD, 5))
@@ -395,16 +346,77 @@ object StringObfuscator: IClassProcessor {
 			add(JumpInsnNode(GOTO, switch)) // GOTO getMethodName
 			
 			add(genericCatch)
-			//add(InsnNode(POP))
-			//add(InsnNode(ACONST_NULL))
-			//add(InsnNode(ATHROW))
+			add(InsnNode(POP))
+			add(InsnNode(ACONST_NULL))
+			add(InsnNode(ATHROW))
 			
 			
 			// Fake try catch second half start
 			add(handler)
-			//add(InsnNode(POP))
-			//add(InsnNode(ACONST_NULL))
-			//add(JumpInsnNode(GOTO, fakeEnd))
+			add(InsnNode(POP))
+			add(InsnNode(ACONST_NULL))
+			add(JumpInsnNode(GOTO, fakeEnd))
+			
+			add(l1) // xor key
+			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
+			add(VarInsnNode(ILOAD, 10)) // index
+			add(InsnNode(CALOAD))
+			add(VarInsnNode(ILOAD, 1)) // key
+			add(InsnNode(IXOR))
+			add(JumpInsnNode(GOTO, setCharArrVal))
+			
+			add(switchEnd)
+			add(InsnNode(ACONST_NULL))
+			add(InsnNode(ATHROW))
+			
+			add(realStart)
+			add(InsnNode(ACONST_NULL))
+			add(VarInsnNode(ASTORE, 3)) // Switch control
+			add(InsnNode(ACONST_NULL))
+			add(VarInsnNode(ASTORE, 4)) // Thread
+			add(InsnNode(ACONST_NULL))
+			add(VarInsnNode(ASTORE, 5)) // StackTrace Element Arr
+			add(ldcInt(0))
+			add(VarInsnNode(ISTORE, 6)) // ClassName hashcode
+			add(ldcInt(0))
+			add(VarInsnNode(ISTORE, 7)) // MethodName hashcode
+			add(InsnNode(ACONST_NULL))
+			add(VarInsnNode(ASTORE, 8)) // Encrypted Char Array
+			add(InsnNode(ACONST_NULL))
+			add(VarInsnNode(ASTORE, 9)) // Decrypted Char Array
+			add(ldcInt(0))
+			add(VarInsnNode(ISTORE, 10)) // Char array for index
+			
+			
+			add(ldcInt(0))
+			add(VarInsnNode(ISTORE, 2))
+			add(switch)
+			add(VarInsnNode(ILOAD, 2))
+			add(LookupSwitchInsnNode(
+				switchDefault,
+				intArrayOf(
+					0,
+					1,
+					2,
+					3,
+					4,
+					5,
+					6,
+					7,
+					8
+				),
+				arrayOf(
+					checkCache,
+					finalReturn,
+					getCurrentThread,
+					getStackTrace,
+					getClassName,
+					getMethodName,
+					checkCache,
+					createCharArrays,
+					xors
+				)
+			))
 		}
 		decryptorMethod.instructions.add(insnList)
 		classNode.methods.add(decryptorMethod)
