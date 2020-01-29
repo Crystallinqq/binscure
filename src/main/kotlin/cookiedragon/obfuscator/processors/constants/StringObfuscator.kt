@@ -11,7 +11,6 @@ import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
-import kotlin.random.Random
 
 /**
  * @author cookiedragon234 20/Jan/2020
@@ -136,11 +135,11 @@ object StringObfuscator: IClassProcessor {
 		val xors = LabelNode(Label())
 		
 		decryptorMethod.tryCatchBlocks.apply {
-			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, null))
-			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
-			add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, null))
-			add(TryCatchBlockNode(start, end, handler, null))
-			add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
+			//add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, null))
+			//add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
+			//add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, null))
+			//add(TryCatchBlockNode(start, end, handler, null))
+			//add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
 		}
 		
 		// First check if the value is cached
@@ -153,7 +152,7 @@ object StringObfuscator: IClassProcessor {
 			
 			// Fake try catch start
 			add(start)
-			add(InsnNode(ACONST_NULL))
+			/*add(InsnNode(ACONST_NULL))
 			add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
 			add(InsnNode(L2I))
 			add(InsnNode(INEG))
@@ -164,7 +163,7 @@ object StringObfuscator: IClassProcessor {
 			add(fakeEnd)
 			add(InsnNode(ATHROW))
 			add(secondCatch)
-			add(InsnNode(POP))
+			add(InsnNode(POP))*/
 			add(end)
 			// Fake try catch start half end
 			
@@ -313,6 +312,7 @@ object StringObfuscator: IClassProcessor {
 			add(switchEnd)
 			// Increment and go to top of loop
 			add(IincInsnNode(10, 1))
+			add(JumpInsnNode(GOTO, loopStart))
 			add(exitLoop)
 			add(ldcInt(1))
 			add(VarInsnNode(ISTORE, 2))
@@ -379,16 +379,16 @@ object StringObfuscator: IClassProcessor {
 			add(JumpInsnNode(GOTO, switch)) // GOTO getMethodName
 			
 			add(genericCatch)
-			add(InsnNode(POP))
-			add(InsnNode(ACONST_NULL))
-			add(InsnNode(ATHROW))
+			//add(InsnNode(POP))
+			//add(InsnNode(ACONST_NULL))
+			//add(InsnNode(ATHROW))
 			
 			
 			// Fake try catch second half start
 			add(handler)
-			add(InsnNode(POP))
-			add(InsnNode(ACONST_NULL))
-			add(JumpInsnNode(GOTO, fakeEnd))
+			//add(InsnNode(POP))
+			//add(InsnNode(ACONST_NULL))
+			//add(JumpInsnNode(GOTO, fakeEnd))
 		}
 		decryptorMethod.instructions.add(insnList)
 		classNode.methods.add(decryptorMethod)
@@ -444,11 +444,10 @@ object StringObfuscator: IClassProcessor {
 		
 		val old = original.toCharArray()
 		val new = CharArray(original.length)
-		val rand = Random(key)
 		
 		for ((index, char) in old.withIndex()) {
-			new[index] = when (index % 6) {
-				0 -> char xor rand.nextInt(20)
+			new[index] = when (index % 5) {
+				0 -> char xor 2
 				1 -> char xor key
 				2 -> char xor classHash
 				3 -> char xor methodHash
@@ -458,7 +457,32 @@ object StringObfuscator: IClassProcessor {
 			}
 		}
 		
+		if (StringObfuscator.decryptString(String(new), key, classNode, methodNode, insn) != original) {
+			throw IllegalStateException()
+		}
+		
 		return EncryptedString(original, String(new), key, classNode, methodNode, insn)
+	}
+	
+	
+	private fun decryptString(original: String, key: Int, classNode: ClassNode, methodNode: MethodNode, insn: LdcInsnNode): String {
+		val classHash = classNode.name.replace('/', '.').hashCode()
+		val methodHash = methodNode.name.replace('/', '.').hashCode()
+		
+		val old = original.toCharArray()
+		val new = CharArray(original.length)
+		
+		for (i in 0..old.size) {
+			when (i % 5) {
+				0 -> new[i] = old[i] xor 2
+				1 -> new[i] = old[i] xor key
+				2 -> new[i] = old[i] xor classHash
+				3 -> new[i] = old[i] xor methodHash
+				4 -> new[i] = old[i] xor  (methodHash + classHash)
+				5 -> new[i] = old[i] xor i
+			}
+		}
+		return String(new)
 	}
 	
 	private fun decryptString(encrypted: String, key: Int): String {
