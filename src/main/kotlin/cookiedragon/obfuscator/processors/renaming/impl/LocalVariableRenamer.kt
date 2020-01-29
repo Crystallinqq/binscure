@@ -36,10 +36,8 @@ object LocalVariableRenamer: IClassProcessor {
 					}
 				}
 				
-				if (name.isEmpty()) {
-					method.parameters = null
-				} else {
-					for (parameter in method.parameters ?: continue) {
+				if (method.parameters != null) {
+					for (parameter in method.parameters) {
 						parameter.name = name
 					}
 				}

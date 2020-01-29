@@ -39,8 +39,7 @@ object IfJumpProxy: IClassProcessor {
 								add(InsnNode(POP))
 							}
 							add(JumpInsnNode(insn.opcode, insn.label))
-							//add(JumpInsnNode(GOTO, after))
-							add(InsnNode(ACONST_NULL))
+							add(JumpInsnNode(GOTO, after))
 							add(tryEnd)
 							add(catch)
 							add(InsnNode(POP))
