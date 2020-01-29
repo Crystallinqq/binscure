@@ -3,6 +3,7 @@ package cookiedragon.obfuscator.processors.flow.trycatch
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.internalName
+import cookiedragon.obfuscator.kotlin.wrap
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -12,8 +13,8 @@ import org.objectweb.asm.tree.*
  */
 object FakeTryCatch: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (classNode in classes) {
-			if (!CObfuscator.isExcluded(classNode) && classNode.methods.size > 0) {
+		for (classNode in CObfuscator.getProgressBar("Adding try catches").wrap(classes)) {
+			if (!CObfuscator.isExcluded(classNode)) {
 				for (method in classNode.methods) {
 					if (CObfuscator.noMethodInsns(method))// || !CObfuscator.randomWeight(5))
 						continue

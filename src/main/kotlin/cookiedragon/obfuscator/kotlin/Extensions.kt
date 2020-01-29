@@ -116,5 +116,11 @@ fun <T> Collection<T>.random(random: SecureRandom): T {
 	return elementAt(random.nextInt(size))
 }
 
+fun <T> Array<T>.random(random: SecureRandom): T {
+	if (isEmpty())
+		throw NoSuchElementException("Collection is empty.")
+	return elementAt(random.nextInt(size))
+}
+
 val <T: Any> KClass<T>.internalName: String
 	get() = Type.getInternalName(this.java)

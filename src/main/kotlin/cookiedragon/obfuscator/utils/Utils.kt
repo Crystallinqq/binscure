@@ -1,7 +1,10 @@
 package cookiedragon.obfuscator.utils
 
-import org.objectweb.asm.tree.AbstractInsnNode
+import cookiedragon.obfuscator.CObfuscator
+import cookiedragon.obfuscator.kotlin.internalName
+import cookiedragon.obfuscator.kotlin.random
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.InsnNode
 import org.objectweb.asm.tree.IntInsnNode
 import org.objectweb.asm.tree.LdcInsnNode
@@ -33,3 +36,21 @@ fun ldcInt(int: Int): AbstractInsnNode {
 		LdcInsnNode(int)
 	}
 }
+
+val throwables = arrayOf(
+	RuntimeException::class.internalName,
+	ArithmeticException::class.internalName,
+	ArrayIndexOutOfBoundsException::class.internalName,
+	ClassCastException::class.internalName,
+	EnumConstantNotPresentException::class.internalName,
+	IllegalArgumentException::class.internalName,
+	NegativeArraySizeException::class.internalName,
+	StringIndexOutOfBoundsException::class.internalName,
+	null,
+	null,
+	null,
+	null,
+	null
+)
+
+fun randomThrowable(): String? = throwables.random(CObfuscator.random)
