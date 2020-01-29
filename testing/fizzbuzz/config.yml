@@ -1,4 +1,4 @@
-input: StringEncTest.jar
+input: fizzbuzz.jar
 
 stringObfuscation:
     enabled: true

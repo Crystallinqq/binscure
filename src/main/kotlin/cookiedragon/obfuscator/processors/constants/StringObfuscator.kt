@@ -119,7 +119,7 @@ object StringObfuscator: IClassProcessor {
 	private fun generateDecrypterMethod(classNode: ClassNode, storageField: FieldNode, strings: ArrayList<EncryptedString>): MethodNode {
 		val decryptorMethod = MethodNode(
 			ACC_PUBLIC + ACC_STATIC,
-			"\$binscureDecryptor",
+			"\u0000",
 			"(II)Ljava/lang/String;",
 			null,
 			null
