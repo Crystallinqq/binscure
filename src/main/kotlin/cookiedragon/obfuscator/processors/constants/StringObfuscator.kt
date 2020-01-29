@@ -288,13 +288,25 @@ object StringObfuscator: IClassProcessor {
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			
 			add(finalReturn)
-			//add(LdcInsnNode("b"))
-			//add(VarInsnNode(ALOAD, 6))
+			
+			add(FieldInsnNode(GETSTATIC, classNode.name, storageField.name, storageField.desc)) // Get field
+			
+			// Get Arr Index
+			add(IntInsnNode(ILOAD, 0)) // String index
+			add(ldcInt(2)) // Multiply by 2
+			add(InsnNode(IMUL))
+			add(ldcInt(1)) // Add 1
+			add(InsnNode(IADD))
+			
+			// Create value
 			add(TypeInsnNode(NEW, "java/lang/String"))
 			add(InsnNode(DUP))
 			add(VarInsnNode(ALOAD, 9)) // Decrypted Char Array
 			add(MethodInsnNode(INVOKESPECIAL, "java/lang/String", "<init>", "([C)V"))
-			add(InsnNode(ARETURN))
+			add(InsnNode(DUP_X2)) // Duplicate two values down
+			
+			add(InsnNode(AASTORE)) // Store in array
+			add(InsnNode(ARETURN)) // Return string
 			
 			add(l2) // xor classhash
 			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
