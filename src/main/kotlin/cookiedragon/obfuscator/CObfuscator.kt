@@ -16,7 +16,7 @@ import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import java.io.FileNotFoundException
-import java.io.FileWriter
+import java.io.FileOutputStream
 import java.io.PrintWriter
 import java.lang.reflect.Modifier
 import java.security.SecureRandom
@@ -74,7 +74,7 @@ object CObfuscator {
 			SourceStripper,
 			KotlinMetadataStripper,
 			
-			MethodIndirection,
+			DynamicCallObfuscation,
 			
 			LocalVariableRenamer,
 			MethodRenamer,
@@ -100,7 +100,7 @@ object CObfuscator {
 		println("Finished processing ${classes.size} classes and ${passThrough.size} resources in ${duration.toMillis() / 1000f}s")
 		
 		if (rootConfig.mappingFile != null && !mappings.isEmpty()) {
-			PrintWriter(FileWriter(rootConfig.mappingFile)).use {
+			PrintWriter(FileOutputStream(rootConfig.mappingFile)).use {
 				for ((key, value) in mappings) {
 					it.println(key.replace(",", "\\,") + "," + value.replace(",", "\\,"))
 				}
