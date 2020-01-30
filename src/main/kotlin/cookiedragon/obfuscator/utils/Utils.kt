@@ -37,6 +37,31 @@ fun ldcInt(int: Int): AbstractInsnNode {
 	}
 }
 
+fun ldcLong(long: Long): AbstractInsnNode {
+	return when (long) {
+		0L -> InsnNode(LCONST_0)
+		1L -> InsnNode(LCONST_1)
+		else -> LdcInsnNode(long)
+	}
+}
+
+fun ldcDouble(double: Double): AbstractInsnNode {
+	return when (double) {
+		0.0 -> InsnNode(DCONST_0)
+		1.0 -> InsnNode(DCONST_1)
+		else -> LdcInsnNode(double)
+	}
+}
+
+fun ldcFloat(float: Float): AbstractInsnNode {
+	return when (float) {
+		0f -> InsnNode(FCONST_0)
+		1f -> InsnNode(FCONST_1)
+		2f -> InsnNode(FCONST_2)
+		else -> LdcInsnNode(float)
+	}
+}
+
 val throwables = arrayOf(
 	RuntimeException::class.internalName,
 	ArithmeticException::class.internalName,

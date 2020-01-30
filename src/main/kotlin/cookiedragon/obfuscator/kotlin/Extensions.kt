@@ -124,3 +124,5 @@ fun <T> Array<T>.random(random: SecureRandom): T {
 
 val <T: Any> KClass<T>.internalName: String
 	get() = Type.getInternalName(this.java)
+
+//public infix fun Int.xor(other: Int): Int = this.xor(other)
