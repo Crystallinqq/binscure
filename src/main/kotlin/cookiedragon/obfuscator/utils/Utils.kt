@@ -8,6 +8,7 @@ import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.InsnNode
 import org.objectweb.asm.tree.IntInsnNode
 import org.objectweb.asm.tree.LdcInsnNode
+import java.security.SecureRandom
 
 
 /**
@@ -115,3 +116,20 @@ fun getNumFromLdc(insn: AbstractInsnNode): Number {
 	}
 }
 
+fun randomBranch(random: SecureRandom, vararg blocks: Int.() -> Unit) {
+	val choice = random.nextInt(blocks.size)
+	blocks.elementAt(choice).invoke(choice)
+}
+
+fun randomBranchExcluding(random: SecureRandom, exclusion: MutableInteger, vararg blocks: Int.() -> Unit) {
+	var choice: Int
+	do {
+		choice = random.nextInt(blocks.size)
+	} while (exclusion.equals(choice))
+	exclusion.value = choice
+	blocks.elementAt(choice).invoke(choice)
+}
+
+data class MutableInteger(var value: Int) {
+	fun equals(v2: Int) = value == v2
+}
