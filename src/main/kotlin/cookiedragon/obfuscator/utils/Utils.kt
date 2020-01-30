@@ -54,3 +54,39 @@ val throwables = arrayOf(
 )
 
 fun randomThrowable(): String? = throwables.random(CObfuscator.random)
+
+val numOps = mapOf<Int, Number>(
+	ICONST_M1 to -1,
+	ICONST_0 to 0,
+	ICONST_1 to 1,
+	ICONST_2 to 2,
+	ICONST_3 to 3,
+	ICONST_4 to 4,
+	ICONST_5 to 5,
+	
+	LCONST_0 to 0L,
+	LCONST_1 to 1L,
+	
+	FCONST_0 to 0f,
+	FCONST_1 to 1f,
+	FCONST_2 to 2f,
+	
+	DCONST_0 to 0.0,
+	DCONST_1 to 1.0,
+	
+	BIPUSH to -1,
+	SIPUSH to -1
+)
+
+fun isNumberLdc(insn: AbstractInsnNode): Boolean = numOps.contains(insn.opcode) || (insn is LdcInsnNode && insn.cst is Number)
+
+fun getNumFromLdc(insn: AbstractInsnNode): Number {
+	return if (insn is LdcInsnNode && insn.cst is Number) {
+		insn.cst as Number
+	} else if (insn is IntInsnNode) {
+		insn.operand
+	} else {
+		numOps[insn.opcode] ?: throw IllegalStateException()
+	}
+}
+
