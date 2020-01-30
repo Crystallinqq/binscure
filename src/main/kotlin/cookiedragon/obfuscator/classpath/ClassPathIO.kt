@@ -33,7 +33,7 @@ object ClassPathIO {
 						ClassPath.classes[classNode.name] = classNode
 						ClassPath.classPath[classNode.name] = classNode
 						ClassPath.originalNames[classNode] = classNode.name
-					} else {
+					} else if (!entry.isDirectory) {
 						ClassPath.passThrough[entry.name] = it.getInputStream(entry).readBytes()
 					}
 					progressBar.step()

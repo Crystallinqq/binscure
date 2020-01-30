@@ -2,11 +2,13 @@ package cookiedragon.obfuscator.processors.flow.jump
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
-import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.utils.InstructionModifier
+import cookiedragon.obfuscator.utils.ldcInt
+import cookiedragon.obfuscator.utils.randomThrowable
 import org.objectweb.asm.Label
-import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.Opcodes.GOTO
+import org.objectweb.asm.Opcodes.IFNONNULL
 import org.objectweb.asm.tree.*
 
 /**
@@ -32,19 +34,21 @@ object IfJumpProxy: IClassProcessor {
 						val catch = LabelNode(Label())
 						val after = LabelNode(Label())
 						
+						val val1 = LabelNode(Label())
+						val switch = LabelNode(Label())
+						
 						val list = InsnList().apply {
 							add(tryStart)
-							if (heavy) {
-								add(MethodInsnNode(INVOKESTATIC, Thread::class.internalName, "currentThread", "()Ljava/lang/Thread;"))
-								add(InsnNode(POP))
-							}
-							add(JumpInsnNode(insn.opcode, insn.label))
-							add(JumpInsnNode(GOTO, after))
-							add(tryEnd)
+							add(JumpInsnNode(insn.opcode, val1))
+							add(ldcInt(0))
+							add(JumpInsnNode(GOTO, switch))
 							add(catch)
-							add(InsnNode(POP))
-							add(JumpInsnNode(GOTO, after))
-							//add(InsnNode(ATHROW))
+							add(JumpInsnNode(IFNONNULL, val1))
+							add(val1)
+							add(ldcInt(-1))
+							add(switch)
+							add(TableSwitchInsnNode(-1, 0, val1, insn.label, after))
+							add(tryEnd)
 						}
 						
 						insn.label = tryStart
@@ -52,7 +56,7 @@ object IfJumpProxy: IClassProcessor {
 						
 						modifier.append(insn, InsnList().apply{add(after)})
 						modifier.append(method.instructions.last, list)
-						method.tryCatchBlocks.add(TryCatchBlockNode(tryStart, tryEnd, catch, null))
+						method.tryCatchBlocks.add(TryCatchBlockNode(tryStart, tryEnd, catch, randomThrowable()))
 						
 						println("Added to ${method.name}")
 						break

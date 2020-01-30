@@ -69,10 +69,8 @@ object CObfuscator {
 		val processors = arrayOf(
 			//BadInvoke,
 			IfJumpProxy
-			//FakeTryCatch,
-			//StringObfuscator
-			//FakeTryCatch
-			/*SourceStripper,
+			/*FakeTryCatch,
+			SourceStripper,
 			KotlinMetadataStripper,
 			
 			MethodIndirection,
@@ -81,9 +79,9 @@ object CObfuscator {
 			MethodRenamer,
 			FieldRenamer,
 			ClassRenamer,
+			StringObfuscator,
 			
 			InvalidSignatureExploit,
-			
 			
 			ManifestResourceProcessor,
 			MixinResourceProcessor*/

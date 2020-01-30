@@ -3,3 +3,5 @@ build/
 .idea/
 
 *.jar
+
+mappings.csv
