@@ -4,10 +4,7 @@ import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.random
 import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.tree.AbstractInsnNode
-import org.objectweb.asm.tree.InsnNode
-import org.objectweb.asm.tree.IntInsnNode
-import org.objectweb.asm.tree.LdcInsnNode
+import org.objectweb.asm.tree.*
 import java.security.SecureRandom
 
 
@@ -80,6 +77,20 @@ val throwables = arrayOf(
 )
 
 fun randomThrowable(): String? = throwables.random(CObfuscator.random)
+
+val throwableActions = arrayOf(
+	InsnList().apply {
+		add(InsnNode(ATHROW))
+	},
+	InsnList().apply {
+		add(InsnNode(ACONST_NULL))
+		add(InsnNode(ATHROW))
+	},
+	InsnList().apply {
+		add(InsnNode(ACONST_NULL))
+		add(InsnNode(ATHROW))
+	}
+)
 
 val numOps = mapOf<Int, Number>(
 	ICONST_M1 to -1,

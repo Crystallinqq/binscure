@@ -2,8 +2,10 @@ package cookiedragon.obfuscator.processors.flow.trycatch
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
+import cookiedragon.obfuscator.kotlin.random
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.utils.InstructionModifier
+import cookiedragon.obfuscator.utils.randomThrowable
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -25,6 +27,9 @@ object UselessTryCatch: IClassProcessor {
 				var isInitialised = !method.name.startsWith("<")
 				
 				var handler: LabelNode? = null
+				val handlerEnd = LabelNode(Label())
+				val endHandler = LabelNode(Label())
+				val endHandlerEnd = LabelNode(Label())
 				
 				val modifier = InstructionModifier()
 				for (insn in method.instructions) {
@@ -43,45 +48,77 @@ object UselessTryCatch: IClassProcessor {
 						
 						if (handler == null) {
 							handler = LabelNode(Label())
-							val handler1 = LabelNode(Label())
-							val handlerEnd = LabelNode(Label())
 							
 							val handlerList = InsnList().apply {
 								add(JumpInsnNode(GOTO, handlerEnd))
 								add(handler)
 								add(InsnNode(DUP))
-								add(JumpInsnNode(IFNULL, handler1))
-								add(InsnNode(ATHROW))
-								add(handler1)
-								add(InsnNode(ACONST_NULL))
+								add(JumpInsnNode(IFNULL, endHandler))
 								add(InsnNode(ATHROW))
 								add(handlerEnd)
 							}
 							
+							val endHandleList = InsnList().apply {
+								add(endHandler)
+								add(InsnNode(ACONST_NULL))
+								add(InsnNode(ATHROW))
+								add(endHandlerEnd)
+							}
+							
 							modifier.prepend(method.instructions.first, handlerList)
+							modifier.append(method.instructions.last, endHandleList)
+							method.tryCatchBlocks.add(TryCatchBlockNode(endHandler, endHandlerEnd, handler, randomThrowable()))
 						}
 						
-						val beforeLabel = LabelNode(Label())
+						val beforeLabel2 = LabelNode(Label())
+						val beforeLabel3 = LabelNode(Label())
 						val afterLabel = LabelNode(Label())
-						val nullThrow = LabelNode(Label())
-						val end = LabelNode(Label())
+						val afterLabel2 = LabelNode(Label())
+						val afterLabel3 = LabelNode(Label())
 						
 						val before = InsnList().apply {
-							//add(nullThrow)
-							//add(InsnNode(ACONST_NULL))
-							//add(InsnNode(ATHROW))
-							//add(JumpInsnNode(GOTO, beforeLabel))
-							//add(handler)
-							//add(JumpInsnNode(IFNULL, handler))
-							add(beforeLabel)
+							add(JumpInsnNode(GOTO, beforeLabel2))
+							add(beforeLabel3)
+							add(InsnNode(ATHROW))
+							add(beforeLabel2)
 						}
 						
 						val list = InsnList().apply {
+							add(JumpInsnNode(GOTO, afterLabel3))
+							add(afterLabel2)
+							add(InsnNode(ATHROW))
 							add(afterLabel)
-							//add(end)
+							add(afterLabel3)
 						}
 						
-						method.tryCatchBlocks.add(TryCatchBlockNode(beforeLabel, afterLabel, handler, null))
+						val availableHandlers = arrayOf(afterLabel2, beforeLabel3, handler)
+						val possibleStarts = arrayOf(beforeLabel2, beforeLabel3)
+						val possibleEnds = arrayOf(afterLabel, afterLabel3, afterLabel2)
+						
+						method.tryCatchBlocks.add(TryCatchBlockNode(
+							possibleStarts.random(getRandom()),
+							possibleEnds.random(getRandom()),
+							availableHandlers.random(getRandom()),
+							randomThrowable()
+						))
+						method.tryCatchBlocks.add(TryCatchBlockNode(
+							possibleStarts.random(getRandom()),
+							possibleEnds.random(getRandom()),
+							availableHandlers.random(getRandom()),
+							randomThrowable()
+						))
+						method.tryCatchBlocks.add(TryCatchBlockNode(
+							possibleStarts.random(getRandom()),
+							possibleEnds.random(getRandom()),
+							availableHandlers.random(getRandom()),
+							randomThrowable()
+						))
+						method.tryCatchBlocks.add(TryCatchBlockNode(
+							possibleStarts.random(getRandom()),
+							possibleEnds.random(getRandom()),
+							availableHandlers.random(getRandom()),
+							randomThrowable()
+						))
 						
 						modifier.prepend(insn, before)
 						modifier.append(insn, list)

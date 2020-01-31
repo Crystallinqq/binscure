@@ -71,11 +71,13 @@ object DynamicCallObfuscation: IClassProcessor {
 			for (methodCall in methodCalls) {
 				methodCall.methodNode.instructions.set(
 					methodCall.insnNode,
-					InvokeDynamicInsnNode("", "", handler) // TODO:
+					InvokeDynamicInsnNode(methodCall.owner, "", handler) // TODO:
 				)
 			}
 		}
 	}
+	
+	fun encryptName(className: String, methodName: String, 
 	
 	data class MethodCall(val classNode: ClassNode, val methodNode: MethodNode, val insnNode: MethodInsnNode)
 }
