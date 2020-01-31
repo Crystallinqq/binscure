@@ -63,6 +63,7 @@ object DynamicCallObfuscation: IClassProcessor {
 				null,
 				null
 			).apply {
+				decryptNode.methods.add(this)
 			}
 			
 			val handler = Handle(H_INVOKESTATIC, decryptNode.name, bootStrapMethod.name, bootStrapMethod.desc, false)

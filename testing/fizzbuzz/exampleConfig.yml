@@ -57,7 +57,7 @@ kotlinMetadata:
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
-    enabled: true
+    enabled: false
 
 # Attempts to conceal method invocations
 indirection:

@@ -7,7 +7,7 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.processors.constants.NumberObfuscation
+import cookiedragon.obfuscator.processors.flow.trycatch.UselessTryCatch
 import me.tongfei.progressbar.CustomProcessRenderer
 import me.tongfei.progressbar.ProgressBar
 import me.tongfei.progressbar.ProgressBarStyle
@@ -68,7 +68,8 @@ object CObfuscator {
 		
 		val processors = arrayOf(
 			//BadInvoke,
-			NumberObfuscation
+			//NumberObfuscation
+			UselessTryCatch
 			//IfJumpProxy
 			/*FakeTryCatch,
 			SourceStripper,
