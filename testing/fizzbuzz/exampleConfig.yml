@@ -25,12 +25,12 @@ remap:
     enabled: true
     # Renamed classes will be prefixed with this
     # You can use unicode escape sequences
-    classPrefix: "/yeet/"
+    classPrefix: "yeet/"
     methodPrefix: ""
     fieldPrefix: ""
     # Sets the names of local veriables for methods, including parameters
     # Set to empty to remove them (they are not required), which will reduce file size but be less confusing
-    localVariableName: "c"
+    localVariableName: ""
     # Default value is true, but you can disable them if you wish
     classes: true
     methods: true

@@ -7,7 +7,20 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.processors.indirection.DynamicCallObfuscation
+import cookiedragon.obfuscator.processors.constants.NumberObfuscation
+import cookiedragon.obfuscator.processors.constants.StringObfuscator
+import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
+import cookiedragon.obfuscator.processors.debug.SourceStripper
+import cookiedragon.obfuscator.processors.exploit.InvalidSignatureExploit
+import cookiedragon.obfuscator.processors.flow.BadInvoke
+import cookiedragon.obfuscator.processors.flow.trycatch.FakeTryCatch
+import cookiedragon.obfuscator.processors.flow.trycatch.UselessTryCatch
+import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.LocalVariableRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.MethodRenamer
+import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
+import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
 import me.tongfei.progressbar.CustomProcessRenderer
 import me.tongfei.progressbar.ProgressBar
 import me.tongfei.progressbar.ProgressBarStyle
@@ -67,16 +80,14 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
-			//BadInvoke,
-			//NumberObfuscation
-			//UselessTryCatch
-			DynamicCallObfuscation
-			//IfJumpProxy
-			/*FakeTryCatch,
+			BadInvoke,
+			NumberObfuscation,
+			UselessTryCatch,
+			//DynamicCallObfuscation
+			//IfJumpProxy,
+			FakeTryCatch,
 			SourceStripper,
 			KotlinMetadataStripper,
-			
-			DynamicCallObfuscation,
 			
 			LocalVariableRenamer,
 			MethodRenamer,
@@ -87,7 +98,7 @@ object CObfuscator {
 			InvalidSignatureExploit,
 			
 			ManifestResourceProcessor,
-			MixinResourceProcessor*/
+			MixinResourceProcessor
 		)
 		
 		val classes = mutableListOf<ClassNode>()

@@ -1,2 +1,4 @@
 rootProject.name = 'obfuscator'
+include 'BinscureNative'
+include 'Native'
 

@@ -24,6 +24,8 @@ shadowJar() {
 
 build.dependsOn.add("shadowJar")
 
+
+
 repositories {
     mavenCentral()
     maven {

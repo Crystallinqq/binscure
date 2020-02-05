@@ -5,6 +5,7 @@ import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.random
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
+import java.io.PrintStream
 import java.security.SecureRandom
 
 
@@ -143,4 +144,20 @@ fun randomBranchExcluding(random: SecureRandom, exclusion: MutableInteger, varar
 
 data class MutableInteger(var value: Int) {
 	fun equals(v2: Int) = value == v2
+}
+
+fun printlnAsm(text: String): InsnList {
+	return InsnList().also { it ->
+		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/lang/PrintStream;"))
+		it.add(LdcInsnNode(text))
+		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/String;)V"))
+	}
+}
+
+fun printlnIntAsm(): InsnList {
+	return InsnList().also { it ->
+		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
+		it.add(InsnNode(SWAP))
+		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(I)V"))
+	}
 }

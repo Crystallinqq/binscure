@@ -173,7 +173,7 @@ object StringObfuscator: IClassProcessor {
 			add(JumpInsnNode(GOTO, start))
 			add(switchDefault)
 			add(InsnNode(ACONST_NULL))
-			add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
+			//add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
 			add(InsnNode(POP))
 			
 			add(l5) // xor i
@@ -204,7 +204,6 @@ object StringObfuscator: IClassProcessor {
 			add(InsnNode(ACONST_NULL))
 			add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
 			add(InsnNode(L2I))
-			add(InsnNode(INEG))
 			add(JumpInsnNode(IFGE, secondCatch))
 			add(InsnNode(POP))
 			add(InsnNode(ACONST_NULL))
