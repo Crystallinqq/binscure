@@ -7,7 +7,8 @@ import java.security.SecureRandom
  * @author cookiedragon234 20/Jan/2020
  */
 interface IClassProcessor {
-	fun getRandom(): SecureRandom = CObfuscator.random
+	val random: SecureRandom
+		get() = CObfuscator.random
 	
 	fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>)
 }

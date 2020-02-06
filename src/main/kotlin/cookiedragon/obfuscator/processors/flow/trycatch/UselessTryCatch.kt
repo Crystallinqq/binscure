@@ -96,27 +96,27 @@ object UselessTryCatch: IClassProcessor {
 						val possibleEnds = arrayOf(afterLabel, afterLabel3, afterLabel2)
 						
 						method.tryCatchBlocks.add(TryCatchBlockNode(
-							possibleStarts.random(getRandom()),
-							possibleEnds.random(getRandom()),
-							availableHandlers.random(getRandom()),
+							possibleStarts.random(random),
+							possibleEnds.random(random),
+							availableHandlers.random(random),
 							randomThrowable()
 						))
 						method.tryCatchBlocks.add(TryCatchBlockNode(
-							possibleStarts.random(getRandom()),
-							possibleEnds.random(getRandom()),
-							availableHandlers.random(getRandom()),
+							possibleStarts.random(random),
+							possibleEnds.random(random),
+							availableHandlers.random(random),
 							randomThrowable()
 						))
 						method.tryCatchBlocks.add(TryCatchBlockNode(
-							possibleStarts.random(getRandom()),
-							possibleEnds.random(getRandom()),
-							availableHandlers.random(getRandom()),
+							possibleStarts.random(random),
+							possibleEnds.random(random),
+							availableHandlers.random(random),
 							randomThrowable()
 						))
 						method.tryCatchBlocks.add(TryCatchBlockNode(
-							possibleStarts.random(getRandom()),
-							possibleEnds.random(getRandom()),
-							availableHandlers.random(getRandom()),
+							possibleStarts.random(random),
+							possibleEnds.random(random),
+							availableHandlers.random(random),
 							randomThrowable()
 						))
 						

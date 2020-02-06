@@ -36,7 +36,7 @@ object StringObfuscator: IClassProcessor {
 					if (insn is LdcInsnNode && insn.cst is String) {
 						val encryptedString = encryptString(
 							insn.cst as String,
-							Math.round(CObfuscator.random.nextFloat() * 100),
+							Math.round(random.nextFloat() * 100),
 							classNode,
 							method,
 							insn
@@ -77,7 +77,7 @@ object StringObfuscator: IClassProcessor {
 				
 				val list = InsnList()
 				
-				if (CObfuscator.random.nextInt(21) == 1) {
+				if (random.nextInt(21) == 1) {
 					list.add(ldcInt(string.key))
 					list.add(ldcInt(index))
 					list.add(InsnNode(SWAP))
@@ -85,7 +85,7 @@ object StringObfuscator: IClassProcessor {
 					list.add(ldcInt(index))
 					list.add(ldcInt(string.key))
 				}
-				when (CObfuscator.random.nextInt(40)) {
+				when (random.nextInt(40)) {
 					1 -> {
 						list.add(InsnNode(ICONST_M1))
 						list.add(InsnNode(POP))
@@ -463,7 +463,7 @@ object StringObfuscator: IClassProcessor {
 		
 		for ((index, string) in strings.withIndex()) {
 			list.add(FieldInsnNode(GETSTATIC, classNode.name, storageField.name, storageField.desc))
-			if (CObfuscator.random.nextInt(20) == 1) {
+			if (random.nextInt(20) == 1) {
 				list.add(LdcInsnNode(string.encrypted))
 				list.add(ldcInt(index * 2))
 				list.add(InsnNode(SWAP))

@@ -7,16 +7,11 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.processors.constants.NumberObfuscation
 import cookiedragon.obfuscator.processors.constants.StringObfuscator
 import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
 import cookiedragon.obfuscator.processors.debug.SourceStripper
 import cookiedragon.obfuscator.processors.exploit.InvalidSignatureExploit
-import cookiedragon.obfuscator.processors.flow.BadInvoke
-import cookiedragon.obfuscator.processors.flow.jump.OpaqueJumps
 import cookiedragon.obfuscator.processors.flow.jump.TableSwitchJump
-import cookiedragon.obfuscator.processors.flow.trycatch.FakeTryCatch
-import cookiedragon.obfuscator.processors.flow.trycatch.UselessTryCatch
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
 import cookiedragon.obfuscator.processors.renaming.impl.LocalVariableRenamer
@@ -82,14 +77,14 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
-			BadInvoke,
-			UselessTryCatch,
+			//BadInvoke,
+			//UselessTryCatch,
 			//DynamicCallObfuscation
 			//IfJumpProxy,
-			FakeTryCatch,
+			//FakeTryCatch,
 			TableSwitchJump,
-			OpaqueJumps,
-			NumberObfuscation,
+			//OpaqueJumps,
+			//NumberObfuscation,
 			
 			SourceStripper,
 			KotlinMetadataStripper,

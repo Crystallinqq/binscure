@@ -44,12 +44,12 @@ object NumberObfuscation: IClassProcessor {
 	private fun obfFloat(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Float) {
 		val randNumbers = randomFloatArray()
 		val list = InsnList()
-		var newNum = getRandom().nextFloat() * 100
+		var newNum = random.nextFloat() * 100
 		list.insert(ldcFloat(newNum))
 		
 		val lastOp = MutableInteger(-1)
 		for (randNumber in randNumbers) {
-			randomBranchExcluding(getRandom(), lastOp, {
+			randomBranchExcluding(random, lastOp, {
 				newNum += randNumber
 				list.add(ldcFloat(randNumber))
 				list.add(InsnNode(FADD))
@@ -68,12 +68,12 @@ object NumberObfuscation: IClassProcessor {
 	private fun obfDouble(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Double) {
 		val randNumbers = randomDoubleArray()
 		val list = InsnList()
-		var newNum = getRandom().nextDouble()
+		var newNum = random.nextDouble()
 		list.insert(ldcDouble(newNum))
 		
 		val lastOp = MutableInteger(-1)
 		for (randNumber in randNumbers) {
-			randomBranchExcluding(getRandom(), lastOp, {
+			randomBranchExcluding(random, lastOp, {
 				newNum += randNumber
 				list.add(ldcDouble(randNumber))
 				list.add(InsnNode(DADD))
@@ -91,12 +91,12 @@ object NumberObfuscation: IClassProcessor {
 	private fun obfInt(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Int) {
 		val randNumbers = randomIntArray()
 		val list = InsnList()
-		var newNum = getRandom().nextInt(Integer.MAX_VALUE)
+		var newNum = random.nextInt(Integer.MAX_VALUE)
 		list.insert(ldcInt(newNum))
 		
 		val lastOp = MutableInteger(-1)
 		for (randNumber in randNumbers) {
-			randomBranchExcluding(getRandom(), lastOp, {
+			randomBranchExcluding(random, lastOp, {
 				newNum = newNum xor randNumber
 				list.add(ldcInt(randNumber))
 				list.add(InsnNode(IXOR))
@@ -141,27 +141,27 @@ object NumberObfuscation: IClassProcessor {
 	private fun obfLong(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Long) {
 		val randNumbers = randomLongArray()
 		val list = InsnList()
-		var newNum = getRandom().nextLong()
+		var newNum = random.nextLong()
 		list.insert(ldcLong(newNum))
 		
 		val lastOp = MutableInteger(-1)
 		for (randNumber in randNumbers) {
-			randomBranchExcluding(getRandom(), lastOp, {
+			randomBranchExcluding(random, lastOp, {
 				newNum = newNum xor randNumber
 				list.add(ldcLong(randNumber))
 				list.add(InsnNode(LXOR))
 			}, {
-				val randInt = getRandom().nextInt(Integer.MAX_VALUE)
+				val randInt = random.nextInt(Integer.MAX_VALUE)
 				newNum = newNum shl randInt
 				list.add(ldcInt(randInt))
 				list.add(InsnNode(LSHL))
 			}, {
-				val randInt = getRandom().nextInt(Integer.MAX_VALUE)
+				val randInt = random.nextInt(Integer.MAX_VALUE)
 				newNum = newNum shr randInt
 				list.add(ldcInt(randInt))
 				list.add(InsnNode(LSHR))
 			}, {
-				val randInt = getRandom().nextInt(Integer.MAX_VALUE)
+				val randInt = random.nextInt(Integer.MAX_VALUE)
 				newNum = newNum ushr randInt
 				list.add(ldcInt(randInt))
 				list.add(InsnNode(LUSHR))
@@ -191,16 +191,16 @@ object NumberObfuscation: IClassProcessor {
 		modifier.replace(insn, list)
 	}
 	
-	private fun randomIntArray(): IntArray = IntArray( getRandom().nextInt(7)).apply {
-		for (i in 0 until size) this[i] = getRandom().nextInt(Integer.MAX_VALUE)
+	private fun randomIntArray(): IntArray = IntArray( random.nextInt(7)).apply {
+		for (i in 0 until size) this[i] = random.nextInt(Integer.MAX_VALUE)
 	}
-	private fun randomLongArray(): LongArray = LongArray( getRandom().nextInt(7)).apply {
-		for (i in 0 until size) this[i] = getRandom().nextLong()
+	private fun randomLongArray(): LongArray = LongArray( random.nextInt(7)).apply {
+		for (i in 0 until size) this[i] = random.nextLong()
 	}
-	private fun randomDoubleArray(): DoubleArray = DoubleArray( getRandom().nextInt(7)).apply {
-		for (i in 0 until size) this[i] = getRandom().nextDouble()
+	private fun randomDoubleArray(): DoubleArray = DoubleArray( random.nextInt(7)).apply {
+		for (i in 0 until size) this[i] = random.nextDouble()
 	}
-	private fun randomFloatArray(): FloatArray = FloatArray( getRandom().nextInt(7)).apply {
-		for (i in 0 until size) this[i] = getRandom().nextFloat() * 100
+	private fun randomFloatArray(): FloatArray = FloatArray( random.nextInt(7)).apply {
+		for (i in 0 until size) this[i] = random.nextFloat() * 100
 	}
 }

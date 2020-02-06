@@ -26,10 +26,10 @@ object OpaqueJumps: IClassProcessor {
 					for (insn in method.instructions) {
 						if (insn is JumpInsnNode && insn.opcode == GOTO) {
 							
-							val randInt = CObfuscator.random.nextInt(Integer.MAX_VALUE)
+							val randInt = random.nextInt(Integer.MAX_VALUE)
 							var other: Int
 							do {
-								other = CObfuscator.random.nextInt(Integer.MAX_VALUE)
+								other = random.nextInt(Integer.MAX_VALUE)
 							} while (other == randInt || other == randInt - 1)
 							
 							val target = insn.label
@@ -69,4 +69,6 @@ object OpaqueJumps: IClassProcessor {
 			}
 		}
 	}
+	
+	data class JumpInfo(val insn: JumpInsnNode, val switchJump: LabelNode, val trueJump: LabelNode, val falseJump: LabelNode)
 }
