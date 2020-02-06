@@ -5,8 +5,10 @@ import me.tongfei.progressbar.ProgressBar
 import me.tongfei.progressbar.ProgressBarIterable
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterator
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedSpliterator
+import org.objectweb.asm.Handle
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
+import org.objectweb.asm.tree.MethodInsnNode
 import java.security.SecureRandom
 import java.util.*
 import kotlin.reflect.KClass
@@ -126,3 +128,5 @@ val <T: Any> KClass<T>.internalName: String
 	get() = Type.getInternalName(this.java)
 
 //public infix fun Int.xor(other: Int): Int = this.xor(other)
+
+fun Handle.toInsn() = MethodInsnNode(this.tag, this.owner, this.name, this.desc, this.isInterface)

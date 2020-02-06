@@ -3,6 +3,8 @@ package cookiedragon.obfuscator.utils
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.random
+import cookiedragon.obfuscator.kotlin.toInsn
+import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.io.PrintStream
@@ -69,15 +71,10 @@ val throwables = arrayOf(
 	EnumConstantNotPresentException::class.internalName,
 	IllegalArgumentException::class.internalName,
 	NegativeArraySizeException::class.internalName,
-	StringIndexOutOfBoundsException::class.internalName,
-	null,
-	null,
-	null,
-	null,
-	null
+	StringIndexOutOfBoundsException::class.internalName
 )
 
-fun randomThrowable(): String? = throwables.random(CObfuscator.random)
+fun randomThrowable(nonNull: Boolean = false): String? = if (CObfuscator.random.nextBoolean() || nonNull) throwables.random(CObfuscator.random) else null
 
 val throwableActions = arrayOf(
 	InsnList().apply {
@@ -159,5 +156,21 @@ fun printlnIntAsm(): InsnList {
 		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
 		it.add(InsnNode(SWAP))
 		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(I)V"))
+	}
+}
+
+val staticInvokes = arrayOf(
+	Handle(INVOKESTATIC, Runtime::class.internalName, "getRuntime", "()Ljava/lang/Runtime;"),
+	Handle(INVOKESTATIC, Thread::class.internalName, "currentThread", "()Ljava/lang/Thread;"),
+	Handle(INVOKESTATIC, System::class.internalName, "console", "()Ljava/io/Console;"),
+	Handle(INVOKESTATIC, System::class.internalName, "lineSeparator", "()Ljava/lang/String;"),
+	Handle(INVOKESTATIC, System::class.internalName, "lineSeparator", "()Ljava/lang/String;")
+)
+
+fun randomStaticInvoke(): MethodInsnNode = staticInvokes.random(CObfuscator.random).toInsn()
+
+fun insnListOf(vararg insns: AbstractInsnNode) = InsnList().also {
+	for (insn in insns) {
+		it.add(insn)
 	}
 }

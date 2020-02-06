@@ -4,6 +4,7 @@ import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.wrap
+import cookiedragon.obfuscator.utils.randomStaticInvoke
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -44,7 +45,7 @@ object FakeTryCatch: IClassProcessor {
 				add(switchStart)
 				add(start)
 				add(InsnNode(ACONST_NULL))
-				add(MethodInsnNode(INVOKESTATIC, Runtime::class.internalName, "getRuntime", "()Ljava/lang/Runtime;"))
+				add(randomStaticInvoke())
 				add(JumpInsnNode(IFNONNULL, secondCatch))
 				add(InsnNode(POP))
 				add(InsnNode(ACONST_NULL))

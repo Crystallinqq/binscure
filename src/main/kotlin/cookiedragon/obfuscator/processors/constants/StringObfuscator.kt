@@ -60,7 +60,7 @@ object StringObfuscator: IClassProcessor {
 				}
 			val storageField = FieldNode(
 				ACC_PRIVATE + ACC_STATIC + ACC_FINAL,
-				"\u0000",
+				"a",
 				"[Ljava/lang/String;",
 				null,
 				null
@@ -119,7 +119,7 @@ object StringObfuscator: IClassProcessor {
 	private fun generateDecrypterMethod(classNode: ClassNode, storageField: FieldNode, strings: ArrayList<EncryptedString>): MethodNode {
 		val decryptorMethod = MethodNode(
 			ACC_PUBLIC + ACC_STATIC,
-			"\u0000",
+			"a",
 			"(II)Ljava/lang/String;",
 			null,
 			null
@@ -173,7 +173,7 @@ object StringObfuscator: IClassProcessor {
 			add(JumpInsnNode(GOTO, start))
 			add(switchDefault)
 			add(InsnNode(ACONST_NULL))
-			//add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
+			add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
 			add(InsnNode(POP))
 			
 			add(l5) // xor i

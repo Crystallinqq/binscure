@@ -25,7 +25,7 @@ remap:
     enabled: true
     # Renamed classes will be prefixed with this
     # You can use unicode escape sequences
-    classPrefix: "yeet/"
+    classPrefix: "/yeet/"
     methodPrefix: ""
     fieldPrefix: ""
     # Sets the names of local veriables for methods, including parameters

@@ -13,6 +13,8 @@ import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
 import cookiedragon.obfuscator.processors.debug.SourceStripper
 import cookiedragon.obfuscator.processors.exploit.InvalidSignatureExploit
 import cookiedragon.obfuscator.processors.flow.BadInvoke
+import cookiedragon.obfuscator.processors.flow.jump.OpaqueJumps
+import cookiedragon.obfuscator.processors.flow.jump.TableSwitchJump
 import cookiedragon.obfuscator.processors.flow.trycatch.FakeTryCatch
 import cookiedragon.obfuscator.processors.flow.trycatch.UselessTryCatch
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
@@ -81,11 +83,14 @@ object CObfuscator {
 		
 		val processors = arrayOf(
 			BadInvoke,
-			NumberObfuscation,
 			UselessTryCatch,
 			//DynamicCallObfuscation
 			//IfJumpProxy,
 			FakeTryCatch,
+			TableSwitchJump,
+			OpaqueJumps,
+			NumberObfuscation,
+			
 			SourceStripper,
 			KotlinMetadataStripper,
 			

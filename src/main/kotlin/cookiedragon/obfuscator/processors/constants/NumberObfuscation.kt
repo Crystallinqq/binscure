@@ -27,7 +27,6 @@ object NumberObfuscation: IClassProcessor {
 				for (insn in method.instructions) {
 					if (isNumberLdc(insn)) {
 						val num = getNumFromLdc(insn)
-						println("Found num ${classNode.name}.${method.name} : $num ${num.javaClass}")
 						
 						when (num) {
 							is Int -> obfInt(classNode, modifier, insn, num as Int)
@@ -48,7 +47,6 @@ object NumberObfuscation: IClassProcessor {
 		var newNum = getRandom().nextFloat() * 100
 		list.insert(ldcFloat(newNum))
 		
-		println("Start $newNum")
 		val lastOp = MutableInteger(-1)
 		for (randNumber in randNumbers) {
 			randomBranchExcluding(getRandom(), lastOp, {
