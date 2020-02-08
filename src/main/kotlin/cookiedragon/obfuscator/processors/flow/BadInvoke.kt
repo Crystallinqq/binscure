@@ -23,7 +23,7 @@ object BadInvoke: IClassProcessor {
 			
 			var field: FieldNode? = null
 			for (method in classNode.methods) {
-				if (CObfuscator.noMethodInsns(method) || CObfuscator.isExcluded(classNode, method))
+				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
 				val modifier = InstructionModifier()

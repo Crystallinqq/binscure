@@ -7,7 +7,7 @@ import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.insnListOf
 import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Label
-import org.objectweb.asm.Opcodes.GOTO
+import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
 /**
@@ -22,20 +22,23 @@ object TableSwitchJump: IClassProcessor {
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
 				val modifier = InstructionModifier()
 				
 				if (!CObfuscator.randomWeight(5)) {
-					val jumps = mutableSetOf<OpaqueJumps.JumpInfo>()
+					val jumps = mutableSetOf<JumpInfo>()
 					for (insn in method.instructions) {
 						if (insn is JumpInsnNode && insn.opcode != GOTO) {
 							val falseJump = LabelNode(Label())
 							modifier.append(insn, InsnList().apply { add(falseJump) })
-							jumps.add(OpaqueJumps.JumpInfo(insn, LabelNode(Label()), insn.label, falseJump))
+							jumps.add(JumpInfo(insn, LabelNode(Label()), insn.label, falseJump))
 						}
 					}
+					
+					if (jumps.isEmpty())
+						continue;
 					
 					if (true) {
 						val start = LabelNode(Label())
@@ -53,7 +56,7 @@ object TableSwitchJump: IClassProcessor {
 							val randJump = JumpInsnNode(GOTO, start)
 							var i = plus
 							
-							for (jump in jumps) {
+							for (jump in jumps.shuffled(random)) {
 								val switchEnter = LabelNode(Label())
 								add(switchEnter)
 								
@@ -82,13 +85,14 @@ object TableSwitchJump: IClassProcessor {
 							}
 							switchConditions.add(start)
 							switchConditions.add(default)
-							
-							add(default)
 							add(randJump)
 							
 							add(end)
 						}
 						val afterList = InsnList().apply {
+							add(default)
+							add(InsnNode(ACONST_NULL))
+							add(InsnNode(ATHROW))
 							add(switchStart)
 							add(TableSwitchInsnNode(plus, (switchConditions.size - 1) + plus, default, *switchConditions.toTypedArray()))
 						}
@@ -143,4 +147,6 @@ object TableSwitchJump: IClassProcessor {
 			}
 		}
 	}
+	
+	data class JumpInfo(val insn: JumpInsnNode, val switchJump: LabelNode, val trueJump: LabelNode, val falseJump: LabelNode)
 }

@@ -29,7 +29,7 @@ object StringObfuscator: IClassProcessor {
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
 				for (insn in method.instructions) {

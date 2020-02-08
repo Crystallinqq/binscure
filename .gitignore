@@ -5,3 +5,5 @@ build/
 *.jar
 
 mappings.csv
+
+testing/obftest/out

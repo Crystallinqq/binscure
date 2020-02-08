@@ -69,6 +69,4 @@ object OpaqueJumps: IClassProcessor {
 			}
 		}
 	}
-	
-	data class JumpInfo(val insn: JumpInsnNode, val switchJump: LabelNode, val trueJump: LabelNode, val falseJump: LabelNode)
 }

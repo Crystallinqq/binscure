@@ -20,7 +20,7 @@ object NumberObfuscation: IClassProcessor {
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
 				val modifier = InstructionModifier()

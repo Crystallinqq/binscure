@@ -21,7 +21,7 @@ object UselessTryCatch: IClassProcessor {
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
 				var isInitialised = !method.name.startsWith("<")

@@ -11,6 +11,7 @@ import cookiedragon.obfuscator.processors.constants.StringObfuscator
 import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
 import cookiedragon.obfuscator.processors.debug.SourceStripper
 import cookiedragon.obfuscator.processors.exploit.InvalidSignatureExploit
+import cookiedragon.obfuscator.processors.flow.jump.OpaqueJumps
 import cookiedragon.obfuscator.processors.flow.jump.TableSwitchJump
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
@@ -80,10 +81,9 @@ object CObfuscator {
 			//BadInvoke,
 			//UselessTryCatch,
 			//DynamicCallObfuscation
-			//IfJumpProxy,
 			//FakeTryCatch,
 			TableSwitchJump,
-			//OpaqueJumps,
+			OpaqueJumps,
 			//NumberObfuscation,
 			
 			SourceStripper,
