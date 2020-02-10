@@ -7,3 +7,5 @@ build/
 mappings.csv
 
 testing/obftest/out
+
+native/cmake-build-debug

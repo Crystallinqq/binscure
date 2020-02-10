@@ -2,11 +2,13 @@ package cookiedragon.obfuscator.processors.flow.jump
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
+import cookiedragon.obfuscator.kotlin.isStatic
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.ldcInt
+import cookiedragon.obfuscator.utils.randomStaticInvoke
 import org.objectweb.asm.Label
-import org.objectweb.asm.Opcodes.GOTO
+import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
 /**
@@ -26,67 +28,59 @@ object TableSwitchJump: IClassProcessor {
 				
 				val modifier = InstructionModifier()
 				
-				val realIndex = random.nextInt(3)
-				var proxyTrueIndex: Int
-				do {
-					proxyTrueIndex = random.nextInt(3)
-				} while (proxyTrueIndex != realIndex)
-				var proxyFalseIndex: Int
-				do {
-					proxyFalseIndex = random.nextInt(3)
-				} while (proxyFalseIndex != realIndex && proxyFalseIndex != proxyTrueIndex)
-				
-				
-				
 				for (insn in method.instructions) {
 					if (insn is JumpInsnNode) {
 						if (insn.opcode == GOTO)
 							continue
 						
-						val switchStart = LabelNode(Label())
-						val entryLabel = LabelNode(Label())
-						val endLabel = LabelNode(Label())
-						val proxyFalse = LabelNode(Label())
+						val trueL = LabelNode(Label())
 						val proxyTrue = LabelNode(Label())
+						val switch = LabelNode(Label())
+						val falseGoto = LabelNode(Label())
 						
-						var randInt = 2//random.nextInt(Integer.MAX_VALUE)
-						
-						val jumps = arrayListOf<JumpInfo>(
-							JumpInfo(entryLabel, insn.opcode, insn.label, endLabel)
-							//JumpInfo(proxyTrue, GOTO, insn.label, null),
-							//JumpInfo(proxyFalse, GOTO, endLabel, null)
-						)//.shuffled(random)
-						
-						val switchLabels = arrayListOf<LabelNode>()
+						val rand = if (random.nextBoolean()) {
+							random.nextInt(Integer.MAX_VALUE)
+						} else {
+							-random.nextInt(Integer.MAX_VALUE)
+						}
 						
 						val newList = InsnList().apply {
-							add(JumpInsnNode(GOTO, entryLabel))
-							
-							for (jump in jumps) {
-								val trueL = LabelNode(Label())
-								add(jump.thisLabel)
-								if (jump.falseJump != null && insn.opcode != GOTO) {
-									add(JumpInsnNode(jump.opcode, trueL))
-									add(ldcInt(randInt))
-									randInt -= 1
-									add(JumpInsnNode(GOTO, switchStart))
-									
-									switchLabels.add(jump.falseJump)
-									
-									add(trueL)
-								}
-								add(ldcInt(randInt))
-								randInt -= 1
-								add(JumpInsnNode(GOTO, switchStart))
-								
-								switchLabels.add(jump.trueJump)
+							if (!method.isStatic()) {
+								add(VarInsnNode(ALOAD, 0))
+								add(InsnNode(MONITORENTER))
 							}
+							add(JumpInsnNode(insn.opcode, trueL))
+							add(ldcInt(rand - 1))
+							add(JumpInsnNode(GOTO, switch))
+							add(trueL)
+							add(ldcInt(rand))
+							add(JumpInsnNode(GOTO, switch))
+							add(proxyTrue)
 							
-							add(switchStart)
-							add(TableSwitchInsnNode(randInt, randInt + switchLabels.size, endLabel, *switchLabels.toTypedArray().reversedArray()))
+							val al = LabelNode(Label())
+							add(randomStaticInvoke())
+							add(JumpInsnNode(IFNONNULL, al))
+							if (!method.isStatic()) {
+								add(VarInsnNode(ALOAD, 0))
+								add(InsnNode(MONITORENTER))
+							}
+							add(al)
+							if (!method.isStatic()) {
+								add(VarInsnNode(ALOAD, 0))
+								add(InsnNode(MONITOREXIT))
+							}
+							add(ldcInt(rand - 2))
 							
-							add(endLabel)
+							add(switch)
+							add(TableSwitchInsnNode(rand - 1, rand, insn.label,    falseGoto, proxyTrue))
+							
+							add(falseGoto)
+							if (!method.isStatic()) {
+								add(VarInsnNode(ALOAD, 0))
+								add(InsnNode(MONITOREXIT))
+							}
 						}
+						
 						
 						modifier.replace(insn, newList)
 						

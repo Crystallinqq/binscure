@@ -4,6 +4,7 @@ import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.kotlin.wrap
 import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
 import java.io.File
 import java.io.FileOutputStream
@@ -94,7 +95,7 @@ object ClassPathIO {
 					val entry = ZipEntry(name)
 					it.putNextEntry(entry)
 					
-					val writer = CustomClassWriter(0)//ClassWriter.COMPUTE_FRAMES)
+					val writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
 					classNode.accept(writer)
 					it.write(writer.toByteArray())
 					it.closeEntry()

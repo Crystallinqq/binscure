@@ -98,7 +98,7 @@ public class NoVerify {
 		@Override
 		protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 			//name = name.replace('.', '/');
-			System.out.println("Load: " + name);
+			System.out.println("Load2: " + name);
 			if (classes.containsKey(name)) {
 				byte[] bytes = classes.get(name.replace('.', '/'));
 				//Class<?> clazz = unsafe.defineClass(name, bytes, 0, bytes.length, null, null);

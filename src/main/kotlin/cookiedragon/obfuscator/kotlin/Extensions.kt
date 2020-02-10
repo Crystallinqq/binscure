@@ -9,6 +9,8 @@ import org.objectweb.asm.Handle
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
+import org.objectweb.asm.tree.MethodNode
+import java.lang.reflect.Modifier
 import java.security.SecureRandom
 import java.util.*
 import kotlin.reflect.KClass
@@ -130,3 +132,5 @@ val <T: Any> KClass<T>.internalName: String
 //public infix fun Int.xor(other: Int): Int = this.xor(other)
 
 fun Handle.toInsn() = MethodInsnNode(this.tag, this.owner, this.name, this.desc, this.isInterface)
+
+fun MethodNode.isStatic() = Modifier.isStatic(this.access)
