@@ -4,10 +4,9 @@ import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.utils.InstructionModifier
-import cookiedragon.obfuscator.utils.insnListOf
 import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Label
-import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.Opcodes.GOTO
 import org.objectweb.asm.tree.*
 
 /**
@@ -27,120 +26,99 @@ object TableSwitchJump: IClassProcessor {
 				
 				val modifier = InstructionModifier()
 				
-				if (!CObfuscator.randomWeight(5)) {
-					val jumps = mutableSetOf<JumpInfo>()
-					for (insn in method.instructions) {
-						if (insn is JumpInsnNode && insn.opcode != GOTO) {
-							val falseJump = LabelNode(Label())
-							modifier.append(insn, InsnList().apply { add(falseJump) })
-							jumps.add(JumpInfo(insn, LabelNode(Label()), insn.label, falseJump))
-						}
-					}
-					
-					if (jumps.isEmpty())
-						continue;
-					
-					if (true) {
-						val start = LabelNode(Label())
-						val end = LabelNode(Label())
+				for (insn in method.instructions) {
+					if (insn is JumpInsnNode) {
+						if (insn.opcode == GOTO)
+							continue
+						
 						val switchStart = LabelNode(Label())
-						val default = LabelNode(Label())
+						val entryLabel = LabelNode(Label())
+						val endLabel = LabelNode(Label())
+						val proxyFalse = LabelNode(Label())
+						val proxyTrue = LabelNode(Label())
 						
-						val plus = random.nextInt(Integer.MAX_VALUE - (jumps.size * 2 + 2))
+						var randInt = 2//random.nextInt(Integer.MAX_VALUE)
 						
-						val switchConditions = arrayListOf<LabelNode>()
-						val beforeList = InsnList().apply {
-							add(start)
-							add(JumpInsnNode(GOTO, end))
+						val jumps = arrayListOf<JumpInfo>(
+							JumpInfo(entryLabel, insn.opcode, insn.label, endLabel)
+							//JumpInfo(proxyTrue, GOTO, insn.label, null),
+							//JumpInfo(proxyFalse, GOTO, endLabel, null)
+						)//.shuffled(random)
+						
+						val switchLabels = arrayListOf<LabelNode>()
+						
+						val newList = InsnList().apply {
+							add(JumpInsnNode(GOTO, entryLabel))
 							
-							val randJump = JumpInsnNode(GOTO, start)
-							var i = plus
-							
-							for (jump in jumps.shuffled(random)) {
-								val switchEnter = LabelNode(Label())
-								add(switchEnter)
-								
-								val trueSwitch = LabelNode(Label())
-								val falseSwitch = LabelNode(Label())
-								
-								add(JumpInsnNode(jump.insn.opcode, trueSwitch))
-								add(falseSwitch)
-								add(ldcInt(i++))
-								add(JumpInsnNode(GOTO, switchStart))
-								add(trueSwitch)
-								add(ldcInt(i++))
-								add(JumpInsnNode(GOTO, switchStart))
-								
-								switchConditions.add(jump.falseJump)
-								switchConditions.add(jump.trueJump)
-								
-								jump.insn.opcode = GOTO
-								jump.insn.label = switchEnter
-								
-								if (random.nextBoolean()) {
-									randJump.label = trueSwitch
-								} else if (random.nextBoolean()) {
-									randJump.label = falseSwitch
+							for (jump in jumps) {
+								val trueL = LabelNode(Label())
+								add(jump.thisLabel)
+								if (jump.falseJump != null && insn.opcode != GOTO) {
+									add(JumpInsnNode(jump.opcode, trueL))
+									add(ldcInt(randInt))
+									randInt -= 1
+									add(JumpInsnNode(GOTO, switchStart))
+									
+									switchLabels.add(jump.falseJump)
+									
+									add(trueL)
 								}
+								add(ldcInt(randInt))
+								randInt -= 1
+								add(JumpInsnNode(GOTO, switchStart))
+								
+								switchLabels.add(jump.trueJump)
 							}
-							switchConditions.add(start)
-							switchConditions.add(default)
-							add(randJump)
 							
-							add(end)
-						}
-						val afterList = InsnList().apply {
-							add(default)
-							add(InsnNode(ACONST_NULL))
-							add(InsnNode(ATHROW))
 							add(switchStart)
-							add(TableSwitchInsnNode(plus, (switchConditions.size - 1) + plus, default, *switchConditions.toTypedArray()))
+							add(TableSwitchInsnNode(randInt, randInt + switchLabels.size, endLabel, *switchLabels.toTypedArray().reversedArray()))
+							
+							add(endLabel)
 						}
-						method.instructions.insert(beforeList)
-						method.instructions.add(afterList)
-					}
-				} else {
-					for (insn in method.instructions) {
-						if (insn is JumpInsnNode) {
-							if (insn.opcode == GOTO)
-								continue
-							
-							val randInt = random.nextInt(Integer.MAX_VALUE)
-							var other: Int
-							do {
-								other = random.nextInt(Integer.MAX_VALUE)
-							} while (other == randInt || other == randInt - 1)
-							
-							val target = insn.label
-							val `else` = LabelNode(Label())
-							
-							val start = LabelNode(Label())
-							val trueLabel = LabelNode(Label())
-							val falseLabel = LabelNode(Label())
-							val dummyLabel = LabelNode(Label())
-							val switch = LabelNode(Label())
-							val end = LabelNode(Label())
-							
-							val list = insnListOf(
-								start,
-								JumpInsnNode(GOTO, end),
-								trueLabel,
-								ldcInt(randInt),
-								JumpInsnNode(GOTO, switch),
-								dummyLabel,
-								ldcInt(other),
-								switch,
-								TableSwitchInsnNode(randInt - 1, randInt, `else`, dummyLabel, target),
-								end,
-								JumpInsnNode(insn.opcode, trueLabel),
-								falseLabel,
-								ldcInt(randInt - 1),
-								JumpInsnNode(GOTO, switch),
-								`else`
-							)
-							
-							modifier.replace(insn, list)
+						
+						modifier.replace(insn, newList)
+						
+						
+						/*
+						val trueInt: Int
+						val falseInt: Int
+						if (random.nextBoolean()) {
+							trueInt = randInt
+							falseInt = randInt - 1
+						} else {
+							trueInt = randInt - 1
+							falseInt = randInt
 						}
+						
+						val target = insn.label
+						val `else` = LabelNode(Label())
+						
+						val start = LabelNode(Label())
+						val trueLabel = LabelNode(Label())
+						val falseLabel = LabelNode(Label())
+						val dummyLabel = LabelNode(Label())
+						val switch = LabelNode(Label())
+						val end = LabelNode(Label())
+						
+						val list = insnListOf(
+							start,
+							JumpInsnNode(GOTO, end),
+							trueLabel,
+							ldcInt(trueInt),
+							JumpInsnNode(GOTO, switch),
+							dummyLabel,
+							ldcInt(randInt - 2),
+							switch,
+							TableSwitchInsnNode(randInt - 1, randInt, `else`, dummyLabel, target),
+							end,
+							JumpInsnNode(insn.opcode, trueLabel),
+							falseLabel,
+							ldcInt(falseInt),
+							JumpInsnNode(GOTO, switch),
+							`else`
+						)
+						
+						modifier.replace(insn, list)*/
 					}
 				}
 				modifier.apply(method)
@@ -148,5 +126,5 @@ object TableSwitchJump: IClassProcessor {
 		}
 	}
 	
-	data class JumpInfo(val insn: JumpInsnNode, val switchJump: LabelNode, val trueJump: LabelNode, val falseJump: LabelNode)
+	data class JumpInfo(val thisLabel: LabelNode, val opcode: Int, val trueJump: LabelNode, val falseJump: LabelNode?)
 }
