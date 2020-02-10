@@ -26,6 +26,18 @@ object TableSwitchJump: IClassProcessor {
 				
 				val modifier = InstructionModifier()
 				
+				val realIndex = random.nextInt(3)
+				var proxyTrueIndex: Int
+				do {
+					proxyTrueIndex = random.nextInt(3)
+				} while (proxyTrueIndex != realIndex)
+				var proxyFalseIndex: Int
+				do {
+					proxyFalseIndex = random.nextInt(3)
+				} while (proxyFalseIndex != realIndex && proxyFalseIndex != proxyTrueIndex)
+				
+				
+				
 				for (insn in method.instructions) {
 					if (insn is JumpInsnNode) {
 						if (insn.opcode == GOTO)

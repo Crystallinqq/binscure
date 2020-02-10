@@ -7,16 +7,6 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.processors.constants.StringObfuscator
-import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
-import cookiedragon.obfuscator.processors.debug.SourceStripper
-import cookiedragon.obfuscator.processors.exploit.InvalidSignatureExploit
-import cookiedragon.obfuscator.processors.flow.jump.OpaqueJumps
-import cookiedragon.obfuscator.processors.flow.jump.TableSwitchJump
-import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
-import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
-import cookiedragon.obfuscator.processors.renaming.impl.LocalVariableRenamer
-import cookiedragon.obfuscator.processors.renaming.impl.MethodRenamer
 import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
 import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
 import me.tongfei.progressbar.CustomProcessRenderer
@@ -26,6 +16,7 @@ import me.tongfei.progressbar.getConsoleConsumer
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
+import sun.misc.Unsafe
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.PrintWriter
@@ -77,7 +68,7 @@ object CObfuscator {
 		
 		ClassPath.constructHierarchy()
 		
-		val processors = arrayOf(
+		val processors = arrayOf(/*
 			//BadInvoke,
 			//UselessTryCatch,
 			//DynamicCallObfuscation
@@ -95,11 +86,13 @@ object CObfuscator {
 			ClassRenamer,
 			StringObfuscator,
 			
-			InvalidSignatureExploit,
+			InvalidSignatureExploit,*/
 			
 			ManifestResourceProcessor,
 			MixinResourceProcessor
 		)
+		
+		val unsafe = Unsafe::class.java.getDeclaredMethod("getUnsafe")
 		
 		val classes = mutableListOf<ClassNode>()
 		classes.addAll(ClassPath.classes.values)
