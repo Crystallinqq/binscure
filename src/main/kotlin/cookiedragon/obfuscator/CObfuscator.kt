@@ -96,8 +96,10 @@ object CObfuscator {
 		
 		val classes = mutableListOf<ClassNode>()
 		classes.addAll(ClassPath.classes.values)
-		for (processor in processors) {
-			processor.process(classes, passThrough)
+		if (classes.isNotEmpty()) {
+			for (processor in processors) {
+				processor.process(classes, passThrough)
+			}
 		}
 		
 		ClassPathIO.writeOutput(rootConfig.output)
