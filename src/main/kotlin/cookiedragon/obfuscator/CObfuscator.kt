@@ -7,7 +7,7 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.processors.flow.jump.TableSwitchJump
+import cookiedragon.obfuscator.processors.flow.classinit.ClassInitMonitor
 import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
 import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
 import me.tongfei.progressbar.CustomProcessRenderer
@@ -73,7 +73,9 @@ object CObfuscator {
 			//UselessTryCatch,
 			//DynamicCallObfuscation
 			//FakeTryCatch,
-			TableSwitchJump,/*
+			//TableSwitchJump,
+			ClassInitMonitor,
+			/*
 			OpaqueJumps,
 			//NumberObfuscation,
 			
