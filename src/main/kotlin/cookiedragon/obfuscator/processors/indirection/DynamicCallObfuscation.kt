@@ -18,8 +18,6 @@ import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import java.lang.invoke.ConstantCallSite
 import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
-import java.lang.reflect.AccessibleObject
 
 /**
  * @author cookiedragon234 22/Jan/2020
@@ -332,25 +330,13 @@ object DynamicCallObfuscation: IClassProcessor {
 			add(VarInsnNode(ASTORE, 8)) // Real Method Type
 			// ========= Get Method Type =========
 			
-			add(VarInsnNode(ALOAD, 4))
-			add(VarInsnNode(ALOAD, 5))
-			add(VarInsnNode(ALOAD, 8)) // Real Method Type
-			add(MethodInsnNode(INVOKEVIRTUAL, MethodType::class.internalName, "ptypes", "()[Ljava/lang/Class;"))
-			add(MethodInsnNode(INVOKEVIRTUAL, Class::class.internalName, "getDeclaredMethod", "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;"))
-			add(DUP)
-			add(ldcInt(1))
-			add(MethodInsnNode(INVOKEVIRTUAL, AccessibleObject::class.internalName, "setAccessible", "(Z)V"))
-			add(VarInsnNode(ALOAD, 0))
-			add(SWAP)
-			add(MethodInsnNode(INVOKEVIRTUAL, MethodHandles.Lookup::class.internalName, "unreflect", "(Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;"))
-			
 			// ========= If Statement =========
 			val retConstant = LabelNode(Label())
 			val lStatic = LabelNode(Label())
 			val lVirtual = LabelNode(Label())
 			val lInterface = LabelNode(Label())
 			
-			/*add(VarInsnNode(ILOAD, 3)) // Opcode
+			add(VarInsnNode(ILOAD, 3)) // Opcode
 			add(ldcInt(INVOKESTATIC))
 			add(JumpInsnNode(IF_ICMPEQ, lStatic))
 			add(VarInsnNode(ILOAD, 3)) // Opcode
@@ -383,7 +369,7 @@ object DynamicCallObfuscation: IClassProcessor {
 			add(VarInsnNode(ALOAD, 8))
 			add(MethodInsnNode(INVOKEVIRTUAL, MethodHandles.Lookup::class.internalName, "findVirtual", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/MethodHandle;"))
 			add(JumpInsnNode(GOTO, retConstant))
-			// ========= If Virtual/Interface =========*/
+			// ========= If Virtual/Interface =========
 			
 			add(retConstant)
 			add(TypeInsnNode(NEW, ConstantCallSite::class.internalName))
