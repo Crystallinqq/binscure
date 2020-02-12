@@ -7,9 +7,7 @@ import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterator
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedSpliterator
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Type
-import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.MethodInsnNode
-import org.objectweb.asm.tree.MethodNode
+import org.objectweb.asm.tree.*
 import java.lang.reflect.Modifier
 import java.security.SecureRandom
 import java.util.*
@@ -134,3 +132,14 @@ val <T: Any> KClass<T>.internalName: String
 fun Handle.toInsn() = MethodInsnNode(this.tag, this.owner, this.name, this.desc, this.isInterface)
 
 fun MethodNode.isStatic() = Modifier.isStatic(this.access)
+
+inline fun <T> T?.ifNotNull(block: (T) -> Unit) = this.whenNotNull(block)
+
+inline fun <T> T?.whenNotNull(block: (T) -> Unit): T? {
+	if (this != null) {
+		block(this)
+	}
+	return this
+}
+
+fun InsnList.add(opcode: Int) = this.add(InsnNode(opcode))

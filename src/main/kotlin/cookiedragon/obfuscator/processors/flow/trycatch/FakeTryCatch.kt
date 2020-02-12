@@ -2,9 +2,10 @@ package cookiedragon.obfuscator.processors.flow.trycatch
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
-import cookiedragon.obfuscator.kotlin.internalName
+import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.kotlin.wrap
-import cookiedragon.obfuscator.utils.randomStaticInvoke
+import cookiedragon.obfuscator.runtime.randomOpaqueJump
+import cookiedragon.obfuscator.utils.randomThrowable
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -45,15 +46,12 @@ object FakeTryCatch: IClassProcessor {
 				add(switchStart)
 				add(start)
 				add(InsnNode(ACONST_NULL))
-				add(randomStaticInvoke())
-				add(JumpInsnNode(IFNONNULL, secondCatch))
+				add(randomOpaqueJump(secondCatch))
 				add(InsnNode(POP))
 				add(InsnNode(ACONST_NULL))
-				//add(InsnNode(DUP))
-				//add(TypeInsnNode(CHECKCAST, "give up"))
-				//add(MethodInsnNode(INVOKESTATIC, "null", "super", "()Ljava/lang/YourMum;"))
-				//add(InsnNode(POP2))
-				//add(InsnNode(POP))
+				if (ConfigurationManager.rootConfig.crasher.enabled) {
+					add(TypeInsnNode(CHECKCAST, "give up"))
+				}
 				add(JumpInsnNode(GOTO, handler))
 				add(fakeEnd)
 				add(InsnNode(ATHROW))
@@ -75,10 +73,10 @@ object FakeTryCatch: IClassProcessor {
 		insnList.insert(list)
 		insnList.add(endList)
 		return arrayOf(
-			TryCatchBlockNode(start, end, handler, RuntimeException::class.internalName),
-			TryCatchBlockNode(fakeEnd, end, secondCatch, Error::class.internalName),
-			TryCatchBlockNode(handler, secondCatch, handler, StringIndexOutOfBoundsException::class.internalName),
-			TryCatchBlockNode(start, fakeEnd, secondCatch, StackOverflowError::class.internalName)
+			TryCatchBlockNode(start, end, handler, randomThrowable()),
+			TryCatchBlockNode(fakeEnd, end, secondCatch, randomThrowable()),
+			TryCatchBlockNode(handler, secondCatch, handler, randomThrowable()),
+			TryCatchBlockNode(start, fakeEnd, secondCatch, randomThrowable())
 		
 		)
 	}

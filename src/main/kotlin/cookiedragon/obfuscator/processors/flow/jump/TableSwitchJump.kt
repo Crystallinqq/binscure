@@ -4,9 +4,9 @@ import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.isStatic
 import cookiedragon.obfuscator.kotlin.wrap
+import cookiedragon.obfuscator.runtime.randomOpaqueJump
 import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.ldcInt
-import cookiedragon.obfuscator.utils.randomStaticInvoke
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -58,8 +58,7 @@ object TableSwitchJump: IClassProcessor {
 							add(proxyTrue)
 							
 							val al = LabelNode(Label())
-							add(randomStaticInvoke())
-							add(JumpInsnNode(IFNONNULL, al))
+							add(randomOpaqueJump(al))
 							if (!method.isStatic()) {
 								add(VarInsnNode(ALOAD, 0))
 								add(InsnNode(MONITORENTER))
@@ -83,48 +82,6 @@ object TableSwitchJump: IClassProcessor {
 						
 						
 						modifier.replace(insn, newList)
-						
-						
-						/*
-						val trueInt: Int
-						val falseInt: Int
-						if (random.nextBoolean()) {
-							trueInt = randInt
-							falseInt = randInt - 1
-						} else {
-							trueInt = randInt - 1
-							falseInt = randInt
-						}
-						
-						val target = insn.label
-						val `else` = LabelNode(Label())
-						
-						val start = LabelNode(Label())
-						val trueLabel = LabelNode(Label())
-						val falseLabel = LabelNode(Label())
-						val dummyLabel = LabelNode(Label())
-						val switch = LabelNode(Label())
-						val end = LabelNode(Label())
-						
-						val list = insnListOf(
-							start,
-							JumpInsnNode(GOTO, end),
-							trueLabel,
-							ldcInt(trueInt),
-							JumpInsnNode(GOTO, switch),
-							dummyLabel,
-							ldcInt(randInt - 2),
-							switch,
-							TableSwitchInsnNode(randInt - 1, randInt, `else`, dummyLabel, target),
-							end,
-							JumpInsnNode(insn.opcode, trueLabel),
-							falseLabel,
-							ldcInt(falseInt),
-							JumpInsnNode(GOTO, switch),
-							`else`
-						)
-						
-						modifier.replace(insn, list)*/
 					}
 				}
 				modifier.apply(method)

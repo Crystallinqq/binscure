@@ -2,8 +2,9 @@ package cookiedragon.obfuscator.processors.flow.classinit
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
+import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
+import cookiedragon.obfuscator.runtime.randomOpaqueJump
 import cookiedragon.obfuscator.utils.InstructionModifier
-import cookiedragon.obfuscator.utils.randomStaticInvoke
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -13,6 +14,7 @@ import org.objectweb.asm.tree.*
  */
 object ClassInitMonitor: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		OpaqueRuntimeManager.fields.hashCode()
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
@@ -34,8 +36,7 @@ object ClassInitMonitor: IClassProcessor {
 								add(InsnNode(DUP))
 								add(InsnNode(MONITORENTER))
 							}
-							add(randomStaticInvoke())
-							add(JumpInsnNode(IFNONNULL, fakeJump))
+							add(randomOpaqueJump(fakeJump))
 							add(InsnNode(DUP))
 							add(InsnNode(MONITORENTER))
 							add(fakeJump)

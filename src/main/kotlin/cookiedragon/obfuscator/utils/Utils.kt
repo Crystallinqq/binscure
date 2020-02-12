@@ -1,6 +1,7 @@
 package cookiedragon.obfuscator.utils
 
 import cookiedragon.obfuscator.CObfuscator
+import cookiedragon.obfuscator.kotlin.add
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.random
 import cookiedragon.obfuscator.kotlin.toInsn
@@ -71,7 +72,15 @@ val throwables = arrayOf(
 	EnumConstantNotPresentException::class.internalName,
 	IllegalArgumentException::class.internalName,
 	NegativeArraySizeException::class.internalName,
-	StringIndexOutOfBoundsException::class.internalName
+	StringIndexOutOfBoundsException::class.internalName,
+	IllegalStateException::class.internalName,
+	IndexOutOfBoundsException::class.internalName,
+	UnsupportedOperationException::class.internalName,
+	NumberFormatException::class.internalName,
+	NullPointerException::class.internalName,
+	AssertionError::class.internalName,
+	NoSuchElementException::class.internalName,
+	ConcurrentModificationException::class.internalName
 )
 
 fun randomThrowable(nonNull: Boolean = false): String? = if (CObfuscator.random.nextBoolean() || nonNull) throwables.random(CObfuscator.random) else null
@@ -143,16 +152,24 @@ data class MutableInteger(var value: Int) {
 	fun equals(v2: Int) = value == v2
 }
 
+fun printlnAsm(): InsnList {
+	return InsnList().apply {
+		add(FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"))
+		add(SWAP)
+		add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/String;)V"))
+	}
+}
+
 fun printlnAsm(text: String): InsnList {
-	return InsnList().also { it ->
-		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/lang/PrintStream;"))
+	return InsnList().also {
+		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
 		it.add(LdcInsnNode(text))
 		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/String;)V"))
 	}
 }
 
 fun printlnIntAsm(): InsnList {
-	return InsnList().also { it ->
+	return InsnList().also {
 		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
 		it.add(InsnNode(SWAP))
 		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(I)V"))

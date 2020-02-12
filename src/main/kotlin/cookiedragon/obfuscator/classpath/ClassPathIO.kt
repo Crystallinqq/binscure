@@ -95,8 +95,16 @@ object ClassPathIO {
 					val entry = ZipEntry(name)
 					it.putNextEntry(entry)
 					
-					val writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
-					classNode.accept(writer)
+					var writer: ClassWriter
+					try {
+						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
+						classNode.accept(writer)
+					} catch (e: Exception) {
+						e.printStackTrace()
+						
+						writer = CustomClassWriter(0)
+						classNode.accept(writer)
+					}
 					it.write(writer.toByteArray())
 					it.closeEntry()
 					

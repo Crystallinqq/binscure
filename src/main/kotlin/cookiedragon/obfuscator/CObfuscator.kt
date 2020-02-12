@@ -7,9 +7,11 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
-import cookiedragon.obfuscator.processors.flow.classinit.ClassInitMonitor
+import cookiedragon.obfuscator.kotlin.whenNotNull
+import cookiedragon.obfuscator.processors.indirection.DynamicCallObfuscation
 import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
 import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
+import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
 import me.tongfei.progressbar.CustomProcessRenderer
 import me.tongfei.progressbar.ProgressBar
 import me.tongfei.progressbar.ProgressBarStyle
@@ -69,12 +71,14 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
+			OpaqueRuntimeManager,
+			
 			//BadInvoke,
 			//UselessTryCatch,
-			//DynamicCallObfuscation
+			DynamicCallObfuscation,
 			//FakeTryCatch,
 			//TableSwitchJump,
-			ClassInitMonitor,
+			//ClassInitMonitor,
 			/*
 			OpaqueJumps,
 			//NumberObfuscation,
@@ -107,10 +111,12 @@ object CObfuscator {
 		val duration = Duration.between(start, Instant.now())
 		println("Finished processing ${classes.size} classes and ${passThrough.size} resources in ${duration.toMillis() / 1000f}s")
 		
-		if (rootConfig.mappingFile != null && !mappings.isEmpty()) {
-			PrintWriter(FileOutputStream(rootConfig.mappingFile)).use {
-				for ((key, value) in mappings) {
-					it.println(key.replace(",", "\\,") + "," + value.replace(",", "\\,"))
+		rootConfig.mappingFile.whenNotNull {file ->
+			if (mappings.isNotEmpty()) {
+				PrintWriter(FileOutputStream(file)).use {
+					for ((key, value) in mappings) {
+						it.println(key.replace(",", "\\,") + "," + value.replace(",", "\\,"))
+					}
 				}
 			}
 		}
