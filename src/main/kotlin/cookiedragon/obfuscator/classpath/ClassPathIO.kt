@@ -100,6 +100,7 @@ object ClassPathIO {
 						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
 						classNode.accept(writer)
 					} catch (e: Exception) {
+						println("Error while writing class ${classNode.name}")
 						e.printStackTrace()
 						
 						writer = CustomClassWriter(0)

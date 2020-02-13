@@ -3,21 +3,15 @@ package cookiedragon.obfuscator.processors.indirection
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.classpath.ClassPath
-import cookiedragon.obfuscator.kotlin.add
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.kotlin.xor
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.utils.InstructionModifier
-import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Handle
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
-import java.lang.invoke.ConstantCallSite
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
 
 /**
  * @author cookiedragon234 22/Jan/2020
@@ -172,101 +166,6 @@ object DynamicCallObfuscation: IClassProcessor {
 			}
 		}
 		return String(new)
-	}
-	
-	private fun generateBootstrapMethod(className: String, strDecryptNode: MethodNode, methodNode: MethodNode) {
-		// Description (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
-		methodNode.instructions.apply {
-			/* Variables
-				0 = MethodHandleLookup
-				1 = callername
-				2 = MethodType
-				3 = Opcode (INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE)
-				4 = Class Name
-				5 = Method Name
-				6 = Method Sig
-				7 = Class
-				8 = Real Method Type
-			 */
-			
-			// ========= Decrypt Names =========
-			add(VarInsnNode(ALOAD, 4)) // Enc CLass Name
-			add(MethodInsnNode(INVOKESTATIC, className, strDecryptNode.name, strDecryptNode.desc))
-			add(VarInsnNode(ASTORE, 4)) // CLass Name
-			
-			add(VarInsnNode(ALOAD, 5)) // Enc Method Name
-			add(MethodInsnNode(INVOKESTATIC, className, strDecryptNode.name, strDecryptNode.desc))
-			add(VarInsnNode(ASTORE, 5)) // Method Name
-			
-			add(VarInsnNode(ALOAD, 6)) // Enc Method Sig
-			add(MethodInsnNode(INVOKESTATIC, className, strDecryptNode.name, strDecryptNode.desc))
-			add(VarInsnNode(ASTORE, 6)) // Method Sig
-			// ========= Decrypt Names =========
-			
-			// ========= Class.forName =========
-			add(VarInsnNode(ALOAD, 4)) // CLass Name
-			add(MethodInsnNode(INVOKESTATIC, Class::class.internalName, "forName", "(Ljava/lang/String;)Ljava/lang/Class;"))
-			add(VarInsnNode(ASTORE, 7))// Class
-			// ========= Class.forName =========
-			
-			// ========= Get Method Type =========
-			add(VarInsnNode(ALOAD, 6)) // Method Sig
-			add(LdcInsnNode(Type.getType("L$className;")))
-			add(MethodInsnNode(INVOKEVIRTUAL, Class::class.internalName, "getClassLoader", "()Ljava/lang/ClassLoader;")) // Class Loader
-			add(MethodInsnNode(INVOKESTATIC, "java/lang/invoke/MethodType", "fromMethodDescriptorString", "(Ljava/lang/String;Ljava/lang/ClassLoader;)Ljava/lang/invoke/MethodType;"))
-			add(VarInsnNode(ASTORE, 8)) // Real Method Type
-			// ========= Get Method Type =========
-			
-			// ========= If Statement =========
-			val retConstant = LabelNode(Label())
-			val lStatic = LabelNode(Label())
-			val lVirtual = LabelNode(Label())
-			val lInterface = LabelNode(Label())
-			
-			add(VarInsnNode(ILOAD, 3)) // Opcode
-			add(ldcInt(INVOKESTATIC))
-			add(JumpInsnNode(IF_ICMPEQ, lStatic))
-			add(VarInsnNode(ILOAD, 3)) // Opcode
-			add(ldcInt(INVOKEVIRTUAL))
-			add(JumpInsnNode(IF_ICMPEQ, lVirtual))
-			add(VarInsnNode(ILOAD, 3)) // Opcode
-			add(ldcInt(INVOKEINTERFACE))
-			add(JumpInsnNode(IF_ICMPEQ, lInterface))
-			
-			add(ACONST_NULL)
-			add(ATHROW)
-			// ========= If Statement =========
-			
-			// ========= If Static =========
-			add(lStatic)
-			add(VarInsnNode(ALOAD, 0))
-			add(VarInsnNode(ALOAD, 7))
-			add(VarInsnNode(ALOAD, 5))
-			add(VarInsnNode(ALOAD, 8))
-			add(MethodInsnNode(INVOKEVIRTUAL, MethodHandles.Lookup::class.internalName, "findStatic", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/MethodHandle;"))
-			add(JumpInsnNode(GOTO, retConstant))
-			// ========= If Static =========
-			
-			// ========= If Virtual/Interface =========
-			add(lVirtual)
-			add(lInterface)
-			add(VarInsnNode(ALOAD, 0))
-			add(VarInsnNode(ALOAD, 7))
-			add(VarInsnNode(ALOAD, 5))
-			add(VarInsnNode(ALOAD, 8))
-			add(MethodInsnNode(INVOKEVIRTUAL, MethodHandles.Lookup::class.internalName, "findVirtual", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/MethodHandle;"))
-			add(JumpInsnNode(GOTO, retConstant))
-			// ========= If Virtual/Interface =========
-			
-			add(retConstant)
-			add(TypeInsnNode(NEW, ConstantCallSite::class.internalName))
-			add(DUP_X1)
-			add(SWAP)
-			add(VarInsnNode(ALOAD, 2))
-			add(MethodInsnNode(INVOKEVIRTUAL, MethodHandle::class.internalName, "asType", "(Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/MethodHandle;"))
-			add(MethodInsnNode(INVOKESPECIAL, ConstantCallSite::class.internalName, "<init>", "(Ljava/lang/invoke/MethodHandle;)V"))
-			add(InsnNode(ARETURN))
-		}
 	}
 	
 	data class MethodCall(val classNode: ClassNode, val methodNode: MethodNode, val insnNode: MethodInsnNode)
