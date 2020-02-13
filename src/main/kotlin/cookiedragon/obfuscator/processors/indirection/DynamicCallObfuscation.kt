@@ -65,8 +65,7 @@ object DynamicCallObfuscation: IClassProcessor {
 				null,
 				null
 			).apply {
-				generateDecryptorMethod(decryptNode.name, this)
-				decryptNode.methods.add(this)
+				generateDecryptorMethod(decryptNode, this)
 			}
 			
 			val bootStrapMethod = MethodNode(

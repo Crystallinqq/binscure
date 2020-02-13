@@ -4,7 +4,10 @@ import cookiedragon.obfuscator.CObfuscator.random
 import cookiedragon.obfuscator.kotlin.add
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.utils.ldcInt
+import cookiedragon.obfuscator.utils.randomBranch
 import cookiedragon.obfuscator.utils.randomThrowable
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.*
@@ -13,7 +16,7 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 12/Feb/2020
  */
 
-fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
+fun generateDecryptorMethod(classNode: ClassNode, methodNode: MethodNode) {
 	methodNode.instructions.apply {
 		val loopStart = LabelNode(Label())
 		val exitLoop = LabelNode(Label())
@@ -26,6 +29,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 		val tble3 = LabelNode(Label())
 		val tble4 = LabelNode(Label())
 		val catch = LabelNode(Label())
+		val catch2 = LabelNode(Label())
 		val start = LabelNode(Label())
 		val end = LabelNode(Label())
 		val pre15 = LabelNode(Label())
@@ -66,9 +70,11 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 		
 		add(JumpInsnNode(Opcodes.GOTO, start))
 		
+		val jumpLabels = mutableSetOf<LabelNode>()
+		
 		val blocks = arrayListOf(
 			InsnList().apply {
-				add(start)
+				add(start.also{jumpLabels.add(it)})
 				add(ldcInt(7))
 				add(rootSwitch)
 				add(
@@ -82,7 +88,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				)
 			},
 			InsnList().apply {
-				add(switch7)
+				add(switch7.also{jumpLabels.add(it)})
 				// First we need to decrypt the method description stored at local var 1
 				// We will turn it into a char array
 				add(VarInsnNode(Opcodes.ALOAD, 0))
@@ -92,7 +98,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch9)
+				add(switch9.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 1))
 				// Find the array length and create our decrypted char array (store in slot 4)
 				add(Opcodes.ARRAYLENGTH)
@@ -102,7 +108,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch6)
+				add(switch6.also{jumpLabels.add(it)})
 				// Get the class and method hash
 				add(getThread)
 				add(MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;", false))
@@ -111,7 +117,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch8)
+				add(switch8.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 3))
 				add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getStackTrace", "()[Ljava/lang/StackTraceElement;", false))
 				add(ldcInt(6))
@@ -121,7 +127,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch5)
+				add(switch5.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 4))
 				add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, StackTraceElement::class.internalName, "getClassName", "()Ljava/lang/String;", false))
 				add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "hashCode", "()I", false))
@@ -130,7 +136,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch11)
+				add(switch11.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 4))
 				add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, StackTraceElement::class.internalName, "getMethodName", "()Ljava/lang/String;", false))
 				add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "hashCode", "()I", false))
@@ -140,14 +146,14 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 			},
 			InsnList().apply {
 				// Now loop over our new array
-				add(switch10)
+				add(switch10.also{jumpLabels.add(it)})
 				add(ldcInt(0))
 				add(VarInsnNode(Opcodes.ISTORE, 7))
 				add(ldcInt(12))
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch12)
+				add(switch12.also{jumpLabels.add(it)})
 				add(loopStart)
 				add(VarInsnNode(Opcodes.ILOAD, 7))
 				add(VarInsnNode(Opcodes.ALOAD, 2))
@@ -157,14 +163,14 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch13)
+				add(switch13.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ILOAD, 7))
 				add(ldcInt(5))
 				add(Opcodes.IREM)
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(tble0)
+				add(tble0.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 1)) // Encrypted Char Array
 				add(VarInsnNode(Opcodes.ILOAD, 7)) // index
 				add(Opcodes.CALOAD)
@@ -173,7 +179,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, setCharArrVal))
 			},
 			InsnList().apply {
-				add(tble1)
+				add(tble1.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 1)) // Encrypted Char Array
 				add(VarInsnNode(Opcodes.ILOAD, 7)) // index
 				add(Opcodes.CALOAD)
@@ -182,7 +188,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, setCharArrVal))
 			},
 			InsnList().apply {
-				add(tble2)
+				add(tble2.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 1)) // Encrypted Char Array
 				add(VarInsnNode(Opcodes.ILOAD, 7)) // index
 				add(Opcodes.CALOAD)
@@ -191,7 +197,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, setCharArrVal))
 			},
 			InsnList().apply {
-				add(tble3)
+				add(tble3.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 1)) // Encrypted Char Array
 				add(VarInsnNode(Opcodes.ILOAD, 7)) // index
 				add(Opcodes.CALOAD)
@@ -202,7 +208,7 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, setCharArrVal))
 			},
 			InsnList().apply {
-				add(tble4)
+				add(tble4.also{jumpLabels.add(it)})
 				add(VarInsnNode(Opcodes.ALOAD, 1)) // Encrypted Char Array
 				add(VarInsnNode(Opcodes.ILOAD, 7)) // index
 				add(Opcodes.CALOAD)
@@ -222,29 +228,29 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch16)
+				add(switch16.also{jumpLabels.add(it)})
 				add(ldcInt(18))
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch18)
+				add(switch18.also{jumpLabels.add(it)})
 				add(ldcInt(14))
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch14)
+				add(switch14.also{jumpLabels.add(it)})
 				add(ldcInt(17))
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(switch17)
+				add(switch17.also{jumpLabels.add(it)})
 				// Increment and go to top of loop
 				add(IincInsnNode(7, 1))
 				add(JumpInsnNode(Opcodes.GOTO, loopStart))
 			},
 			InsnList().apply {
 				// If we are here then we have a decrypted char array in slot 4
-				add(exitLoop)
+				add(exitLoop.also{jumpLabels.add(it)})
 				add(TypeInsnNode(Opcodes.NEW, "java/lang/String"))
 				add(Opcodes.DUP)
 				add(VarInsnNode(Opcodes.ALOAD, 1)) // Decrypted Char Array
@@ -252,18 +258,24 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 				add(Opcodes.ARETURN)
 			},
 			InsnList().apply {
-				add(throwNull)
+				add(throwNull.also{jumpLabels.add(it)})
 				add(ldcInt(15))
 				add(JumpInsnNode(Opcodes.GOTO, rootSwitch))
 			},
 			InsnList().apply {
-				add(catch)
+				add(catch.also{jumpLabels.add(it)})
 				add(Opcodes.DUP)
 				add(JumpInsnNode(Opcodes.IFNULL, pre15))
 				add(Opcodes.ATHROW)
 			},
 			InsnList().apply {
-				add(pre15)
+				add(catch2.also{jumpLabels.add(it)})
+				add(Opcodes.DUP)
+				add(JumpInsnNode(Opcodes.IFNONNULL, pre15))
+				add(Opcodes.ATHROW)
+			},
+			InsnList().apply {
+				add(pre15.also{jumpLabels.add(it)})
 				add(Opcodes.POP)
 				add(switch15)
 				add(Opcodes.ACONST_NULL)
@@ -284,19 +296,47 @@ fun generateDecryptorMethod(className: String, methodNode: MethodNode) {
 			}
 		}
 		
+		classNode.methods.add(methodNode)
+		
 		if (labels.size > 3) {
-			for (i in 0 until labels.size / 3) {
-				var randIndex: Int
-				var nextIndex: Int
-				do {
-					randIndex = random.nextInt(labels.size - 1)
-					nextIndex = randIndex + random.nextInt(labels.size - randIndex)
-				} while (nextIndex - randIndex < labels.size / 5)
-				
-				val startLabel = labels[randIndex]
-				val endLabel = labels[nextIndex]
-				methodNode.tryCatchBlocks.add(TryCatchBlockNode(startLabel, endLabel, catch, randomThrowable()))
-			}
+			do {
+				methodNode.tryCatchBlocks.clear()
+				for (i in 0 until labels.size / 2) {
+					var randIndex: Int
+					var nextIndex: Int
+					var startLabel: LabelNode
+					var endLabel: LabelNode
+					do {
+						randIndex = random.nextInt(labels.size - 1)
+						nextIndex = randIndex + random.nextInt(labels.size - randIndex)
+						
+						startLabel = labels[randIndex]
+						endLabel = labels[nextIndex]
+					} while (nextIndex - randIndex < labels.size / 7)// && jumpLabels.contains(startLabel) && jumpLabels.contains(endLabel))
+					
+					randomBranch(
+						random, {
+							methodNode.tryCatchBlocks.add(TryCatchBlockNode(startLabel, endLabel, catch, randomThrowable()))
+						}, {
+							methodNode.tryCatchBlocks.add(TryCatchBlockNode(startLabel, endLabel, pre15, randomThrowable()))
+						}, {
+							methodNode.tryCatchBlocks.add(TryCatchBlockNode(startLabel, endLabel, catch2, randomThrowable()))
+						}
+					)
+				}
+			} while (!verifyNode(classNode))
 		}
+	}
+}
+
+private fun verifyNode(classNode: ClassNode): Boolean {
+	try {
+		val writer = ClassWriter(ClassWriter.COMPUTE_FRAMES)
+		classNode.accept(writer)
+		val reader = ClassReader(writer.toByteArray()).accept(ClassNode(), ClassReader.EXPAND_FRAMES)
+		return true
+	} catch (e: Exception) {
+		e.printStackTrace()
+		return false
 	}
 }
