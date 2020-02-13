@@ -156,7 +156,7 @@ fun printlnAsm(): InsnList {
 	return InsnList().apply {
 		add(FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"))
 		add(SWAP)
-		add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/String;)V"))
+		add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/Object;)V"))
 	}
 }
 
