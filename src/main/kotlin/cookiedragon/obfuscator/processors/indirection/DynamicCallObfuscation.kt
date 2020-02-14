@@ -54,7 +54,7 @@ object DynamicCallObfuscation: IClassProcessor {
 			
 			val stringDecryptMethod = MethodNode(
 				ACC_PRIVATE + ACC_FINAL + ACC_STATIC,
-				"c",
+				"continue",
 				"(Ljava/lang/String;)Ljava/lang/String;",
 				null,
 				null
@@ -64,7 +64,7 @@ object DynamicCallObfuscation: IClassProcessor {
 			
 			val bootStrapMethod = MethodNode(
 				ACC_PUBLIC + ACC_FINAL + ACC_STATIC,
-				"c",
+				"break",
 				"(Ljava/lang/invoke/MethodHandles\$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;",
 				null,
 				null
