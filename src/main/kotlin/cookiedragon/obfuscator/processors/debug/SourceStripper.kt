@@ -23,6 +23,7 @@ object SourceStripper: IClassProcessor {
 		for (classNode in CObfuscator.getProgressBar("Stripping Source Info").wrap(classes)) {
 			classNode.sourceDebug = null
 			classNode.sourceFile = null
+			classNode.signature = null
 			
 			if (action == KEEP)
 				continue
@@ -35,6 +36,9 @@ object SourceStripper: IClassProcessor {
 					}
 				}
 				modifier.apply(method)
+				
+				method.exceptions = null
+				method.signature = null
 			}
 		}
 	}

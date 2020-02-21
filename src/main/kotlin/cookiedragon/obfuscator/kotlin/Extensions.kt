@@ -143,3 +143,15 @@ inline fun <T> T?.whenNotNull(block: (T) -> Unit): T? {
 }
 
 fun InsnList.add(opcode: Int) = this.add(InsnNode(opcode))
+
+fun InsnList.clone(): InsnList {
+	return InsnList().also {
+		for (insn in this) {
+			it.add(insn)
+		}
+	}
+}
+
+fun Int.removeAccess(access: Int) = this and access.inv()
+fun Int.addAccess(access: Int) = this or access
+fun Int.hasAccess(access: Int) = this and access != 0

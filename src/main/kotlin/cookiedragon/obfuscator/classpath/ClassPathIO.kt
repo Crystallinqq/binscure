@@ -28,11 +28,6 @@ object ClassPathIO {
 						ClassReader(it.getInputStream(entry).readBytes())
 							.accept(classNode, ClassReader.EXPAND_FRAMES)
 						
-						if (!CObfuscator.isExcluded(classNode)) {
-							classNode.fields.shuffle(CObfuscator.random)
-							classNode.methods.shuffle(CObfuscator.random)
-						}
-						
 						ClassPath.classes[classNode.name] = classNode
 						ClassPath.classPath[classNode.name] = classNode
 						ClassPath.originalNames[classNode] = classNode.name
@@ -83,8 +78,12 @@ object ClassPathIO {
 					progressBar.step()
 				}
 				for (classNode in ClassPath.classes.values) {
-					if (!CObfuscator.isExcluded(classNode))
+					if (!CObfuscator.isExcluded(classNode)) {
 						crc.overwrite = true
+						classNode.fields?.shuffle(CObfuscator.random)
+						classNode.methods?.shuffle(CObfuscator.random)
+						classNode.innerClasses?.shuffle(CObfuscator.random)
+					}
 					
 					var name = "${classNode.name}.class"
 					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {

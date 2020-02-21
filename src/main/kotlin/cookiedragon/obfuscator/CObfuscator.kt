@@ -8,6 +8,8 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
 import cookiedragon.obfuscator.kotlin.whenNotNull
+import cookiedragon.obfuscator.processors.classmerge.StaticMethodMerger
+import cookiedragon.obfuscator.processors.debug.AccessStripper
 import cookiedragon.obfuscator.processors.indirection.DynamicCallObfuscation
 import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
 import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
@@ -73,9 +75,11 @@ object CObfuscator {
 		val processors = arrayOf(
 			OpaqueRuntimeManager,
 			
+			AccessStripper,
 			//BadInvoke,
 			//UselessTryCatch,
-			DynamicCallObfuscation,
+			//DynamicCallObfuscation,
+			StaticMethodMerger,
 			//FakeTryCatch,
 			//TableSwitchJump,
 			//ClassInitMonitor,

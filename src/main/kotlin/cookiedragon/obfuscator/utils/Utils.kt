@@ -7,6 +7,7 @@ import cookiedragon.obfuscator.kotlin.random
 import cookiedragon.obfuscator.kotlin.toInsn
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import java.io.PrintStream
 import java.security.SecureRandom
@@ -189,5 +190,27 @@ fun randomStaticInvoke(): MethodInsnNode = staticInvokes.random(CObfuscator.rand
 fun insnListOf(vararg insns: AbstractInsnNode) = InsnList().also {
 	for (insn in insns) {
 		it.add(insn)
+	}
+}
+
+fun getRetForType(type: Type): Int {
+	return when (type) {
+		Type.VOID_TYPE -> RETURN
+		Type.BOOLEAN_TYPE, Type.CHAR_TYPE, Type.BYTE_TYPE, Type.SHORT_TYPE, Type.INT_TYPE -> IRETURN
+		Type.FLOAT_TYPE -> FRETURN
+		Type.LONG_TYPE -> LRETURN
+		Type.DOUBLE_TYPE -> DRETURN
+		else -> ARETURN
+	}
+}
+
+fun getLoadForType(type: Type): Int {
+	return when (type) {
+		Type.VOID_TYPE -> throw IllegalArgumentException("Cannot load Void $type")
+		Type.BOOLEAN_TYPE, Type.CHAR_TYPE, Type.BYTE_TYPE, Type.SHORT_TYPE, Type.INT_TYPE -> ILOAD
+		Type.FLOAT_TYPE -> FLOAD
+		Type.LONG_TYPE -> LLOAD
+		Type.DOUBLE_TYPE -> DLOAD
+		else -> ALOAD
 	}
 }
