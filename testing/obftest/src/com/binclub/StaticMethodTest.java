@@ -9,6 +9,7 @@ public class StaticMethodTest implements Test {
 		if (doOne("hello") && !doTwo("byebye") && doThree("goodbye")) {
 			return;
 		}
+		System.out.println(doOne("hello") +"."+ !doTwo("byebye") +"."+ doThree("goodbye"));
 		throw new AssertionError();
 	}
 	
@@ -19,9 +20,10 @@ public class StaticMethodTest implements Test {
 					return true;
 				}
 			}
-		} finally {
+		} catch (Exception e) {
 			return false;
 		}
+		return false;
 	}
 	
 	public static boolean doTwo(String thing) {
