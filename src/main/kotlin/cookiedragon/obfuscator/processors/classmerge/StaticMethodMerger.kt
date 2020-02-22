@@ -86,14 +86,19 @@ object StaticMethodMerger: IClassProcessor {
 						newMethod.localVariables = firstMethod.localVariables ?: arrayListOf()
 						firstMethod.localVariables = null
 						
+						val baseInt = random.nextInt(Integer.MAX_VALUE - 2)
+						val keyInt = random.nextInt(Integer.MAX_VALUE)
+						
 						val firstStart = LabelNode(Label())
 						val secondStart = LabelNode(Label())
 						newMethod.instructions = InsnList().apply {
 							val default = LabelNode(Label())
 							add(default)
 							add(VarInsnNode(ILOAD, 0))
+							add(ldcInt(keyInt))
+							add(IXOR)
 							add(TableSwitchInsnNode(
-								0, 1,
+								baseInt, baseInt + 1,
 								default,
 								firstStart, secondStart
 							))
@@ -113,8 +118,8 @@ object StaticMethodMerger: IClassProcessor {
 						}
 						secondMethod.instructions = firstMethod.instructions.clone()
 						
-						firstMethod.instructions.insert(ldcInt(0))
-						secondMethod.instructions.insert(ldcInt(1))
+						firstMethod.instructions.insert(ldcInt(baseInt xor keyInt))
+						secondMethod.instructions.insert(ldcInt((baseInt + 1) xor keyInt))
 							
 						if (secondMethod.tryCatchBlocks != null) newMethod.tryCatchBlocks.addAll(secondMethod.tryCatchBlocks)
 						secondMethod.tryCatchBlocks = null
