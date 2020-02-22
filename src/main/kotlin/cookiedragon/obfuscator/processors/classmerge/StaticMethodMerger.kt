@@ -11,6 +11,8 @@ import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
 import cookiedragon.obfuscator.utils.getLoadForType
 import cookiedragon.obfuscator.utils.getRetForType
+import cookiedragon.obfuscator.utils.ldcInt
+import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
@@ -23,7 +25,7 @@ import java.lang.reflect.Modifier
  */
 object StaticMethodMerger: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		val staticMethods = arrayListOf<Pair<ClassNode, MethodNode>>()
+		val staticMethods = hashMapOf<String, MutableSet<Pair<ClassNode, MethodNode>>>()
 		
 		for (classNode in classes) {
 			for (method in classNode.methods) {
@@ -34,10 +36,8 @@ object StaticMethodMerger: IClassProcessor {
 					&&
 					!method.access.hasAccess(ACC_NATIVE)
 				) {
-					println("Did ${classNode.name}.${method.name}")
-					staticMethods.add(Pair(classNode, method))
+					staticMethods.getOrPut(method.desc, { hashSetOf() }).add(Pair(classNode, method))
 				} else {
-					println("Skipped ${classNode.name}.${method.name}")
 					println(Modifier.isStatic(method.access))
 					println(Modifier.isAbstract(method.access))
 					println(Modifier.isNative(method.access))
@@ -59,38 +59,99 @@ object StaticMethodMerger: IClassProcessor {
 			
 			val namer = NameGenerator("\$o")
 			
-			for ((classNode, method) in staticMethods) {
-				println("Processed ${classNode.name}.${method.name}")
-				
-				var newNode: ClassNode
-				do {
-					newNode = classes.random(random)
-				} while (newNode.access.hasAccess(ACC_INTERFACE))
-				
-				val newMethod = MethodNode(
-					ACC_PUBLIC + ACC_STATIC,
-					namer.uniqueRandomString(),
-					method.desc,
-					null,
-					null)
-				newNode.methods.add(newMethod)
-				
-				newMethod.tryCatchBlocks = method.tryCatchBlocks
-				method.tryCatchBlocks = null
-				
-				newMethod.localVariables = method.localVariables
-				method.localVariables = null
-				
-				newMethod.instructions = method.instructions.clone()
-				method.instructions = InsnList().apply {
-					val params = Type.getArgumentTypes(method.desc)
-					for ((index, param) in params.withIndex()) {
-						add(VarInsnNode(getLoadForType(param), index))
+			for ((desc, methods) in staticMethods) {
+				val it = methods.iterator()
+				while (it.hasNext()) {
+					val (firstClass, firstMethod) = it.next()
+					
+					var newNode: ClassNode
+					do {
+						newNode = classes.random(random)
+					} while (newNode.access.hasAccess(ACC_INTERFACE))
+					
+					val newMethod = MethodNode(
+						ACC_PUBLIC + ACC_STATIC,
+						namer.uniqueRandomString(),
+						if (it.hasNext()) firstMethod.desc.replace("(", "(I") else firstMethod.desc,
+						null,
+						null)
+					newNode.methods.add(newMethod)
+					
+					if (it.hasNext()) {
+						val (secondClass, secondMethod) = it.next()
+						
+						newMethod.tryCatchBlocks = firstMethod.tryCatchBlocks ?: arrayListOf()
+						firstMethod.tryCatchBlocks = null
+						
+						newMethod.localVariables = firstMethod.localVariables ?: arrayListOf()
+						firstMethod.localVariables = null
+						
+						val firstStart = LabelNode(Label())
+						val secondStart = LabelNode(Label())
+						newMethod.instructions = InsnList().apply {
+							val default = LabelNode(Label())
+							add(default)
+							add(VarInsnNode(ILOAD, 0))
+							add(TableSwitchInsnNode(
+								0, 1,
+								default,
+								firstStart, secondStart
+							))
+							add(secondStart)
+							add(incAllVarInsn(secondMethod.instructions))
+							add(firstStart)
+							add(incAllVarInsn(firstMethod.instructions))
+						}
+						
+						firstMethod.instructions = InsnList().apply {
+							val params = Type.getArgumentTypes(firstMethod.desc)
+							for ((index, param) in params.withIndex()) {
+								add(VarInsnNode(getLoadForType(param), index))
+							}
+							add(MethodInsnNode(INVOKESTATIC, newNode.name, newMethod.name, newMethod.desc))
+							add(getRetForType(Type.getReturnType(firstMethod.desc)))
+						}
+						secondMethod.instructions = firstMethod.instructions.clone()
+						
+						firstMethod.instructions.insert(ldcInt(0))
+						secondMethod.instructions.insert(ldcInt(1))
+							
+						if (secondMethod.tryCatchBlocks != null) newMethod.tryCatchBlocks.addAll(secondMethod.tryCatchBlocks)
+						secondMethod.tryCatchBlocks = null
+						if (secondMethod.localVariables != null) newMethod.localVariables.addAll(secondMethod.localVariables)
+						secondMethod.localVariables = null
+						
+						for (localVariable in newMethod.localVariables) {
+							localVariable.index += 1
+						}
+					} else {
+						newMethod.tryCatchBlocks = firstMethod.tryCatchBlocks
+						firstMethod.tryCatchBlocks = null
+						
+						newMethod.localVariables = firstMethod.localVariables
+						firstMethod.localVariables = null
+						
+						newMethod.instructions = firstMethod.instructions.clone()
+						firstMethod.instructions = InsnList().apply {
+							val params = Type.getArgumentTypes(firstMethod.desc)
+							for ((index, param) in params.withIndex()) {
+								add(VarInsnNode(getLoadForType(param), index))
+							}
+							add(MethodInsnNode(INVOKESTATIC, newNode.name, newMethod.name, newMethod.desc))
+							add(getRetForType(Type.getReturnType(firstMethod.desc)))
+						}
 					}
-					add(MethodInsnNode(INVOKESTATIC, newNode.name, newMethod.name, newMethod.desc))
-					add(getRetForType(Type.getReturnType(method.desc)))
 				}
-				println("Finished ${classNode.name}.${method.name}")
+			}
+		}
+	}
+	
+	fun incAllVarInsn(insnList: InsnList): InsnList {
+		return insnList.apply {
+			for (insn in this) {
+				if (insn is VarInsnNode) {
+					insn.`var` += 1
+				}
 			}
 		}
 	}

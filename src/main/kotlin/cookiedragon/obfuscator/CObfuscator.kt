@@ -10,7 +10,6 @@ import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
 import cookiedragon.obfuscator.kotlin.whenNotNull
 import cookiedragon.obfuscator.processors.classmerge.StaticMethodMerger
 import cookiedragon.obfuscator.processors.debug.AccessStripper
-import cookiedragon.obfuscator.processors.indirection.DynamicCallObfuscation
 import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
 import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
 import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
