@@ -5,6 +5,7 @@ import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.runtime.randomOpaqueJump
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.randomThrowable
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
@@ -34,12 +35,12 @@ object FakeTryCatch: IClassProcessor {
 	}
 	
 	fun addFakeTryCatches(insnList: InsnList): Array<TryCatchBlockNode> {
-		val switchStart = LabelNode(Label())
-		val fakeEnd = LabelNode(Label())
-		val start = LabelNode(Label())
-		val handler = LabelNode(Label())
-		val end = LabelNode(Label())
-		val secondCatch = LabelNode(Label())
+		val switchStart = BlameableLabelNode()
+		val fakeEnd = BlameableLabelNode()
+		val start = BlameableLabelNode()
+		val handler = BlameableLabelNode()
+		val end = BlameableLabelNode()
+		val secondCatch = BlameableLabelNode()
 		
 		val list = InsnList()
 			.apply {

@@ -4,6 +4,7 @@ import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.random
 import cookiedragon.obfuscator.kotlin.wrap
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.randomThrowable
 import org.objectweb.asm.Label
@@ -27,9 +28,9 @@ object UselessTryCatch: IClassProcessor {
 				var isInitialised = !method.name.startsWith("<")
 				
 				var handler: LabelNode? = null
-				val handlerEnd = LabelNode(Label())
-				val endHandler = LabelNode(Label())
-				val endHandlerEnd = LabelNode(Label())
+				val handlerEnd = BlameableLabelNode()
+				val endHandler = BlameableLabelNode()
+				val endHandlerEnd = BlameableLabelNode()
 				
 				val modifier = InstructionModifier()
 				for (insn in method.instructions) {
@@ -47,7 +48,7 @@ object UselessTryCatch: IClassProcessor {
 							continue
 						
 						if (handler == null) {
-							handler = LabelNode(Label())
+							handler = BlameableLabelNode()
 							
 							val handlerList = InsnList().apply {
 								add(JumpInsnNode(GOTO, handlerEnd))
@@ -70,11 +71,11 @@ object UselessTryCatch: IClassProcessor {
 							method.tryCatchBlocks.add(TryCatchBlockNode(endHandler, endHandlerEnd, handler, randomThrowable()))
 						}
 						
-						val beforeLabel2 = LabelNode(Label())
-						val beforeLabel3 = LabelNode(Label())
-						val afterLabel = LabelNode(Label())
-						val afterLabel2 = LabelNode(Label())
-						val afterLabel3 = LabelNode(Label())
+						val beforeLabel2 = BlameableLabelNode()
+						val beforeLabel3 = BlameableLabelNode()
+						val afterLabel = BlameableLabelNode()
+						val afterLabel2 = BlameableLabelNode()
+						val afterLabel3 = BlameableLabelNode()
 						
 						val before = InsnList().apply {
 							add(JumpInsnNode(GOTO, beforeLabel2))

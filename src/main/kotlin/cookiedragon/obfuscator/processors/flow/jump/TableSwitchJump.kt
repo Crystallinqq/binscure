@@ -5,6 +5,7 @@ import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.isStatic
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.runtime.randomOpaqueJump
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Label
@@ -33,10 +34,10 @@ object TableSwitchJump: IClassProcessor {
 						if (insn.opcode == GOTO)
 							continue
 						
-						val trueL = LabelNode(Label())
-						val proxyTrue = LabelNode(Label())
-						val switch = LabelNode(Label())
-						val falseGoto = LabelNode(Label())
+						val trueL = BlameableLabelNode()
+						val proxyTrue = BlameableLabelNode()
+						val switch = BlameableLabelNode()
+						val falseGoto = BlameableLabelNode()
 						
 						val rand = if (random.nextBoolean()) {
 							random.nextInt(Integer.MAX_VALUE)
@@ -57,7 +58,7 @@ object TableSwitchJump: IClassProcessor {
 							add(JumpInsnNode(GOTO, switch))
 							add(proxyTrue)
 							
-							val al = LabelNode(Label())
+							val al = BlameableLabelNode()
 							add(randomOpaqueJump(al))
 							if (!method.isStatic()) {
 								add(VarInsnNode(ALOAD, 0))

@@ -3,6 +3,7 @@ package cookiedragon.obfuscator.processors.flow
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.wrap
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.InstructionModifier
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
@@ -33,7 +34,7 @@ object BadInvoke: IClassProcessor {
 							field = FieldNode(ACC_PUBLIC + ACC_STATIC, "\$badInvoke", Type.getDescriptor(String::class.java), null, null)
 						}
 						
-						val end = LabelNode(Label())
+						val end = BlameableLabelNode()
 						
 						val list = InsnList()
 							.apply {

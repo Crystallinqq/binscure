@@ -9,6 +9,7 @@ import cookiedragon.obfuscator.kotlin.random
 import cookiedragon.obfuscator.processors.renaming.generation.NameGenerator
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.getLoadForType
 import cookiedragon.obfuscator.utils.getRetForType
 import cookiedragon.obfuscator.utils.ldcInt
@@ -30,11 +31,13 @@ object StaticMethodMerger: IClassProcessor {
 		for (classNode in classes) {
 			for (method in classNode.methods) {
 				if (
-					method.name != "<init>"
+					!method.name.startsWith('<')
 					&&
 					!method.access.hasAccess(ACC_ABSTRACT)
 					&&
 					!method.access.hasAccess(ACC_NATIVE)
+					&&
+					random.nextBoolean()
 				) {
 					staticMethods.getOrPut(method.desc, { hashSetOf() }).add(Pair(classNode, method))
 				}
@@ -45,12 +48,15 @@ object StaticMethodMerger: IClassProcessor {
 			val namer = NameGenerator("\$o")
 			
 			for ((desc, methods) in staticMethods) {
-				val it = methods.iterator()
+				val it = methods.shuffled(random).iterator()
 				while (it.hasNext()) {
 					val (firstClass, firstMethod) = it.next()
 					
+					val (secondClass, secondMethod) =
+						(if (it.hasNext()) it.next() else continue/*Pair(null, null)*/)
+					
 					val firstStatic = firstMethod.access.hasAccess(ACC_STATIC)
-					val secondStatic = firstMethod.access.hasAccess(ACC_STATIC)
+					val secondStatic = secondMethod.access.hasAccess(ACC_STATIC)
 					
 					var newNode: ClassNode
 					do {
@@ -66,9 +72,6 @@ object StaticMethodMerger: IClassProcessor {
 					)
 					newNode.methods.add(newMethod)
 					
-					val (secondClass, secondMethod) =
-						(if (it.hasNext()) it.next() else Pair(null, null))
-					
 					newMethod.tryCatchBlocks = firstMethod.tryCatchBlocks ?: arrayListOf()
 					firstMethod.tryCatchBlocks = null
 					
@@ -78,10 +81,10 @@ object StaticMethodMerger: IClassProcessor {
 					val baseInt = random.nextInt(Integer.MAX_VALUE - 2)
 					val keyInt = random.nextInt(Integer.MAX_VALUE)
 					
-					val firstStart = LabelNode(Label())
-					val secondStart = LabelNode(Label())
+					val firstStart = BlameableLabelNode()
+					val secondStart = BlameableLabelNode()
 					newMethod.instructions = InsnList().apply {
-						val default = LabelNode(Label())
+						val default = BlameableLabelNode()
 						add(default)
 						add(VarInsnNode(ILOAD, 1))
 						add(ldcInt(keyInt))
@@ -110,6 +113,7 @@ object StaticMethodMerger: IClassProcessor {
 							add(VarInsnNode(getLoadForType(param), index))
 						}
 						add(MethodInsnNode(INVOKESTATIC, newNode.name, newMethod.name, newMethod.desc))
+						println("${firstMethod.name}, ${secondMethod?.name}: ${Type.getReturnType(firstMethod.desc)}")
 						add(getRetForType(Type.getReturnType(firstMethod.desc)))
 					}
 					
@@ -150,7 +154,7 @@ object StaticMethodMerger: IClassProcessor {
 			if (localVar.index != 0 || static) {
 				localVar.index += 1
 			} else {
-				toRemove.add(localVar)
+				//toRemove.add(localVar)
 			}
 		}
 		vars.removeAll(toRemove)

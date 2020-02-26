@@ -3,10 +3,7 @@ package cookiedragon.obfuscator.processors.flow.jump
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.wrap
-import cookiedragon.obfuscator.utils.InstructionModifier
-import cookiedragon.obfuscator.utils.insnListOf
-import cookiedragon.obfuscator.utils.ldcInt
-import cookiedragon.obfuscator.utils.randomStaticInvoke
+import cookiedragon.obfuscator.utils.*
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -33,14 +30,14 @@ object OpaqueJumps: IClassProcessor {
 							} while (other == randInt || other == randInt - 1)
 							
 							val target = insn.label
-							val `else` = LabelNode(Label())
+							val `else` = BlameableLabelNode()
 							
-							val start = LabelNode(Label())
-							val trueLabel = LabelNode(Label())
-							val falseLabel = LabelNode(Label())
-							val dummyLabel = LabelNode(Label())
-							val switch = LabelNode(Label())
-							val end = LabelNode(Label())
+							val start = BlameableLabelNode()
+							val trueLabel = BlameableLabelNode()
+							val falseLabel = BlameableLabelNode()
+							val dummyLabel = BlameableLabelNode()
+							val switch = BlameableLabelNode()
+							val end = BlameableLabelNode()
 							
 							val list = insnListOf(
 								start,

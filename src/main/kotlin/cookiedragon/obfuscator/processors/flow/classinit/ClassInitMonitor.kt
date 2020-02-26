@@ -4,6 +4,7 @@ import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
 import cookiedragon.obfuscator.runtime.randomOpaqueJump
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.InstructionModifier
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
@@ -27,7 +28,7 @@ object ClassInitMonitor: IClassProcessor {
 				
 				for (insn in method.instructions) {
 					if (insn is TypeInsnNode && insn.opcode == NEW) {
-						val fakeJump = LabelNode(Label())
+						val fakeJump = BlameableLabelNode()
 						
 						val heavy = CObfuscator.randomWeight(3);
 						

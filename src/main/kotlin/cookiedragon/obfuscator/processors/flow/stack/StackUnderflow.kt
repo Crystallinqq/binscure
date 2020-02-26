@@ -2,6 +2,7 @@ package cookiedragon.obfuscator.processors.flow.stack
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.randomStaticInvoke
 import org.objectweb.asm.Label
@@ -20,7 +21,7 @@ object StackUnderflow: IClassProcessor {
 					val modifier = InstructionModifier()
 					for (insn in method.instructions) {
 						if (insn is JumpInsnNode) {
-							val start = LabelNode(Label())
+							val start = BlameableLabelNode()
 							val before = InsnList().apply {
 								add(randomStaticInvoke())
 								add(JumpInsnNode(IFNONNULL, start))

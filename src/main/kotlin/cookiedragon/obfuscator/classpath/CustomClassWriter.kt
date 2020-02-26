@@ -1,8 +1,8 @@
 package cookiedragon.obfuscator.classpath
 
 import cookiedragon.obfuscator.classpath.tree.ClassTreeEntry
-import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
+import org.objectweb.asm.ByteVector
 import org.objectweb.asm.ClassWriter
 import java.lang.reflect.Modifier
 import java.util.*
@@ -12,6 +12,10 @@ import java.util.*
  */
 class CustomClassWriter(flags: Int): ClassWriter(flags) {
 	private val warnings = mutableSetOf<String>()
+	
+	init {
+		this.newUTF8("Protected by Binscure")
+	}
 	
 	private fun <T> warn(type: String, out: T): T {
 		if (!rootConfig.ignoreClassPathNotFound && warnings.add(type)) {

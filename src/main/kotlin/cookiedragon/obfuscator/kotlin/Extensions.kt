@@ -1,11 +1,13 @@
 package cookiedragon.obfuscator.kotlin
 
 import cookiedragon.obfuscator.classpath.ClassPath
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import me.tongfei.progressbar.ProgressBar
 import me.tongfei.progressbar.ProgressBarIterable
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterator
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedSpliterator
 import org.objectweb.asm.Handle
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import java.lang.reflect.Modifier
@@ -155,3 +157,41 @@ fun InsnList.clone(): InsnList {
 fun Int.removeAccess(access: Int) = this and access.inv()
 fun Int.addAccess(access: Int) = this or access
 fun Int.hasAccess(access: Int) = this and access != 0
+
+val opcodes: Map<Int, String> by lazy {
+	val map = hashMapOf<Int, String>()
+	for (declaredField in Opcodes::class.java.declaredFields) {
+		map[declaredField.get(null) as Int] = declaredField.name
+	}
+	map
+}
+
+fun AbstractInsnNode.opcodeString(): String {
+	when (this) {
+		is BlameableLabelNode -> return this.toString()
+		is JumpInsnNode -> return "${implOpToStr(opcode)}: $label"
+		else -> {
+			if (opcode == -1) return this::class.java.simpleName ?: this::class.java.name!!
+			return implOpToStr(opcode)
+		}
+	}
+}
+
+private fun implOpToStr(op: Int): String {
+	return opcodes.getOrDefault(op, "0x${Integer.toHexString(op)} <invalid>")
+}
+
+fun InsnList.toOpcodeStrings(): String {
+	val out = StringBuilder(this.size())
+	for ((i, insn) in this.iterator().withIndex()) {
+		out.append("\t $i: ${insn.opcodeString()}\n")
+	}
+	return out.toString()
+}
+
+fun InsnList.contains(insn: AbstractInsnNode): Boolean {
+	for (it in this) {
+		if (it == insn) return true
+	}
+	return false
+}

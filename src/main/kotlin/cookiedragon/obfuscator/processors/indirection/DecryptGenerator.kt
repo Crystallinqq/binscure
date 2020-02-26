@@ -3,9 +3,7 @@ package cookiedragon.obfuscator.processors.indirection
 import cookiedragon.obfuscator.CObfuscator.random
 import cookiedragon.obfuscator.kotlin.add
 import cookiedragon.obfuscator.kotlin.internalName
-import cookiedragon.obfuscator.utils.ldcInt
-import cookiedragon.obfuscator.utils.randomBranch
-import cookiedragon.obfuscator.utils.randomThrowable
+import cookiedragon.obfuscator.utils.*
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Label
@@ -19,21 +17,21 @@ import kotlin.math.max
 
 fun generateDecryptorMethod(classNode: ClassNode, methodNode: MethodNode) {
 	methodNode.instructions.apply {
-		val loopStart = LabelNode(Label())
-		val exitLoop = LabelNode(Label())
-		val setCharArrVal = LabelNode(Label())
-		val throwNull = LabelNode(Label())
-		val getThread = LabelNode(Label())
-		val tble0 = LabelNode(Label())
-		val tble1 = LabelNode(Label())
-		val tble2 = LabelNode(Label())
-		val tble3 = LabelNode(Label())
-		val tble4 = LabelNode(Label())
-		val catch = LabelNode(Label())
-		val catch2 = LabelNode(Label())
-		val start = LabelNode(Label())
-		val end = LabelNode(Label())
-		val pre15 = LabelNode(Label())
+		val loopStart = BlameableLabelNode()
+		val exitLoop = BlameableLabelNode()
+		val setCharArrVal = BlameableLabelNode()
+		val throwNull = BlameableLabelNode()
+		val getThread = BlameableLabelNode()
+		val tble0 = BlameableLabelNode()
+		val tble1 = BlameableLabelNode()
+		val tble2 = BlameableLabelNode()
+		val tble3 = BlameableLabelNode()
+		val tble4 = BlameableLabelNode()
+		val catch = BlameableLabelNode()
+		val catch2 = BlameableLabelNode()
+		val start = BlameableLabelNode()
+		val end = BlameableLabelNode()
+		val pre15 = BlameableLabelNode()
 		
 		add(ACONST_NULL)
 		add(VarInsnNode(ASTORE, 1))
@@ -54,22 +52,23 @@ fun generateDecryptorMethod(classNode: ClassNode, methodNode: MethodNode) {
 		
 		
 		
-		val rootSwitch = LabelNode(Label())
+		val rootSwitch = BlameableLabelNode()
 		
-		val switch5 = LabelNode(Label())
-		val switch6 = LabelNode(Label())
-		val switch7 = LabelNode(Label())
-		val switch8 = LabelNode(Label())
-		val switch9 = LabelNode(Label())
-		val switch10 = LabelNode(Label())
-		val switch11 = LabelNode(Label())
-		val switch12 = LabelNode(Label())
-		val switch13 = LabelNode(Label())
-		val switch14 = LabelNode(Label())
-		val switch15 = LabelNode(Label())
-		val switch16 = LabelNode(Label())
-		val switch17 = LabelNode(Label())
-		val switch18 = LabelNode(Label())
+		val switch5 = BlameableLabelNode()
+		val switch6 = BlameableLabelNode()
+		val switch7 = BlameableLabelNode()
+		val switch8 = BlameableLabelNode()
+		val switch9 = BlameableLabelNode()
+		val switch10 = BlameableLabelNode()
+		val switch11 = BlameableLabelNode()
+		val switch12 = BlameableLabelNode()
+		val switch13 = BlameableLabelNode()
+		val switch14 = BlameableLabelNode()
+		val switch15 = BlameableLabelNode()
+		val switch16 = BlameableLabelNode()
+		val switch17 = BlameableLabelNode()
+		val switch18 = BlameableLabelNode()
+		
 		
 		add(JumpInsnNode(GOTO, start))
 		
@@ -81,9 +80,8 @@ fun generateDecryptorMethod(classNode: ClassNode, methodNode: MethodNode) {
 				add(rootSwitch)
 				add(VarInsnNode(ILOAD, 8))
 				add(
-					TableSwitchInsnNode(
+					constructTableSwitch(
 						0, // Min
-						18, // Max
 						throwNull, // Default
 						tble0, tble1, tble2, tble3, tble4, switch5, switch6, switch7, switch8, switch9, switch10, switch11, switch12, switch13,
 						switch14, switch15, switch16, switch17, switch18

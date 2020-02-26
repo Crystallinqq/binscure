@@ -8,6 +8,7 @@ import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.kotlin.xor
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
+import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.InstructionModifier
 import cookiedragon.obfuscator.utils.ldcInt
 import org.objectweb.asm.Label
@@ -125,38 +126,38 @@ object StringObfuscator: IClassProcessor {
 			null
 		)
 		
-		val realStart = LabelNode(Label())
-		val fakeEnd = LabelNode(Label())
-		val start = LabelNode(Label())
-		val handler = LabelNode(Label())
-		val end = LabelNode(Label())
-		val secondCatch = LabelNode(Label())
+		val realStart = BlameableLabelNode()
+		val fakeEnd = BlameableLabelNode()
+		val start = BlameableLabelNode()
+		val handler = BlameableLabelNode()
+		val end = BlameableLabelNode()
+		val secondCatch = BlameableLabelNode()
 		
-		val switch = LabelNode(Label())
-		val switchDefault = LabelNode(Label())
+		val switch = BlameableLabelNode()
+		val switchDefault = BlameableLabelNode()
 		
-		val genericCatch = LabelNode(Label())
-		val checkCache = LabelNode(Label())
-		val afterRet = LabelNode(Label())
-		val getCurrentThread = LabelNode(Label())
-		val getStackTrace = LabelNode(Label())
-		val getClassName = LabelNode(Label())
-		val getMethodName = LabelNode(Label())
-		val finalReturn = LabelNode(Label())
-		val createCharArrays = LabelNode(Label())
-		val xors = LabelNode(Label())
+		val genericCatch = BlameableLabelNode()
+		val checkCache = BlameableLabelNode()
+		val afterRet = BlameableLabelNode()
+		val getCurrentThread = BlameableLabelNode()
+		val getStackTrace = BlameableLabelNode()
+		val getClassName = BlameableLabelNode()
+		val getMethodName = BlameableLabelNode()
+		val finalReturn = BlameableLabelNode()
+		val createCharArrays = BlameableLabelNode()
+		val xors = BlameableLabelNode()
 		
 		// XOR SWITCH LABELS
-		val loopStart = LabelNode(Label())
-		val exitLoop = LabelNode(Label())
-		val switchEnd = LabelNode(Label())
-		val setCharArrVal = LabelNode(Label())
-		val l0 = LabelNode(Label())
-		val l1 = LabelNode(Label())
-		val l2 = LabelNode(Label())
-		val l3 = LabelNode(Label())
-		val l4 = LabelNode(Label())
-		val l5 = LabelNode(Label())
+		val loopStart = BlameableLabelNode()
+		val exitLoop = BlameableLabelNode()
+		val switchEnd = BlameableLabelNode()
+		val setCharArrVal = BlameableLabelNode()
+		val l0 = BlameableLabelNode()
+		val l1 = BlameableLabelNode()
+		val l2 = BlameableLabelNode()
+		val l3 = BlameableLabelNode()
+		val l4 = BlameableLabelNode()
+		val l5 = BlameableLabelNode()
 		
 		decryptorMethod.tryCatchBlocks.apply {
 			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))

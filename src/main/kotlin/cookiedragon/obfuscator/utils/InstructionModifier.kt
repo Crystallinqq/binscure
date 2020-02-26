@@ -12,11 +12,15 @@ class InstructionModifier {
 	private val prepends = HashMap<AbstractInsnNode, InsnList>()
 	
 	fun append(original: AbstractInsnNode, append: InsnList) {
-		appends[original] = append
+		if (append.size() > 0) {
+			appends[original] = append
+		}
 	}
 	
 	fun prepend(original: AbstractInsnNode, append: InsnList) {
-		prepends[original] = append
+		if (append.size() > 0) {
+			prepends[original] = append
+		}
 	}
 	
 	fun replace(original: AbstractInsnNode, vararg insns: AbstractInsnNode) {
@@ -24,11 +28,15 @@ class InstructionModifier {
 		for (replacement in insns) {
 			singleton.add(replacement)
 		}
-		replacements[original] = singleton
+		if (singleton.size() > 0) {
+			replacements[original] = singleton
+		}
 	}
 	
 	fun replace(original: AbstractInsnNode, replacements: InsnList) {
-		this.replacements[original] = replacements
+		if (replacements.size() > 0) {
+			this.replacements[original] = replacements
+		}
 	}
 	
 	fun remove(original: AbstractInsnNode) {
@@ -42,12 +50,12 @@ class InstructionModifier {
 	}
 	
 	fun apply(methodNode: MethodNode) {
-		replacements.forEach { insn, list ->
+		replacements.forEach { (insn, list) ->
 			methodNode.instructions.insert(insn, list)
 			methodNode.instructions.remove(insn)
 		}
-		prepends.forEach { insn, list -> methodNode.instructions.insertBefore(insn, list) }
-		appends.forEach { insn, list -> methodNode.instructions.insert(insn, list) }
+		prepends.forEach { (insn, list) -> methodNode.instructions.insertBefore(insn, list) }
+		appends.forEach { (insn, list) -> methodNode.instructions.insert(insn, list) }
 	}
 	
 	companion object {

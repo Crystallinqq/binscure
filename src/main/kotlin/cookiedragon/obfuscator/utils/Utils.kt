@@ -5,10 +5,12 @@ import cookiedragon.obfuscator.kotlin.add
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.random
 import cookiedragon.obfuscator.kotlin.toInsn
-import org.objectweb.asm.Handle
+import org.objectweb.asm.*
+import org.objectweb.asm.ClassReader.EXPAND_FRAMES
+import org.objectweb.asm.ClassWriter.COMPUTE_FRAMES
 import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import org.objectweb.asm.util.CheckClassAdapter
 import java.io.PrintStream
 import java.security.SecureRandom
 
@@ -214,3 +216,38 @@ fun getLoadForType(type: Type): Int {
 		else -> ALOAD
 	}
 }
+
+fun verifyClass(classNode: ClassNode) {
+	val writer = ClassWriter(COMPUTE_FRAMES)
+	classNode.accept(writer)
+	val bytes = writer.toByteArray()
+	val reader = ClassReader(bytes)
+	reader.accept(CheckClassAdapter(EmptyClassVisitor), EXPAND_FRAMES)
+}
+
+fun verifyMethodNode(methodNode: MethodNode) {
+	val writer = ClassWriter(COMPUTE_FRAMES)
+	val classNode = ClassNode().apply {
+		version = V1_8
+		access = ACC_PUBLIC
+		name = "a"
+		signature = null
+		superName = "java/lang/Object"
+		interfaces = arrayListOf()
+	}
+	classNode.accept(writer)
+	val bytes = writer.toByteArray()
+	val reader = ClassReader(bytes)
+	reader.accept(CheckClassAdapter(EmptyClassVisitor), EXPAND_FRAMES)
+}
+
+fun constructTableSwitch(baseNumber: Int, defaultLabel: LabelNode, vararg targetLabels: LabelNode): TableSwitchInsnNode {
+	return TableSwitchInsnNode(
+		baseNumber,
+		baseNumber + targetLabels.size -1,
+		defaultLabel,
+		*targetLabels
+	)
+}
+
+fun newLabel() = BlameableLabelNode()

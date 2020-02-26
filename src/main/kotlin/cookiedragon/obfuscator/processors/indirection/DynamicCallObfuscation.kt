@@ -3,26 +3,74 @@ package cookiedragon.obfuscator.processors.indirection
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.classpath.ClassPath
-import cookiedragon.obfuscator.kotlin.internalName
-import cookiedragon.obfuscator.kotlin.wrap
-import cookiedragon.obfuscator.kotlin.xor
+import cookiedragon.obfuscator.kotlin.*
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
-import cookiedragon.obfuscator.utils.InstructionModifier
+import cookiedragon.obfuscator.utils.*
 import org.objectweb.asm.Handle
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import kotlin.properties.Delegates
 
 /**
  * @author cookiedragon234 22/Jan/2020
  */
 object DynamicCallObfuscation: IClassProcessor {
+	val targetOps = arrayOf(INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE)
+	
+	val debugName = "execute"
+	
+	var classVersion by Delegates.notNull<Int>()
+	var isInit: Boolean = false
+	val decryptNode: ClassNode by lazy {
+		isInit = true
+		ClassNode().apply {
+			access = ACC_PUBLIC + ACC_FINAL
+			version = classVersion
+			name = ClassRenamer.namer.uniqueRandomString()
+			signature = null
+			superName = "java/lang/Object"
+		}
+	}
+	
+	val stringDecryptMethod: MethodNode by lazy {
+		MethodNode(
+			ACC_PRIVATE + ACC_STATIC,
+			"a",
+			"(Ljava/lang/String;)Ljava/lang/String;",
+			null,
+			null
+		).apply {
+			generateDecryptorMethod(decryptNode, this)
+			decryptNode.methods.add(this)
+		}
+	}
+	
+	val bootStrapMethod: MethodNode by lazy {
+		MethodNode(
+			ACC_PUBLIC + ACC_STATIC,
+			"b",
+			"(Ljava/lang/invoke/MethodHandles\$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;",
+			null,
+			null
+		).apply {
+			generateBootstrapMethod(decryptNode.name, stringDecryptMethod, this)
+			decryptNode.methods.add(this)
+		}
+	}
+	
+	val handler: Handle by lazy {
+		Handle(H_INVOKESTATIC, decryptNode.name, bootStrapMethod.name, bootStrapMethod.desc, false)
+	}
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		//if (!ConfigurationManager.rootConfig.indirection.enabled)
 		//	return
 		
-		val methodCalls = mutableSetOf<MethodCall>()
-		for (classNode in CObfuscator.getProgressBar("Indirecting method calls").wrap(classes)) {
+		classVersion = if (classes.isEmpty()) V1_7 else classes.first().version
+		
+		for (classNode in ArrayList(classes)) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			
@@ -30,113 +78,93 @@ object DynamicCallObfuscation: IClassProcessor {
 				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
-				for (insn in method.instructions) {
-					if (insn is MethodInsnNode) {
-						when (insn.opcode) {
-							INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE -> methodCalls.add(MethodCall(classNode, method, insn))
+				val outInsns = InsnList().apply {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode) {
+							if (targetOps.contains(insn.opcode)) {
+								if (method.name == debugName) {
+									println("---- ${method.name}")
+									println("b4 ${method.instructions.toOpcodeStrings()}")
+									println("target: ${insn.opcodeString()}")
+								}
+								
+								var newDesc = insn.desc
+								if (insn.opcode != INVOKESTATIC) {
+									newDesc = newDesc.replace("(", "(L${insn.owner};")
+								}
+								val returnType = Type.getReturnType(newDesc)
+								
+								// Downcast types to java/lang/Object
+								val args = Type.getArgumentTypes(newDesc)
+								for (i in args.indices) {
+									args[i] = genericType(args[i])
+								}
+								
+								newDesc = Type.getMethodDescriptor(genericType(returnType), *args)
+								
+								val indyNode = InvokeDynamicInsnNode(
+									"bob",
+									newDesc,
+									handler,
+									insn.opcode,
+									encryptName(classNode, method, insn.owner.replace('/', '.')),
+									encryptName(classNode, method, insn.name),
+									encryptName(classNode, method, insn.desc)
+								)
+								add(indyNode)
+								if (method.name == debugName) {
+									println("Replacement: ${indyNode.opcodeString()}")
+								}
+								
+								var checkCast: TypeInsnNode? = if (returnType.sort == Type.OBJECT || returnType.sort == Type.ARRAY)
+									TypeInsnNode(CHECKCAST, returnType.internalName)
+								else null
+								
+								
+								/*null
+								if (returnType.sort == Type.ARRAY) {
+									checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
+								} else if (returnType.sort == Type.OBJECT) {
+									if (insn.next is MethodInsnNode) {
+										val next = insn.next as MethodInsnNode
+										val params = Type.getArgumentTypes(next.desc)
+										if (params.isEmpty()) {
+											if (insn.next.opcode == INVOKEVIRTUAL) {
+												checkCast = (TypeInsnNode(CHECKCAST, next.owner))
+											}
+										} else {
+											checkCast = (TypeInsnNode(CHECKCAST, params.last().internalName))
+										}
+									} else if (arrayOf(POP, POP2, RETURN, IFNONNULL, IFNULL).contains(insn.next?.opcode)) {
+										//
+									} else {
+										checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
+									}
+								}*/
+								if (checkCast != null) {
+									if (checkCast.desc != Any::class.internalName) {
+										add(checkCast)
+									}
+								}
+								continue
+							}
 						}
+						add(insn)
+					}
+					method.instructions = this
+					if (method.name == debugName) {
+						println("after ${method.instructions.toOpcodeStrings()}")
 					}
 				}
 			}
 		}
 		
-		if (methodCalls.isNotEmpty()) {
-			val decryptNode = ClassNode().apply {
-				access = ACC_PUBLIC + ACC_FINAL
-				version = methodCalls.first().classNode.version
-				name = ClassRenamer.namer.uniqueRandomString()
-				signature = null
-				superName = "java/lang/Object"
-				classes.add(this)
-				ClassPath.classes[this.name] = this
-				ClassPath.classPath[this.name] = this
-			}
-			
-			val stringDecryptMethod = MethodNode(
-				ACC_PRIVATE + ACC_FINAL + ACC_STATIC,
-				"continue",
-				"(Ljava/lang/String;)Ljava/lang/String;",
-				null,
-				null
-			).apply {
-				generateDecryptorMethod(decryptNode, this)
-			}
-			
-			val bootStrapMethod = MethodNode(
-				ACC_PUBLIC + ACC_FINAL + ACC_STATIC,
-				"break",
-				"(Ljava/lang/invoke/MethodHandles\$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;",
-				null,
-				null
-			).apply {
-				generateBootstrapMethod(decryptNode.name, stringDecryptMethod, this)
-				decryptNode.methods.add(this)
-			}
-			
-			val handler = Handle(H_INVOKESTATIC, decryptNode.name, bootStrapMethod.name, bootStrapMethod.desc, false)
-			
-			for (methodCall in methodCalls) {
-				val insn = methodCall.insnNode
-				
-				var newDesc = insn.desc
-				if (insn.opcode != INVOKESTATIC) {
-					newDesc = newDesc.replace("(", "(L${insn.owner};")
-				}
-				val returnType = Type.getReturnType(newDesc)
-				
-				// Downcast types to java/lang/Object
-				val args = Type.getArgumentTypes(newDesc)
-				for (i in args.indices) {
-					args[i] = genericType(args[i])
-				}
-				
-				newDesc = Type.getMethodDescriptor(genericType(returnType), *args)
-				
-				val modifier = InstructionModifier()
-				val list = InsnList().apply {
-					val indyNode: InvokeDynamicInsnNode
-					add(
-						InvokeDynamicInsnNode(
-							"",
-							newDesc,
-							handler,
-							insn.opcode,
-							encryptName(methodCall.classNode, methodCall.methodNode, insn.owner.replace('/', '.')),
-							encryptName(methodCall.classNode, methodCall.methodNode, insn.name),
-							encryptName(methodCall.classNode, methodCall.methodNode, insn.desc)
-						).also { indyNode = it }
-					)
-					if (returnType.sort == Type.ARRAY) {
-						add(TypeInsnNode(CHECKCAST, returnType.internalName))
-					} else if (returnType.sort == Type.OBJECT) {
-						if (insn.next is MethodInsnNode) {
-							val next = insn.next as MethodInsnNode
-							val params = Type.getArgumentTypes(next.desc)
-							if (params.isEmpty()) {
-								if (insn.next.opcode != INVOKESTATIC) {
-									add(TypeInsnNode(CHECKCAST, next.owner))
-								}
-							} else {
-								add(TypeInsnNode(CHECKCAST, params.last().internalName))
-							}
-						} else if (insn.next?.opcode == IFNULL) {
-							//
-						} else if (insn.next?.opcode == IFNONNULL) {
-							//
-						} else {
-							add(TypeInsnNode(CHECKCAST, returnType.internalName))
-						}
-					}
-					if (indyNode.next != null && indyNode.next.opcode == CHECKCAST) {
-						val checkcast = indyNode.next as TypeInsnNode
-						if (checkcast.desc == Any::class.internalName) {
-							remove(checkcast)
-						}
-					}
-				}
-				modifier.replace(insn, list)
-				modifier.apply(methodCall.methodNode)
-			}
+		if (isInit) {
+			ClassVerifier.verifyClass(decryptNode)
+			verifyClass(decryptNode)
+			classes.add(decryptNode)
+			ClassPath.classes[decryptNode.name] = decryptNode
+			ClassPath.classPath[decryptNode.name] = decryptNode
 		}
 	}
 	
