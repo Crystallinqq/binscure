@@ -8,6 +8,7 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
 import cookiedragon.obfuscator.kotlin.whenNotNull
+import cookiedragon.obfuscator.processors.classmerge.StaticMethodMerger
 import cookiedragon.obfuscator.processors.debug.AccessStripper
 import cookiedragon.obfuscator.processors.exploit.BadClinit
 import cookiedragon.obfuscator.processors.flow.CfgFucker
@@ -80,7 +81,7 @@ object CObfuscator {
 			BadClinit,
 			//BadInvoke,
 			//UselessTryCatch,
-			//StaticMethodMerger,
+			StaticMethodMerger,
 			//DynamicCallObfuscation,
 			//FakeTryCatch,
 			//TableSwitchJump,

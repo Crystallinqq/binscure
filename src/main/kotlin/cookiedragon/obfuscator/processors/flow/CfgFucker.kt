@@ -11,6 +11,9 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 27/Feb/2020
  */
 object CfgFucker: IClassProcessor {
+	// 0 = most aggressive, 10 = hardly at all
+	var aggresiveness = 2
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes.toTypedArray()) {
 			if (CObfuscator.isExcluded(classNode))
@@ -24,11 +27,11 @@ object CfgFucker: IClassProcessor {
 				val endings = hashSetOf<InsnList>()
 				for (insn in method.instructions) {
 					if (
-						(insn is MethodInsnNode || insn is FieldInsnNode || insn is VarInsnNode)
+						(insn is MethodInsnNode || insn is FieldInsnNode || insn is VarInsnNode || insn is JumpInsnNode)
 						&&
 						insn.next != null
 						&&
-						random.nextBoolean()
+						random.nextInt(aggresiveness) == 0
 					) {
 						val list = opaqueSwitchJump()
 						modifier.prepend(insn, list)
