@@ -1,12 +1,14 @@
 package cookiedragon.obfuscator.runtime
 
 import cookiedragon.obfuscator.CObfuscator
+import cookiedragon.obfuscator.CObfuscator.random
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.classpath.ClassPath
+import cookiedragon.obfuscator.kotlin.add
 import cookiedragon.obfuscator.kotlin.random
 import cookiedragon.obfuscator.processors.renaming.generation.NameGenerator
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
-import cookiedragon.obfuscator.utils.ldcInt
+import cookiedragon.obfuscator.utils.*
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -98,4 +100,68 @@ fun randomOpaqueJump(target: LabelNode): InsnList {
 		add(FieldInsnNode(GETSTATIC, OpaqueRuntimeManager.classNode.name, field.fieldNode.name, field.fieldNode.desc))
 		add(JumpInsnNode(field.trueOpcode, target))
 	}
+}
+
+fun opaqueSwitchJump(): InsnList {
+	val field = OpaqueRuntimeManager.fields.random(CObfuscator.random)
+	
+	val trueNum = randomInt()
+	val falseNum = randomInt()
+	val key = randomInt()
+	val switch = newLabel()
+	val trueLabel = newLabel()
+	val falseLabel = newLabel()
+	val deadLabel = newLabel()
+	val list = InsnList().apply {
+		val rand = randomBranch(
+			random, {
+				var dummyNum: Int
+				do {
+					dummyNum = randomInt()
+				} while (dummyNum == trueNum || dummyNum == falseNum)
+				
+				add(randomOpaqueJump(falseLabel))
+				add(ldcInt(trueNum xor key))
+				add(JumpInsnNode(GOTO, switch))
+				add(falseLabel)
+				add(ldcInt(dummyNum xor key))
+				add(switch)
+				add(ldcInt(key))
+				add(IXOR)
+				add(constructLookupSwitch(
+					trueLabel, if(random.nextBoolean()) arrayOf(
+						trueNum to deadLabel, falseNum to falseLabel
+					) else arrayOf(
+						falseNum to falseLabel, trueNum to deadLabel
+					)
+				))
+				add(deadLabel)
+				add(ACONST_NULL)
+				add(ATHROW)
+				add(trueLabel)
+			}, {
+				add(randomOpaqueJump(falseLabel))
+				add(ldcInt(falseNum xor key))
+				add(JumpInsnNode(GOTO, switch))
+				add(falseLabel)
+				add(ldcInt(trueNum xor key))
+				add(switch)
+				add(ldcInt(key))
+				add(IXOR)
+				add(constructLookupSwitch(
+					deadLabel, if(random.nextBoolean()) arrayOf(
+						trueNum to trueLabel, falseNum to falseLabel
+					) else arrayOf(
+						falseNum to falseLabel, trueNum to trueLabel
+					)
+				))
+				add(deadLabel)
+				add(ACONST_NULL)
+				add(ATHROW)
+				add(trueLabel)
+			}
+		)
+	}
+	
+	return list
 }

@@ -1,6 +1,7 @@
 package cookiedragon.obfuscator.utils
 
 import cookiedragon.obfuscator.CObfuscator
+import cookiedragon.obfuscator.CObfuscator.random
 import cookiedragon.obfuscator.kotlin.add
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.random
@@ -137,9 +138,9 @@ fun getNumFromLdc(insn: AbstractInsnNode): Number {
 	}
 }
 
-fun randomBranch(random: SecureRandom, vararg blocks: Int.() -> Unit) {
+fun <T> randomBranch(random: SecureRandom, vararg blocks: (Int) -> T): T {
 	val choice = random.nextInt(blocks.size)
-	blocks.elementAt(choice).invoke(choice)
+	return blocks.elementAt(choice).invoke(choice)
 }
 
 fun randomBranchExcluding(random: SecureRandom, exclusion: MutableInteger, vararg blocks: Int.() -> Unit) {
@@ -250,4 +251,27 @@ fun constructTableSwitch(baseNumber: Int, defaultLabel: LabelNode, vararg target
 	)
 }
 
-fun newLabel() = BlameableLabelNode()
+fun constructLookupSwitch(
+	defaultLabel: LabelNode,
+	lookup: Array<Pair<Int, LabelNode>>
+): LookupSwitchInsnNode {
+	lookup.sortWith(Comparator {a,b -> a.first.compareTo(b.first)})
+	
+	val keys = lookup.map {
+		it.first
+	}.toIntArray()
+	
+	val values = lookup.map {
+		it.second
+	}.toTypedArray()
+	
+	return LookupSwitchInsnNode(
+		defaultLabel,
+		keys,
+		values
+	)
+}
+
+fun newLabel(): LabelNode = BlameableLabelNode()
+
+fun randomInt() = if (random.nextBoolean()) random.nextInt(Integer.MAX_VALUE) else -random.nextInt(Integer.MAX_VALUE)

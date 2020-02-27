@@ -10,6 +10,7 @@ import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
 import cookiedragon.obfuscator.kotlin.whenNotNull
 import cookiedragon.obfuscator.processors.debug.AccessStripper
 import cookiedragon.obfuscator.processors.exploit.BadClinit
+import cookiedragon.obfuscator.processors.flow.CfgFucker
 import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
 import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
 import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
@@ -74,6 +75,7 @@ object CObfuscator {
 		val processors = arrayOf(
 			OpaqueRuntimeManager,
 			
+			CfgFucker,
 			AccessStripper,
 			BadClinit,
 			//BadInvoke,
@@ -108,9 +110,6 @@ object CObfuscator {
 			for (processor in processors) {
 				processor.process(classes, passThrough)
 			}
-		}
-		for (classNode in classes) {
-			//classNode.sourceDebug = "BINSCURE_BAD_SOURCE"
 		}
 		
 		ClassPathIO.writeOutput(rootConfig.output)
