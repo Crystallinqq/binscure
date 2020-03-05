@@ -12,6 +12,7 @@ data class RootConfiguration(
 	val libraries: List<File> = arrayListOf(),
 	val mappingFile: File?,
 	val exclusions: List<String> = arrayListOf(),
+	val hardExclusions: List<String> = arrayListOf(),
 	val remap: RemapConfiguration,
 	val sourceStrip: SourceStripConfiguration,
 	val kotlinMetadata: KotlinMetadataConfiguration,

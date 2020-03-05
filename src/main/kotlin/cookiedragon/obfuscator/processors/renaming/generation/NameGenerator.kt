@@ -8,7 +8,7 @@ import cookiedragon.obfuscator.kotlin.random
  */
 class NameGenerator(val prefix: String = "") {
 	companion object {
-		val CHARSET = "cabdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray()
+		val CHARSET = "c0123456789abdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()
 		
 		/**
 		 * @param index A unique positive integer

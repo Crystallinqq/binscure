@@ -1,12 +1,14 @@
 input: ares-2.2-release.jar
 output: ares-obf.jar
 
-exclusions:
+hardExclusions:
     - club/
     - com/
     - javassist/
     - net/
     - org/
+
+exclusions:
     - me/tigermouthbear/ares/mixin/
 
 # The mappings created by the obfuscator are saved to this csv file
@@ -16,6 +18,7 @@ mappingFile: mappings.csv
 remap:
     # Must be specified, strategies are by default disabled
     enabled: true
+    classPrefix: "me/tigermouthbear/ares/"
     localVariableName: ""
 
 # Strip source file information

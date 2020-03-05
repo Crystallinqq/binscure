@@ -9,9 +9,16 @@ import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
 import cookiedragon.obfuscator.kotlin.whenNotNull
 import cookiedragon.obfuscator.processors.classmerge.StaticMethodMerger
+import cookiedragon.obfuscator.processors.constants.StringObfuscator
 import cookiedragon.obfuscator.processors.debug.AccessStripper
+import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
+import cookiedragon.obfuscator.processors.debug.SourceStripper
 import cookiedragon.obfuscator.processors.exploit.BadClinit
 import cookiedragon.obfuscator.processors.flow.CfgFucker
+import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.LocalVariableRenamer
+import cookiedragon.obfuscator.processors.renaming.impl.MethodRenamer
 import cookiedragon.obfuscator.processors.resources.ManifestResourceProcessor
 import cookiedragon.obfuscator.processors.resources.MixinResourceProcessor
 import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
@@ -39,7 +46,6 @@ object CObfuscator {
 	var exclusions = arrayListOf<ExclusionConfiguration>().also { arr ->
 		rootConfig.exclusions.forEach{
 			arr.add(PackageBlacklistExcluder(it.trim()))
-			println("{${it.trim()}}")
 		}
 	}
 	val mappings = mutableMapOf<String, String>()
@@ -88,7 +94,7 @@ object CObfuscator {
 			//ClassInitMonitor,
 			/*
 			OpaqueJumps,
-			//NumberObfuscation,
+			//NumberObfuscation,*/
 			
 			SourceStripper,
 			KotlinMetadataStripper,
@@ -98,8 +104,6 @@ object CObfuscator {
 			FieldRenamer,
 			ClassRenamer,
 			StringObfuscator,
-			
-			InvalidSignatureExploit,*/
 			
 			ManifestResourceProcessor
 		)

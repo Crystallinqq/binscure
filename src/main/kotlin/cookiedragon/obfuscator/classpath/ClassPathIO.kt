@@ -29,7 +29,7 @@ object ClassPathIO {
 						ClassReader(bytes)
 							.accept(classNode, ClassReader.EXPAND_FRAMES)
 						
-						if (!CObfuscator.isExcluded(entry.name)) {
+						if (!rootConfig.hardExclusions.any { entry.name.startsWith(it.trim()) }) {
 							ClassPath.classes[classNode.name] = classNode
 						} else {
 							ClassPath.passThrough[entry.name] = bytes

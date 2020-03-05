@@ -36,7 +36,7 @@ object MethodRenamer: AbstractRenamer() {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			
-			val classTree = ClassPath.hierachy[classNode.name] ?: throw RuntimeException("$classNode not in classpath")
+			val classTree = ClassPath.hierachy[classNode.name] ?: continue
 			val names = mutableMapOf<String, NameGenerator>()
 			
 			for (method in classNode.methods) {
