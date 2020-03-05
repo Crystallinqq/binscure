@@ -44,6 +44,8 @@ object AccessStripper: IClassProcessor {
 			access = access.removeAccess(ACC_PROTECTED)
 		if (access.hasAccess(ACC_SYNTHETIC))
 			access = access.removeAccess(ACC_SYNTHETIC)
+		if (access.hasAccess(ACC_SYNTHETIC))
+			access = access.removeAccess(ACC_SYNTHETIC)
 		if (access.hasAccess(ACC_FINAL) && !isInterface)
 			access = access.removeAccess(ACC_FINAL)
 		if (!access.hasAccess(ACC_PUBLIC))
