@@ -113,7 +113,6 @@ object StaticMethodMerger: IClassProcessor {
 							add(VarInsnNode(getLoadForType(param), index))
 						}
 						add(MethodInsnNode(INVOKESTATIC, newNode.name, newMethod.name, newMethod.desc))
-						println("${firstMethod.name}, ${secondMethod?.name}: ${Type.getReturnType(firstMethod.desc)}")
 						add(getRetForType(Type.getReturnType(firstMethod.desc)))
 					}
 					

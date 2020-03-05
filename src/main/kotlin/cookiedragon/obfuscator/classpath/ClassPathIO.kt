@@ -19,25 +19,30 @@ import java.util.zip.ZipOutputStream
  */
 object ClassPathIO {
 	fun loadInputJar(file: File) {
-		CObfuscator.getProgressBar("Loading Input").use { progressBar ->
+		//CObfuscator.getProgressBar("Loading Input").use { progressBar ->
 			JarFile(file).use {
-				progressBar.maxHint(it.size().toLong())
+				//progressBar.maxHint(it.size().toLong())
 				for (entry in it.entries()) {
+					val bytes = it.getInputStream(entry).readBytes()
 					if (!entry.isDirectory && entry.name.endsWith(".class") && !entry.name.endsWith("module-info.class")) {
 						val classNode = ClassNode()
-						ClassReader(it.getInputStream(entry).readBytes())
+						ClassReader(bytes)
 							.accept(classNode, ClassReader.EXPAND_FRAMES)
 						
-						ClassPath.classes[classNode.name] = classNode
+						if (!CObfuscator.isExcluded(entry.name)) {
+							ClassPath.classes[classNode.name] = classNode
+						} else {
+							ClassPath.passThrough[entry.name] = bytes
+						}
 						ClassPath.classPath[classNode.name] = classNode
 						ClassPath.originalNames[classNode] = classNode.name
 					} else if (!entry.isDirectory) {
-						ClassPath.passThrough[entry.name] = it.getInputStream(entry).readBytes()
+						ClassPath.passThrough[entry.name] = bytes
 					}
-					progressBar.step()
+					//progressBar.step()
 				}
 			}
-		}
+		//}
 	}
 	
 	fun loadClassPath(files: Collection<File>) {
@@ -60,8 +65,8 @@ object ClassPathIO {
 	}
 	
 	fun writeOutput(file: File) {
-		CObfuscator.getProgressBar("Writing Output").use { progressBar ->
-			progressBar.maxHint((ClassPath.passThrough.size + ClassPath.classes.size).toLong())
+		//CObfuscator.getProgressBar("Writing Output").use { progressBar ->
+			//progressBar.maxHint((ClassPath.passThrough.size + ClassPath.classes.size).toLong())
 			JarOutputStream(FileOutputStream(file)).use {
 				val crc = DummyCRC(0xDEADBEEF)
 				if (rootConfig.crasher.enabled) {
@@ -75,7 +80,7 @@ object ClassPathIO {
 					it.putNextEntry(ZipEntry(name))
 					it.write(bytes)
 					it.closeEntry()
-					progressBar.step()
+					//progressBar.step()
 				}
 				for (classNode in ClassPath.classes.values) {
 					if (!CObfuscator.isExcluded(classNode)) {
@@ -98,7 +103,7 @@ object ClassPathIO {
 					try {
 						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
 						classNode.accept(writer)
-					} catch (e: Exception) {
+					} catch (e: Throwable) {
 						println("Error while writing class ${classNode.name}")
 						e.printStackTrace()
 						
@@ -109,10 +114,10 @@ object ClassPathIO {
 					it.closeEntry()
 					
 					crc.overwrite = false
-					progressBar.step()
+					//progressBar.step()
 				}
 			}
-		}
+		//}
 	}
 	
 	private class DummyCRC(val crc: Long): CRC32() {

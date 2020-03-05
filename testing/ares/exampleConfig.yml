@@ -1,0 +1,47 @@
+input: ares-2.2-release.jar
+output: ares-obf.jar
+
+exclusions:
+    - club/
+    - com/
+    - javassist/
+    - net/
+    - org/
+    - me/tigermouthbear/ares/mixin/
+
+# The mappings created by the obfuscator are saved to this csv file
+mappingFile: mappings.csv
+
+# Handles renaming
+remap:
+    # Must be specified, strategies are by default disabled
+    enabled: true
+    localVariableName: ""
+
+# Strip source file information
+sourceStrip:
+    enabled: true
+    # Default is REMOVE, options [KEEP/REMOVE]
+    lineNumbers: REMOVE
+
+# Removes additional data created by the kotlin compiler
+# WARNING: Can break the kotlin.reflect library
+kotlinMetadata:
+    enabled: true
+
+# Employs various tactics to limit or remove functionality from reverse engineering libraries
+crasher:
+    enabled: false
+
+# Attempts to conceal method invocations
+indirection:
+    enabled: false
+
+# Encrypts constants constants and decrypts them dynamically at runtime
+# Uses Context checking and may also impact application startup time
+stringObfuscation:
+    enabled: true
+
+# Disable "WARNING: class was not found in the classpath" warnings
+# Default is false
+ignoreClassPathNotFound: false

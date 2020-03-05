@@ -36,10 +36,10 @@ import java.time.Instant
  */
 object CObfuscator {
 	val random = SecureRandom()
-	var exclusions = arrayListOf<ExclusionConfiguration>().also {
-		arr ->
-		ConfigurationManager.rootConfig.exclusions.forEach{
-			arr.add(PackageBlacklistExcluder(it))
+	var exclusions = arrayListOf<ExclusionConfiguration>().also { arr ->
+		rootConfig.exclusions.forEach{
+			arr.add(PackageBlacklistExcluder(it.trim()))
+			println("{${it.trim()}}")
 		}
 	}
 	val mappings = mutableMapOf<String, String>()
@@ -101,8 +101,7 @@ object CObfuscator {
 			
 			InvalidSignatureExploit,*/
 			
-			ManifestResourceProcessor,
-			MixinResourceProcessor
+			ManifestResourceProcessor
 		)
 		
 		val classes = mutableListOf<ClassNode>()
@@ -110,6 +109,7 @@ object CObfuscator {
 		if (classes.isNotEmpty()) {
 			for (processor in processors) {
 				processor.process(classes, passThrough)
+				println(processor)
 			}
 		}
 		

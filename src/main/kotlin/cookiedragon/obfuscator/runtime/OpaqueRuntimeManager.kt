@@ -12,6 +12,7 @@ import cookiedragon.obfuscator.utils.*
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
+import kotlin.math.max
 
 /**
  * @author cookiedragon234 11/Feb/2020
@@ -37,7 +38,8 @@ object OpaqueRuntimeManager: IClassProcessor {
 		}
 	}
 	val fields by lazy {
-		arrayOf(generateField(), generateField(), generateField())
+		val num = max(classes.size / 2, 5)
+		Array(num) { generateField() }
 	}
 	
 	val namer = NameGenerator()
@@ -56,32 +58,32 @@ object OpaqueRuntimeManager: IClassProcessor {
 			0 -> {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(0))
-				FieldInfo(fieldNode, IFEQ)
+				FieldInfo(fieldNode, IFEQ, IFGT)
 			}
 			1 -> {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(1))
-				FieldInfo(fieldNode, IFGE)
+				FieldInfo(fieldNode, IFGE, IFLT)
 			}
 			2 -> {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(1))
-				FieldInfo(fieldNode, IFGT)
+				FieldInfo(fieldNode, IFGT, IFEQ)
 			}
 			3 -> {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(-1))
-				FieldInfo(fieldNode, IFLT)
+				FieldInfo(fieldNode, IFLT, IFGE)
 			}
 			4 -> {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(-1))
-				FieldInfo(fieldNode, IFLE)
+				FieldInfo(fieldNode, IFLE, IFGT)
 			}
 			5 -> {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(-1))
-				FieldInfo(fieldNode, IFNE)
+				FieldInfo(fieldNode, IFNE, IFEQ)
 			}
 			else -> throw IllegalStateException()
 		}
@@ -91,20 +93,23 @@ object OpaqueRuntimeManager: IClassProcessor {
 		this.classes = classes
 	}
 	
-	data class FieldInfo(val fieldNode: FieldNode, val trueOpcode: Int)
+	data class FieldInfo(val fieldNode: FieldNode, val trueOpcode: Int, val falseOpcode: Int)
 }
 
-fun randomOpaqueJump(target: LabelNode): InsnList {
+fun randomOpaqueJump(target: LabelNode, jumpOver: Boolean = true): InsnList {
 	val field = OpaqueRuntimeManager.fields.random(CObfuscator.random)
 	return InsnList().apply {
 		add(FieldInsnNode(GETSTATIC, OpaqueRuntimeManager.classNode.name, field.fieldNode.name, field.fieldNode.desc))
-		add(JumpInsnNode(field.trueOpcode, target))
+		add(JumpInsnNode(
+			if (jumpOver) field.trueOpcode else field.falseOpcode,
+			target
+		))
 	}
 }
 
-fun opaqueSwitchJump(): InsnList {
-	val field = OpaqueRuntimeManager.fields.random(CObfuscator.random)
-	
+fun opaqueSwitchJump(jumpSupplier: (LabelNode) -> InsnList = {
+	randomOpaqueJump(it)
+}): Pair<InsnList, InsnList> {
 	val trueNum = randomInt()
 	val falseNum = randomInt()
 	val key = randomInt()
@@ -120,7 +125,7 @@ fun opaqueSwitchJump(): InsnList {
 					dummyNum = randomInt()
 				} while (dummyNum == trueNum || dummyNum == falseNum)
 				
-				add(randomOpaqueJump(falseLabel))
+				add(jumpSupplier(falseLabel))
 				add(ldcInt(trueNum xor key))
 				add(JumpInsnNode(GOTO, switch))
 				add(falseLabel)
@@ -135,12 +140,9 @@ fun opaqueSwitchJump(): InsnList {
 						falseNum to falseLabel, trueNum to deadLabel
 					)
 				))
-				add(deadLabel)
-				add(ACONST_NULL)
-				add(ATHROW)
 				add(trueLabel)
 			}, {
-				add(randomOpaqueJump(falseLabel))
+				add(jumpSupplier(falseLabel))
 				add(ldcInt(falseNum xor key))
 				add(JumpInsnNode(GOTO, switch))
 				add(falseLabel)
@@ -155,13 +157,16 @@ fun opaqueSwitchJump(): InsnList {
 						falseNum to falseLabel, trueNum to trueLabel
 					)
 				))
-				add(deadLabel)
-				add(ACONST_NULL)
-				add(ATHROW)
 				add(trueLabel)
 			}
 		)
 	}
 	
-	return list
+	val otherList = InsnList().apply {
+		add(deadLabel)
+		add(ACONST_NULL)
+		add(ATHROW)
+	}
+	
+	return Pair(list, otherList)
 }

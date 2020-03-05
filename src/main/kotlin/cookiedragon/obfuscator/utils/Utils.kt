@@ -14,6 +14,10 @@ import org.objectweb.asm.tree.*
 import org.objectweb.asm.util.CheckClassAdapter
 import java.io.PrintStream
 import java.security.SecureRandom
+import java.util.*
+import kotlin.Comparator
+import kotlin.ConcurrentModificationException
+import kotlin.NoSuchElementException
 
 
 /**

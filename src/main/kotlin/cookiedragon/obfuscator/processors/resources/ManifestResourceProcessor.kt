@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.ClassNode
  */
 object ManifestResourceProcessor: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for ((name, bytes) in CObfuscator.getProgressBar("Remapping Manifest").wrap(passThrough)) {
+		for ((name, bytes) in passThrough) {
 			if (name.endsWith(".json") || name.endsWith(".MF")) {
 				var contents = String(bytes)
 				for (mapping in CObfuscator.mappings) {
