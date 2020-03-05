@@ -3,6 +3,7 @@ package cookiedragon.obfuscator.processors.flow
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.add
+import cookiedragon.obfuscator.kotlin.hasAccess
 import cookiedragon.obfuscator.runtime.opaqueSwitchJump
 import cookiedragon.obfuscator.runtime.randomOpaqueJump
 import cookiedragon.obfuscator.utils.*
@@ -19,7 +20,7 @@ object CfgFucker: IClassProcessor {
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes.toTypedArray()) {
-			if (CObfuscator.isExcluded(classNode))
+			if (CObfuscator.isExcluded(classNode) || classNode.access.hasAccess(ACC_INTERFACE))
 				continue
 			
 			for (method in classNode.methods) {

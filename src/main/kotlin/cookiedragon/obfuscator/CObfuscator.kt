@@ -87,7 +87,7 @@ object CObfuscator {
 			BadClinit,
 			//BadInvoke,
 			//UselessTryCatch,
-			StaticMethodMerger,
+			//StaticMethodMerger,
 			//DynamicCallObfuscation,
 			//FakeTryCatch,
 			//TableSwitchJump,
@@ -100,10 +100,9 @@ object CObfuscator {
 			KotlinMetadataStripper,
 			
 			LocalVariableRenamer,
-			MethodRenamer,
-			FieldRenamer,
-			ClassRenamer,
-			StringObfuscator,
+			//MethodRenamer,
+			//FieldRenamer,
+			//ClassRenamer,
 			
 			ManifestResourceProcessor
 		)

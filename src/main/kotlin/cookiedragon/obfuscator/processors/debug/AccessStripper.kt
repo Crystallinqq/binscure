@@ -1,5 +1,6 @@
 package cookiedragon.obfuscator.processors.debug
 
+import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.kotlin.addAccess
 import cookiedragon.obfuscator.kotlin.hasAccess
@@ -14,22 +15,28 @@ import java.lang.reflect.Modifier
 object AccessStripper: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
+			if (CObfuscator.isExcluded(classNode))
+				continue
+			
 			classNode.access = makePublic(classNode.access)
 			
 			for (method in classNode.methods) {
 				// Dont run on static init
-				if (method.name != "<clinit>") {
+				if (method.name != "<clinit>" && !CObfuscator.isExcluded(classNode, method)) {
 					method.access = makePublic(method.access)
 				}
 			}
 			
 			for (field in classNode.fields) {
-				field.access = makePublic(field.access)
+				if (CObfuscator.isExcluded(classNode, field))
+					continue
+				
+				field.access = makePublic(field.access, classNode.access.hasAccess(ACC_INTERFACE))
 			}
 		}
 	}
 	
-	private fun makePublic(access: Int): Int {
+	private fun makePublic(access: Int, isInterface: Boolean = false): Int {
 		var access = access
 		if (access.hasAccess(ACC_PRIVATE))
 			access = access.removeAccess(ACC_PRIVATE)
@@ -37,7 +44,7 @@ object AccessStripper: IClassProcessor {
 			access = access.removeAccess(ACC_PROTECTED)
 		if (access.hasAccess(ACC_SYNTHETIC))
 			access = access.removeAccess(ACC_SYNTHETIC)
-		if (access.hasAccess(ACC_FINAL))
+		if (access.hasAccess(ACC_FINAL) && !isInterface)
 			access = access.removeAccess(ACC_FINAL)
 		if (!access.hasAccess(ACC_PUBLIC))
 			access = access.addAccess(ACC_PUBLIC)

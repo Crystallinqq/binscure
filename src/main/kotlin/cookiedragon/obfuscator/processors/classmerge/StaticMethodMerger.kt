@@ -1,5 +1,6 @@
 package cookiedragon.obfuscator.processors.classmerge
 
+import cookiedragon.obfuscator.CObfuscator.isExcluded
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.classpath.ClassPath
 import cookiedragon.obfuscator.kotlin.add
@@ -25,6 +26,14 @@ import java.lang.reflect.Modifier
  * @author cookiedragon234 21/Feb/2020
  */
 object StaticMethodMerger: IClassProcessor {
+	private fun containsSpecial(insnList: InsnList): Boolean {
+		for (insn in insnList) {
+			if (insn.opcode == INVOKESPECIAL) return true
+		}
+		
+		return false
+	}
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		val staticMethods = hashMapOf<String, MutableSet<Pair<ClassNode, MethodNode>>>()
 		
@@ -38,6 +47,8 @@ object StaticMethodMerger: IClassProcessor {
 					!method.access.hasAccess(ACC_NATIVE)
 					&&
 					random.nextBoolean()
+					&&
+					!containsSpecial(method.instructions)
 				) {
 					staticMethods.getOrPut(method.desc, { hashSetOf() }).add(Pair(classNode, method))
 				}
@@ -61,7 +72,7 @@ object StaticMethodMerger: IClassProcessor {
 					var newNode: ClassNode
 					do {
 						newNode = classes.random(random)
-					} while (newNode.access.hasAccess(ACC_INTERFACE))
+					} while (newNode.access.hasAccess(ACC_INTERFACE) || isExcluded(newNode))
 					
 					val newMethod = MethodNode(
 						ACC_PUBLIC + ACC_STATIC,
@@ -98,7 +109,7 @@ object StaticMethodMerger: IClassProcessor {
 						)
 						add(secondStart)
 						if (secondMethod != null) {
-							add(incAllVarInsn(secondMethod.instructions, secondStatic, secondClass!!.name))
+							add(incAllVarInsn(secondMethod.instructions, secondStatic, secondClass.name))
 						} else {
 							InsnNode(ACONST_NULL)
 							InsnNode(ATHROW)
@@ -108,26 +119,24 @@ object StaticMethodMerger: IClassProcessor {
 					}
 					
 					firstMethod.instructions = InsnList().apply {
-						val params = Type.getArgumentTypes(firstMethod.desc)
+						val params = getArgumentTypes(firstMethod.desc)
 						for ((index, param) in params.withIndex()) {
-							add(VarInsnNode(getLoadForType(param), index))
+							add(VarInsnNode(getLoadForType(param), if (firstStatic) index else (index + 1)))
 						}
 						add(MethodInsnNode(INVOKESTATIC, newNode.name, newMethod.name, newMethod.desc))
-						add(getRetForType(Type.getReturnType(firstMethod.desc)))
+						add(getRetForType(getReturnType(firstMethod.desc)))
 					}
 					
-					if (secondMethod != null) {
-						secondMethod.instructions = firstMethod.instructions.clone()
-						secondMethod.instructions.insert(
-							InsnList().apply {
-								if (!secondStatic) {
-									add(VarInsnNode(ALOAD, 0))
-								} else {
-									add(ACONST_NULL)
-								}
-								add(ldcInt((baseInt + 1) xor keyInt))
-							})
-					}
+					secondMethod.instructions = firstMethod.instructions.clone()
+					secondMethod.instructions.insert(
+						InsnList().apply {
+							if (!secondStatic) {
+								add(VarInsnNode(ALOAD, 0))
+							} else {
+								add(ACONST_NULL)
+							}
+							add(ldcInt((baseInt + 1) xor keyInt))
+						})
 					
 					firstMethod.instructions.insert(InsnList().apply {
 						if (!firstStatic) {
@@ -138,10 +147,10 @@ object StaticMethodMerger: IClassProcessor {
 						add(ldcInt(baseInt xor keyInt))
 					})
 					
-					if (secondMethod?.tryCatchBlocks != null) newMethod.tryCatchBlocks.addAll(secondMethod.tryCatchBlocks)
-					secondMethod?.tryCatchBlocks = null
-					if (secondMethod?.localVariables != null) newMethod.localVariables.addAll(incrementLocalVars(secondMethod.localVariables, secondStatic))
-					secondMethod?.localVariables = null
+					if (secondMethod.tryCatchBlocks != null) newMethod.tryCatchBlocks.addAll(secondMethod.tryCatchBlocks)
+					secondMethod.tryCatchBlocks = null
+					if (secondMethod.localVariables != null) newMethod.localVariables.addAll(incrementLocalVars(secondMethod.localVariables, secondStatic))
+					secondMethod.localVariables = null
 				}
 			}
 		}
