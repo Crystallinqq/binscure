@@ -13,7 +13,8 @@ data class RemapConfiguration(
 	val methods: Boolean = true,
 	val fields: Boolean = true,
 	val localVariables: Boolean = true,
-	val annotationExclude: List<String> = arrayListOf()
+	val annotationExclude: List<String> = arrayListOf(),
+	val aggressiveOverloading: Boolean = true
 ) {
 	fun areClassesEnabled() = classes && enabled
 	fun areMethodsEnabled() = methods && enabled

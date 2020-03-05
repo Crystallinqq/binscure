@@ -20,6 +20,7 @@ remap:
     enabled: true
     classPrefix: "me/tigermouthbear/ares/"
     localVariableName: ""
+    aggressiveOverloading: false
 
 # Strip source file information
 sourceStrip:

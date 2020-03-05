@@ -20,7 +20,7 @@ import java.lang.RuntimeException
  * @author cookiedragon234 25/Jan/2020
  */
 object MethodRenamer: AbstractRenamer() {
-	override fun isEnabled(): Boolean = ConfigurationManager.rootConfig.remap.areMethodsEnabled()
+	override fun isEnabled(): Boolean = rootConfig.remap.areMethodsEnabled()
 	
 	override fun getTaskName(): String = "Remapping Methods"
 	
@@ -47,7 +47,8 @@ object MethodRenamer: AbstractRenamer() {
 					continue
 				
 				if (!parentsHaveMethod(classTree, method)) {
-					val generator =  names.getOrPutLazy(method.desc) {NameGenerator(rootConfig.remap.methodPrefix)}
+					val desc = if (rootConfig.remap.aggressiveOverloading) method.desc else method.desc.substringBefore(")")
+					val generator =  names.getOrPutLazy(desc) {NameGenerator(rootConfig.remap.methodPrefix)}
 					var newName: String
 					do {
 						newName = generator.uniqueRandomString()

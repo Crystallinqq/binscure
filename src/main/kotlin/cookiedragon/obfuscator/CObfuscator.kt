@@ -100,9 +100,9 @@ object CObfuscator {
 			KotlinMetadataStripper,
 			
 			LocalVariableRenamer,
-			//MethodRenamer,
-			//FieldRenamer,
-			//ClassRenamer,
+			MethodRenamer,
+			FieldRenamer,
+			ClassRenamer,
 			
 			ManifestResourceProcessor
 		)
