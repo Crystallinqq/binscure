@@ -311,8 +311,6 @@ fun generateDecryptorMethod(classNode: ClassNode, methodNode: MethodNode) {
 			}
 		}
 		
-		classNode.methods.add(methodNode)
-		
 		if (labels.size > 3 && false) {
 			do {
 				methodNode.tryCatchBlocks.clear()

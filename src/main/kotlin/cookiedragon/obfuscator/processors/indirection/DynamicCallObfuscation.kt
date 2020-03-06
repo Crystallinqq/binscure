@@ -82,20 +82,28 @@ object DynamicCallObfuscation: IClassProcessor {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode) {
 							if (targetOps.contains(insn.opcode)) {
-								if (method.name == debugName) {
-									println("---- ${method.name}")
-									println("b4 ${method.instructions.toOpcodeStrings()}")
-									println("target: ${insn.opcodeString()}")
-								}
-								
 								var newDesc = insn.desc
 								if (insn.opcode != INVOKESTATIC) {
-									newDesc = newDesc.replace("(", "(L${insn.owner};")
+									newDesc = if ((insn.owner.startsWith('L') || insn.owner.startsWith("[L")) && insn.owner.endsWith(';')) {
+										newDesc.replaceFirst("(", "(${insn.owner}")
+									} else {
+										newDesc.replaceFirst("(", "(L${insn.owner};")
+									}
 								}
 								val returnType = Type.getReturnType(newDesc)
 								
 								// Downcast types to java/lang/Object
-								val args = Type.getArgumentTypes(newDesc)
+								val args: Array<Type>
+								try {
+									args = Type.getArgumentTypes(newDesc)
+								} catch (e: Exception) {
+									println(insn.desc)
+									println(insn.owner)
+									println(newDesc)
+									println("${classNode.name}.${method.name}${method.desc}")
+									throw e
+								}
+								
 								for (i in args.indices) {
 									args[i] = genericType(args[i])
 								}

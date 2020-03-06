@@ -15,6 +15,7 @@ import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
 import cookiedragon.obfuscator.processors.debug.SourceStripper
 import cookiedragon.obfuscator.processors.exploit.BadClinit
 import cookiedragon.obfuscator.processors.flow.CfgFucker
+import cookiedragon.obfuscator.processors.indirection.DynamicCallObfuscation
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
 import cookiedragon.obfuscator.processors.renaming.impl.LocalVariableRenamer
@@ -104,6 +105,9 @@ object CObfuscator {
 			FieldRenamer,
 			ClassRenamer,
 			
+			StringObfuscator,
+			DynamicCallObfuscation,
+			
 			ManifestResourceProcessor
 		)
 		
@@ -111,8 +115,13 @@ object CObfuscator {
 		classes.addAll(ClassPath.classes.values)
 		if (classes.isNotEmpty()) {
 			for (processor in processors) {
-				processor.process(classes, passThrough)
-				println(processor)
+				try {
+					processor.process(classes, passThrough)
+					println(processor::class.java.simpleName)
+				} catch (t: Throwable) {
+					println("Exception while processing ${processor::class.java.simpleName}")
+					t.printStackTrace()
+				}
 			}
 		}
 		

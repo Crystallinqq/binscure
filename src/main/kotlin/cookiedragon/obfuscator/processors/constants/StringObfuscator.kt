@@ -8,9 +8,8 @@ import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.kotlin.xor
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
-import cookiedragon.obfuscator.utils.BlameableLabelNode
-import cookiedragon.obfuscator.utils.InstructionModifier
-import cookiedragon.obfuscator.utils.ldcInt
+import cookiedragon.obfuscator.runtime.randomOpaqueJump
+import cookiedragon.obfuscator.utils.*
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -190,7 +189,6 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ALOAD, 8))
 			add(InsnNode(ARRAYLENGTH))
 			add(JumpInsnNode(IF_ICMPGE, exitLoop))
-			
 			add(VarInsnNode(ILOAD, 10))
 			add(ldcInt(5))
 			add(InsnNode(IREM))
@@ -203,9 +201,7 @@ object StringObfuscator: IClassProcessor {
 			// Fake try catch start
 			add(start)
 			add(InsnNode(ACONST_NULL))
-			add(MethodInsnNode(INVOKESTATIC, System::class.internalName, "currentTimeMillis", "()J", false))
-			add(InsnNode(L2I))
-			add(JumpInsnNode(IFGE, secondCatch))
+			add(randomOpaqueJump(secondCatch))
 			add(InsnNode(POP))
 			add(InsnNode(ACONST_NULL))
 			add(JumpInsnNode(GOTO, handler))
@@ -251,6 +247,7 @@ object StringObfuscator: IClassProcessor {
 			// Increment and go to top of loop
 			add(IincInsnNode(10, 1))
 			add(JumpInsnNode(GOTO, loopStart))
+			
 			add(exitLoop)
 			add(ldcInt(1))
 			add(VarInsnNode(ISTORE, 2))
@@ -288,7 +285,6 @@ object StringObfuscator: IClassProcessor {
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			
 			add(finalReturn)
-			
 			add(FieldInsnNode(GETSTATIC, classNode.name, storageField.name, storageField.desc)) // Get field
 			
 			// Get Arr Index
