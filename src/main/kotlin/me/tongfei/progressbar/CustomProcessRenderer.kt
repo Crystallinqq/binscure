@@ -1,6 +1,6 @@
 package me.tongfei.progressbar
 
-import cookiedragon.obfuscator.kotlin.clampStart
+import dev.binclub.binscure.kotlin.clampStart
 import java.lang.StringBuilder
 import java.text.DecimalFormat
 import java.time.Duration
