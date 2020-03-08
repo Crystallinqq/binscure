@@ -2,11 +2,11 @@ package cookiedragon.obfuscator.processors.flow.classinit
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
-import cookiedragon.obfuscator.runtime.OpaqueRuntimeManager
+import cookiedragon.obfuscator.api.transformers.FlowObfuscationSeverity
+import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.runtime.randomOpaqueJump
 import cookiedragon.obfuscator.utils.BlameableLabelNode
 import cookiedragon.obfuscator.utils.InstructionModifier
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -15,7 +15,11 @@ import org.objectweb.asm.tree.*
  */
 object ClassInitMonitor: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		OpaqueRuntimeManager.fields.hashCode()
+		if (!rootConfig.flowObfuscation.enabled) {
+			return
+		}
+		var aggresiveness = FlowObfuscationSeverity.values().size - (rootConfig.flowObfuscation.severity.ordinal + 1)
+		
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
@@ -30,7 +34,7 @@ object ClassInitMonitor: IClassProcessor {
 					if (insn is TypeInsnNode && insn.opcode == NEW) {
 						val fakeJump = BlameableLabelNode()
 						
-						val heavy = CObfuscator.randomWeight(3);
+						val heavy = CObfuscator.randomWeight(aggresiveness);
 						
 						val after = InsnList().apply {
 							if (heavy) {

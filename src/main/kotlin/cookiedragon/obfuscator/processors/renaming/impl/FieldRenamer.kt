@@ -5,12 +5,13 @@ import cookiedragon.obfuscator.classpath.ClassPath
 import cookiedragon.obfuscator.classpath.ClassTree
 import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
-import cookiedragon.obfuscator.kotlin.getOrPut
-import cookiedragon.obfuscator.kotlin.getOrPutLazy
+import cookiedragon.obfuscator.kotlin.hasAccess
+import cookiedragon.obfuscator.processors.constants.EnumObfuscator
 import cookiedragon.obfuscator.processors.renaming.AbstractRenamer
 import cookiedragon.obfuscator.processors.renaming.generation.NameGenerator
 import cookiedragon.obfuscator.processors.renaming.utils.CustomRemapper
 import me.tongfei.progressbar.ProgressBar
+import org.objectweb.asm.Opcodes.ACC_ENUM
 import org.objectweb.asm.tree.ClassNode
 import java.lang.RuntimeException
 
@@ -35,7 +36,7 @@ object FieldRenamer: AbstractRenamer() {
 				
 				for (field in classNode.fields) {
 					
-					val generator =  names.getOrPutLazy(field.desc) {NameGenerator(rootConfig.remap.fieldPrefix)}
+					val generator =  names.getOrPut(field.desc) {NameGenerator(rootConfig.remap.fieldPrefix)}
 					var newName: String
 					do {
 						newName = generator.uniqueRandomString()
@@ -44,6 +45,11 @@ object FieldRenamer: AbstractRenamer() {
 						||
 						!checkConflictingDownwardsRemaps(remapper, classTree, newName, field.desc)
 					)
+					
+					if (field.access.hasAccess(ACC_ENUM) && classNode.access.hasAccess(ACC_ENUM)) {
+						EnumObfuscator.enumMappings.getOrPut(classNode, { hashMapOf() })[newName] = field.name
+					}
+					
 					if (!remapper.mapFieldName(classNode.name, field.name, field.desc, newName, false))
 						throw IllegalStateException("Illegal State mapping methods (Race Condition?)")
 					remapChildren(remapper, classTree, field.name, field.desc, newName)

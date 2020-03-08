@@ -1,5 +1,6 @@
 package cookiedragon.obfuscator
 
+import com.binclub.binscure.annotations.ExcludeAll
 import cookiedragon.obfuscator.classpath.ClassPath
 import cookiedragon.obfuscator.classpath.ClassPath.passThrough
 import cookiedragon.obfuscator.classpath.ClassPathIO
@@ -7,14 +8,17 @@ import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.configuration.exclusions.ExclusionConfiguration
 import cookiedragon.obfuscator.configuration.exclusions.PackageBlacklistExcluder
+import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.whenNotNull
 import cookiedragon.obfuscator.processors.classmerge.StaticMethodMerger
+import cookiedragon.obfuscator.processors.constants.FieldInitialiser
 import cookiedragon.obfuscator.processors.constants.StringObfuscator
 import cookiedragon.obfuscator.processors.debug.AccessStripper
 import cookiedragon.obfuscator.processors.debug.KotlinMetadataStripper
 import cookiedragon.obfuscator.processors.debug.SourceStripper
 import cookiedragon.obfuscator.processors.exploit.BadClinit
 import cookiedragon.obfuscator.processors.flow.CfgFucker
+import cookiedragon.obfuscator.processors.flow.classinit.ClassInitMonitor
 import cookiedragon.obfuscator.processors.indirection.DynamicCallObfuscation
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.processors.renaming.impl.FieldRenamer
@@ -82,6 +86,7 @@ object CObfuscator {
 		
 		val processors = arrayOf(
 			OpaqueRuntimeManager,
+			FieldInitialiser,
 			
 			CfgFucker,
 			AccessStripper,
@@ -92,7 +97,7 @@ object CObfuscator {
 			//DynamicCallObfuscation,
 			//FakeTryCatch,
 			//TableSwitchJump,
-			//ClassInitMonitor,
+			ClassInitMonitor,
 			/*
 			OpaqueJumps,
 			//NumberObfuscation,*/
@@ -149,6 +154,7 @@ object CObfuscator {
 		return false
 	}
 	fun isExcluded(classNode: ClassNode): Boolean {
+		if (classNode.visibleAnnotations.any { it.desc == ExcludeAll::class.internalName })
 		for (exclusion in exclusions) {
 			if (exclusion.isExcluded(classNode))
 				return true
@@ -156,6 +162,7 @@ object CObfuscator {
 		return false
 	}
 	fun isExcluded(parentClass: ClassNode, methodNode: MethodNode): Boolean {
+		if (methodNode.visibleAnnotations.any { it.desc == ExcludeAll::class.internalName })
 		for (exclusion in exclusions) {
 			if (exclusion.isExcluded(parentClass, methodNode))
 				return true
@@ -163,6 +170,7 @@ object CObfuscator {
 		return false
 	}
 	fun isExcluded(parentClass: ClassNode, fieldNode: FieldNode): Boolean {
+		if (fieldNode.visibleAnnotations.any { it.desc == ExcludeAll::class.internalName })
 		for (exclusion in exclusions) {
 			if (exclusion.isExcluded(parentClass, fieldNode))
 				return true

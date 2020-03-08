@@ -2,9 +2,8 @@ package cookiedragon.obfuscator.processors.debug
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
-import cookiedragon.obfuscator.api.SourceStripConfiguration
 import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
-import cookiedragon.obfuscator.api.SourceStripConfiguration.LineNumberAction.*
+import cookiedragon.obfuscator.api.transformers.SourceStripConfiguration.LineNumberAction.*
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.utils.InstructionModifier
 import org.objectweb.asm.tree.ClassNode

@@ -2,23 +2,25 @@ package cookiedragon.obfuscator.processors.flow
 
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
+import cookiedragon.obfuscator.api.transformers.FlowObfuscationSeverity
+import cookiedragon.obfuscator.configuration.ConfigurationManager.rootConfig
 import cookiedragon.obfuscator.kotlin.add
 import cookiedragon.obfuscator.kotlin.hasAccess
 import cookiedragon.obfuscator.runtime.opaqueSwitchJump
-import cookiedragon.obfuscator.runtime.randomOpaqueJump
 import cookiedragon.obfuscator.utils.*
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
-import java.lang.IllegalStateException
 
 /**
  * @author cookiedragon234 27/Feb/2020
  */
 object CfgFucker: IClassProcessor {
-	// 0 = most aggressive, 10 = hardly at all (each potential target will have a 1/n-1 change to be obfuscated)
-	var aggresiveness = 1
-	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		if (!rootConfig.flowObfuscation.enabled) {
+			return
+		}
+		var aggresiveness = FlowObfuscationSeverity.values().size - (rootConfig.flowObfuscation.severity.ordinal + 1)
+		
 		for (classNode in classes.toTypedArray()) {
 			if (CObfuscator.isExcluded(classNode) || classNode.access.hasAccess(ACC_INTERFACE))
 				continue

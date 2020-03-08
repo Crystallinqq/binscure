@@ -4,13 +4,13 @@ import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.classpath.ClassPath
 import cookiedragon.obfuscator.configuration.ConfigurationManager
+import cookiedragon.obfuscator.kotlin.hasAccess
 import cookiedragon.obfuscator.kotlin.internalName
 import cookiedragon.obfuscator.kotlin.wrap
 import cookiedragon.obfuscator.kotlin.xor
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.runtime.randomOpaqueJump
 import cookiedragon.obfuscator.utils.*
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.util.*
@@ -20,8 +20,9 @@ import java.util.*
  */
 object StringObfuscator: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!ConfigurationManager.rootConfig.stringObfuscation.enabled)
+		if (!ConfigurationManager.rootConfig.stringObfuscation.enabled) {
 			return
+		}
 		
 		val stringInsns = arrayListOf<EncryptedString>()
 		for (classNode in CObfuscator.getProgressBar("Obfuscating Strings").wrap(classes)) {

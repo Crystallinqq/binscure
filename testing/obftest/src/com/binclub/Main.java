@@ -1,11 +1,15 @@
 package com.binclub;
 
+import com.binclub.enumtest.EnumTest;
+
 import java.text.MessageFormat;
 
 public class Main {
 	private static final Test[] tests = new Test[]{
 		new IfStatementTest(),
-		new StaticMethodTest()
+		new StaticMethodTest(),
+		new EnumTest(),
+		new StaticFieldTest()
 	};
 	
     public static void main(String[] args) {

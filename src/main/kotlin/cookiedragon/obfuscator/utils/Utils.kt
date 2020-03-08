@@ -279,3 +279,15 @@ fun constructLookupSwitch(
 fun newLabel(): LabelNode = BlameableLabelNode()
 
 fun randomInt() = if (random.nextBoolean()) random.nextInt(Integer.MAX_VALUE) else -random.nextInt(Integer.MAX_VALUE)
+
+fun getClinit(classNode: ClassNode): MethodNode {
+	for (method in classNode.methods) {
+		if (method.name == "<clinit>" && method.desc == "()V") {
+			return method
+		}
+	}
+	
+	return MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).apply {
+		classNode.methods.add(this)
+	}
+}

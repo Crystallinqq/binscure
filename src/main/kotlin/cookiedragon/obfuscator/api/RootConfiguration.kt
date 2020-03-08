@@ -1,5 +1,6 @@
 package cookiedragon.obfuscator.api
 
+import cookiedragon.obfuscator.api.transformers.*
 import cookiedragon.obfuscator.kotlin.replaceLast
 import java.io.File
 
@@ -9,8 +10,8 @@ import java.io.File
 data class RootConfiguration(
 	val input: File,
 	val output: File = File(input.absolutePath.replaceLast('.', "-obf.")),
-	val libraries: List<File> = arrayListOf(),
 	val mappingFile: File?,
+	val libraries: List<File> = arrayListOf(),
 	val exclusions: List<String> = arrayListOf(),
 	val hardExclusions: List<String> = arrayListOf(),
 	val remap: RemapConfiguration,
@@ -19,6 +20,7 @@ data class RootConfiguration(
 	val crasher: CrasherConfiguration,
 	val indirection: IndirectionConfiguration,
 	val stringObfuscation: StringObfuscationConfiguration,
+	val flowObfuscation: FlowObfuscationConfiguration,
 	val ignoreClassPathNotFound: Boolean = false
 ) {
 	override fun toString(): String  = """

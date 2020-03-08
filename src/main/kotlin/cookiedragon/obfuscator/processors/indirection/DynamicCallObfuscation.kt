@@ -3,6 +3,7 @@ package cookiedragon.obfuscator.processors.indirection
 import cookiedragon.obfuscator.CObfuscator
 import cookiedragon.obfuscator.IClassProcessor
 import cookiedragon.obfuscator.classpath.ClassPath
+import cookiedragon.obfuscator.configuration.ConfigurationManager
 import cookiedragon.obfuscator.kotlin.*
 import cookiedragon.obfuscator.processors.renaming.impl.ClassRenamer
 import cookiedragon.obfuscator.utils.*
@@ -65,8 +66,9 @@ object DynamicCallObfuscation: IClassProcessor {
 	}
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		//if (!ConfigurationManager.rootConfig.indirection.enabled)
-		//	return
+		if (!ConfigurationManager.rootConfig.indirection.enabled) {
+			return
+		}
 		
 		classVersion = if (classes.isEmpty()) V1_7 else classes.first().version
 		
@@ -124,14 +126,9 @@ object DynamicCallObfuscation: IClassProcessor {
 									println("Replacement: ${indyNode.opcodeString()}")
 								}
 								
-								var checkCast: TypeInsnNode? = if (returnType.sort == Type.OBJECT || returnType.sort == Type.ARRAY)
-									TypeInsnNode(CHECKCAST, returnType.internalName)
-								else null
-								
-								
-								/*null
+								var checkCast: TypeInsnNode? = null
 								if (returnType.sort == Type.ARRAY) {
-									checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
+									checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName.removePrefix("L").removeSuffix(";")))
 								} else if (returnType.sort == Type.OBJECT) {
 									if (insn.next is MethodInsnNode) {
 										val next = insn.next as MethodInsnNode
@@ -148,7 +145,7 @@ object DynamicCallObfuscation: IClassProcessor {
 									} else {
 										checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
 									}
-								}*/
+								}
 								if (checkCast != null) {
 									if (checkCast.desc != Any::class.internalName) {
 										add(checkCast)

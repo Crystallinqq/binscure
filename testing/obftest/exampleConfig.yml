@@ -7,7 +7,7 @@ mappingFile: mappings.csv
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
-    enabled: true
+    enabled: false
     localVariableName: ""
 
 # Strip source file information
@@ -27,12 +27,15 @@ crasher:
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: false
+    enabled: true
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
 stringObfuscation:
-    enabled: true
+    enabled: false
+
+flowObfuscation:
+    enabled: false
 
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false
