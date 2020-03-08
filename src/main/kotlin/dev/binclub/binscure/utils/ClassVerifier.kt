@@ -1,6 +1,5 @@
 package dev.binclub.binscure.utils
 
-import dev.binclub.binscure.kotlin.opcodeString
 import dev.binclub.binscure.kotlin.toOpcodeStrings
 import org.objectweb.asm.tree.*
 

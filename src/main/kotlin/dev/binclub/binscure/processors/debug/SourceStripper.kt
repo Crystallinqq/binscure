@@ -19,7 +19,7 @@ object SourceStripper: IClassProcessor {
 		
 		val action = rootConfig.sourceStrip.lineNumbers
 		
-		for (classNode in CObfuscator.getProgressBar("Stripping Source Info").wrap(classes)) {
+		for (classNode in classes) {
 			classNode.sourceDebug = null
 			classNode.sourceFile = null
 			classNode.signature = null

@@ -113,15 +113,19 @@ object CObfuscator {
 		val classes = mutableListOf<ClassNode>()
 		classes.addAll(ClassPath.classes.values)
 		if (classes.isNotEmpty()) {
+			var progress = 0
 			for (processor in processors) {
 				try {
 					processor.process(classes, passThrough)
-					println(processor::class.java.simpleName)
+					debug(processor::class.java.simpleName)
+					print("\r${(progress / (processors.size - 1)) * 100}%")
 				} catch (t: Throwable) {
 					println("Exception while processing ${processor::class.java.simpleName}")
 					t.printStackTrace()
 				}
+				progress += 1
 			}
+			print("\r")
 		}
 		
 		ClassPathIO.writeOutput(rootConfig.output)
@@ -177,5 +181,11 @@ object CObfuscator {
 	
 	fun randomWeight(weight: Int): Boolean {
 		return random.nextInt(weight) == 0
+	}
+	
+	inline fun debug(message: Any) {
+		if (false) {
+			println(message)
+		}
 	}
 }

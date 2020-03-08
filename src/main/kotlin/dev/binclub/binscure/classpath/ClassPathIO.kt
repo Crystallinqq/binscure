@@ -1,18 +1,26 @@
 package dev.binclub.binscure.classpath
 
 import dev.binclub.binscure.CObfuscator
+import dev.binclub.binscure.CObfuscator.random
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
+import dev.binclub.binscure.kotlin.replaceLast
 import dev.binclub.binscure.kotlin.wrap
+import dev.binclub.binscure.utils.DummyHashSet
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.reflect.Field
+import java.nio.file.attribute.FileTime
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.zip.CRC32
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlin.random.Random
 
 /**
  * @author cookiedragon234 25/Jan/2020
@@ -64,60 +72,99 @@ object ClassPathIO {
 		}
 	}
 	
+	val emptyClass: ByteArray by lazy {
+		ClassWriter(0).also {
+			ClassNode().apply {
+				version = Opcodes.V1_8
+				name = ""
+			}.accept(it)
+		}.toByteArray()
+	}
+	
 	fun writeOutput(file: File) {
-		//CObfuscator.getProgressBar("Writing Output").use { progressBar ->
-			//progressBar.maxHint((ClassPath.passThrough.size + ClassPath.classes.size).toLong())
-			JarOutputStream(FileOutputStream(file)).use {
-				val crc = DummyCRC(0xDEADBEEF)
-				if (rootConfig.crasher.enabled) {
-					val field = ZipOutputStream::class.java.getDeclaredField("crc")
-					field.isAccessible = true
-					field.set(it, crc)
+		val fileOut = FileOutputStream(file)
+		JarOutputStream(fileOut).use {
+			namesField[it] = DummyHashSet<String>()
+			val crc = DummyCRC(0xDEADBEEF)
+			if (rootConfig.crasher.enabled) {
+				crcField[it] = crc
+				commentField[it] = ByteArray(32000) {0x06054b50.toByte()}
+				it.putNextEntry(ZipEntry("â\u3B25\u00d4\ud400®©¯\u00EB\u00A9\u00AE\u008D\u00AA\u002E"))
+				
+			}
+			
+			for ((name, bytes) in ClassPath.passThrough) {
+				crc.overwrite = false
+				it.putNextEntry(ZipEntry(name))
+				it.write(bytes)
+				it.closeEntry()
+			}
+			for (classNode in ClassPath.classes.values) {
+				if (!CObfuscator.isExcluded(classNode)) {
+					crc.overwrite = true
+					classNode.fields?.shuffle(random)
+					classNode.methods?.shuffle(random)
+					classNode.innerClasses?.shuffle(random)
 				}
 				
-				for ((name, bytes) in ClassPath.passThrough) {
-					crc.overwrite = false
-					it.putNextEntry(ZipEntry(name))
-					it.write(bytes)
-					it.closeEntry()
-					//progressBar.step()
+				var name = "${classNode.name}.class"
+				if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
+					crc.overwrite = true
+					
+					it.putNextEntry(ZipEntry(name.replaceLast('/', "/\u0000")))
+					it.write(0x00)
 				}
-				for (classNode in ClassPath.classes.values) {
-					if (!CObfuscator.isExcluded(classNode)) {
-						crc.overwrite = true
-						classNode.fields?.shuffle(CObfuscator.random)
-						classNode.methods?.shuffle(CObfuscator.random)
-						classNode.innerClasses?.shuffle(CObfuscator.random)
-					}
-					
-					var name = "${classNode.name}.class"
-					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
-						name += "/"
-						crc.overwrite = true
-					}
-					
-					val entry = ZipEntry(name)
-					it.putNextEntry(entry)
-					
-					var writer: ClassWriter
-					try {
-						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
-						classNode.accept(writer)
-					} catch (e: Throwable) {
-						println("Error while writing class ${classNode.name}")
-						e.printStackTrace()
-						
-						writer = CustomClassWriter(0)
-						classNode.accept(writer)
-					}
-					it.write(writer.toByteArray())
-					it.closeEntry()
-					
-					crc.overwrite = false
-					//progressBar.step()
+				
+				val entry = ZipEntry(name)
+				
+				if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
+					it.putNextEntry(ZipEntry(entry.name))
 				}
+				
+				it.putNextEntry(entry)
+				
+				var writer: ClassWriter
+				try {
+					writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
+					classNode.accept(writer)
+				} catch (e: Throwable) {
+					println("Error while writing class ${classNode.name}")
+					e.printStackTrace()
+					
+					writer = CustomClassWriter(0)
+					classNode.accept(writer)
+				}
+				val arr = writer.toByteArray()
+				it.write(arr)
+				it.closeEntry()
+				
+				crc.overwrite = false
 			}
-		//}
+		}
+	}
+	
+	val namesField: Field by lazy {
+		ZipOutputStream::class.java.getDeclaredField("names").also {
+			it.isAccessible = true
+		}
+	}
+	
+	val crcField: Field by lazy {
+		ZipOutputStream::class.java.getDeclaredField("crc").also {
+			it.isAccessible = true
+		}
+	}
+	
+	val timeField: Field by lazy {
+		ZipEntry::class.java.getDeclaredField("csize").also {
+			it.isAccessible = true
+		}
+	}
+	
+	val commentField: Field by lazy {
+		ZipOutputStream::class.java.getDeclaredField("comment").also {
+			it.isAccessible = true
+		}
 	}
 	
 	private class DummyCRC(val crc: Long): CRC32() {

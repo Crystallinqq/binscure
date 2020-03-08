@@ -90,8 +90,10 @@ val throwables = arrayOf(
 	ConcurrentModificationException::class.internalName
 )
 
-fun randomThrowable(nonNull: Boolean = false): String? = if (CObfuscator.random.nextBoolean() || nonNull) throwables.random(
-	CObfuscator.random) else null
+fun randomThrowable(nonNull: Boolean = false): String? =
+	if (CObfuscator.random.nextBoolean() || nonNull) throwables.random(
+		CObfuscator.random
+	) else null
 
 val throwableActions = arrayOf(
 	InsnList().apply {
@@ -130,7 +132,8 @@ val numOps = mapOf<Int, Number>(
 	SIPUSH to -1
 )
 
-fun isNumberLdc(insn: AbstractInsnNode): Boolean = numOps.contains(insn.opcode) || (insn is LdcInsnNode && insn.cst is Number)
+fun isNumberLdc(insn: AbstractInsnNode): Boolean =
+	numOps.contains(insn.opcode) || (insn is LdcInsnNode && insn.cst is Number)
 
 fun getNumFromLdc(insn: AbstractInsnNode): Number {
 	return if (insn is LdcInsnNode && insn.cst is Number) {
@@ -246,10 +249,14 @@ fun verifyMethodNode(methodNode: MethodNode) {
 	reader.accept(CheckClassAdapter(EmptyClassVisitor), EXPAND_FRAMES)
 }
 
-fun constructTableSwitch(baseNumber: Int, defaultLabel: LabelNode, vararg targetLabels: LabelNode): TableSwitchInsnNode {
+fun constructTableSwitch(
+	baseNumber: Int,
+	defaultLabel: LabelNode,
+	vararg targetLabels: LabelNode
+): TableSwitchInsnNode {
 	return TableSwitchInsnNode(
 		baseNumber,
-		baseNumber + targetLabels.size -1,
+		baseNumber + targetLabels.size - 1,
 		defaultLabel,
 		*targetLabels
 	)
@@ -259,7 +266,7 @@ fun constructLookupSwitch(
 	defaultLabel: LabelNode,
 	lookup: Array<Pair<Int, LabelNode>>
 ): LookupSwitchInsnNode {
-	lookup.sortWith(Comparator {a,b -> a.first.compareTo(b.first)})
+	lookup.sortWith(Comparator { a, b -> a.first.compareTo(b.first) })
 	
 	val keys = lookup.map {
 		it.first

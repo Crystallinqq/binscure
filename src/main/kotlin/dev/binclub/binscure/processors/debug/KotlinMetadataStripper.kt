@@ -18,7 +18,7 @@ object KotlinMetadataStripper: IClassProcessor {
 		if (!rootConfig.kotlinMetadata.enabled)
 			return
 		
-		for (classNode in CObfuscator.getProgressBar("Stripping Kotlin Metadata").wrap(classes)) {
+		for (classNode in classes) {
 			classNode.visibleAnnotations =
 				classNode.visibleAnnotations
 					?.stream()

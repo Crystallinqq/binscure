@@ -4,10 +4,8 @@ import dev.binclub.binscure.kotlin.hasAccess
 import dev.binclub.binscure.kotlin.opcodeString
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
-import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.MethodNode
 import org.objectweb.asm.tree.VarInsnNode
-import java.lang.IllegalArgumentException
 
 /**
  * @author cookiedragon234 24/Feb/2020
