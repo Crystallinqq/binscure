@@ -9,7 +9,8 @@ public class Main {
 		new IfStatementTest(),
 		new StaticMethodTest(),
 		new EnumTest(),
-		new StaticFieldTest()
+		new StaticFieldTest(),
+		new NumberTest()
 	};
 	
     public static void main(String[] args) {

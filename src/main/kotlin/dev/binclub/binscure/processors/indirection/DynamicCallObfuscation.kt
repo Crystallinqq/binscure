@@ -20,8 +20,6 @@ import kotlin.properties.Delegates
 object DynamicCallObfuscation: IClassProcessor {
 	val targetOps = arrayOf(INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE)
 	
-	val debugName = "execute"
-	
 	var classVersion by Delegates.notNull<Int>()
 	var isInit: Boolean = false
 	val decryptNode: ClassNode by lazy {
@@ -122,9 +120,6 @@ object DynamicCallObfuscation: IClassProcessor {
 									encryptName(classNode, method, insn.desc)
 								)
 								add(indyNode)
-								if (method.name == debugName) {
-									println("Replacement: ${indyNode.opcodeString()}")
-								}
 								
 								var checkCast: TypeInsnNode? = null
 								if (returnType.sort == Type.ARRAY) {
@@ -157,16 +152,11 @@ object DynamicCallObfuscation: IClassProcessor {
 						add(insn)
 					}
 					method.instructions = this
-					if (method.name == debugName) {
-						println("after ${method.instructions.toOpcodeStrings()}")
-					}
 				}
 			}
 		}
 		
 		if (isInit) {
-			ClassVerifier.verifyClass(decryptNode)
-			verifyClass(decryptNode)
 			classes.add(decryptNode)
 			ClassPath.classes[decryptNode.name] = decryptNode
 			ClassPath.classPath[decryptNode.name] = decryptNode

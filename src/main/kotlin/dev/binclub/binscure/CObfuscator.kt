@@ -12,6 +12,7 @@ import dev.binclub.binscure.kotlin.internalName
 import dev.binclub.binscure.kotlin.whenNotNull
 import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
 import dev.binclub.binscure.processors.constants.FieldInitialiser
+import dev.binclub.binscure.processors.constants.NumberObfuscation
 import dev.binclub.binscure.processors.constants.StringObfuscator
 import dev.binclub.binscure.processors.debug.AccessStripper
 import dev.binclub.binscure.processors.debug.KotlinMetadataStripper
@@ -88,6 +89,8 @@ object CObfuscator {
 			OpaqueRuntimeManager,
 			FieldInitialiser,
 			
+			NumberObfuscation,
+			
 			CfgFucker,
 			AccessStripper,
 			BadClinit,
@@ -145,7 +148,7 @@ object CObfuscator {
 		return false
 	}
 	fun isExcluded(classNode: ClassNode): Boolean {
-		if (classNode.visibleAnnotations.any { it.desc == ExcludeAll::class.internalName })
+		if (classNode.visibleAnnotations?.any { it.desc == ExcludeAll::class.internalName } == true) return true
 		for (exclusion in exclusions) {
 			if (exclusion.isExcluded(classNode))
 				return true
@@ -153,7 +156,7 @@ object CObfuscator {
 		return false
 	}
 	fun isExcluded(parentClass: ClassNode, methodNode: MethodNode): Boolean {
-		if (methodNode.visibleAnnotations.any { it.desc == ExcludeAll::class.internalName })
+		if (methodNode.visibleAnnotations?.any { it.desc == ExcludeAll::class.internalName } == true) return true
 		for (exclusion in exclusions) {
 			if (exclusion.isExcluded(parentClass, methodNode))
 				return true
@@ -161,7 +164,7 @@ object CObfuscator {
 		return false
 	}
 	fun isExcluded(parentClass: ClassNode, fieldNode: FieldNode): Boolean {
-		if (fieldNode.visibleAnnotations.any { it.desc == ExcludeAll::class.internalName })
+		if (fieldNode.visibleAnnotations?.any { it.desc == ExcludeAll::class.internalName } == true) return true
 		for (exclusion in exclusions) {
 			if (exclusion.isExcluded(parentClass, fieldNode))
 				return true

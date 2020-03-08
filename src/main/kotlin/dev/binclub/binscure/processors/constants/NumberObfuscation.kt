@@ -2,20 +2,21 @@ package dev.binclub.binscure.processors.constants
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.kotlin.wrap
+import dev.binclub.binscure.kotlin.add
+import dev.binclub.binscure.kotlin.internalName
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.InsnList
-import org.objectweb.asm.tree.InsnNode
+import org.objectweb.asm.tree.MethodInsnNode
 
 /**
  * @author cookiedragon234 30/Jan/2020
  */
 object NumberObfuscation: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (classNode in CObfuscator.getProgressBar("Obfuscating Numbers").wrap(classes)) {
+		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			
@@ -42,161 +43,53 @@ object NumberObfuscation: IClassProcessor {
 	}
 	
 	private fun obfFloat(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Float) {
-		val randNumbers = randomFloatArray()
-		val list = InsnList()
-		var newNum = random.nextFloat() * 100
-		list.insert(ldcFloat(newNum))
-		
-		val lastOp = MutableInteger(-1)
-		for (randNumber in randNumbers) {
-			randomBranchExcluding(random, lastOp, {
-				newNum += randNumber
-				list.add(ldcFloat(randNumber))
-				list.add(InsnNode(FADD))
-				
-			}, {
-				newNum -= randNumber
-				list.add(ldcFloat(randNumber))
-				list.add(InsnNode(FSUB))
-			})
+		val firstRand = random.nextFloat() * Float.MAX_VALUE
+		val numAsInt = java.lang.Float.floatToIntBits(firstRand)
+		val list = InsnList().apply {
+			add(ldcFloat(firstRand xor num))
+			add(MethodInsnNode(INVOKESTATIC, java.lang.Float::class.internalName, "floatToIntBits", "(F)I"))
+			add(ldcInt(numAsInt))
+			add(IXOR)
+			add(MethodInsnNode(INVOKESTATIC, java.lang.Float::class.internalName, "intBitsToFloat", "(I)F"))
 		}
-		list.add(ldcFloat(num - newNum))
-		list.add(InsnNode(FADD))
 		modifier.replace(insn, list)
 	}
 	
 	private fun obfDouble(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Double) {
-		val randNumbers = randomDoubleArray()
-		val list = InsnList()
-		var newNum = random.nextDouble()
-		list.insert(ldcDouble(newNum))
-		
-		val lastOp = MutableInteger(-1)
-		for (randNumber in randNumbers) {
-			randomBranchExcluding(random, lastOp, {
-				newNum += randNumber
-				list.add(ldcDouble(randNumber))
-				list.add(InsnNode(DADD))
-			}, {
-				newNum -= randNumber
-				list.add(ldcDouble(randNumber))
-				list.add(InsnNode(DSUB))
-			})
+		val firstRand = random.nextDouble() * Double.MAX_VALUE
+		val numAsLong = java.lang.Double.doubleToLongBits(firstRand)
+		val list = InsnList().apply {
+			add(ldcDouble(firstRand xor num))
+			add(MethodInsnNode(INVOKESTATIC, java.lang.Double::class.internalName, "doubleToLongBits", "(D)J"))
+			add(ldcLong(numAsLong))
+			add(LXOR)
+			add(MethodInsnNode(INVOKESTATIC, java.lang.Double::class.internalName, "longBitsToDouble", "(J)D"))
 		}
-		list.add(ldcDouble(num - newNum))
-		list.add(InsnNode(DADD))
 		modifier.replace(insn, list)
 	}
 	
 	private fun obfInt(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Int) {
-		val randNumbers = randomIntArray()
-		val list = InsnList()
-		var newNum = random.nextInt(Integer.MAX_VALUE)
-		list.insert(ldcInt(newNum))
-		
-		val lastOp = MutableInteger(-1)
-		for (randNumber in randNumbers) {
-			randomBranchExcluding(random, lastOp, {
-				newNum = newNum xor randNumber
-				list.add(ldcInt(randNumber))
-				list.add(InsnNode(IXOR))
-			}, {
-				newNum = newNum shl randNumber
-				list.add(ldcInt(randNumber))
-				list.add(InsnNode(ISHL))
-			}, {
-				newNum = newNum shr randNumber
-				list.add(ldcInt(randNumber))
-				list.add(InsnNode(ISHR))
-			}, {
-				newNum = newNum ushr randNumber
-				list.add(ldcInt(randNumber))
-				list.add(InsnNode(IUSHR))
-			}, {
-				newNum += randNumber
-				list.add(ldcInt(randNumber))
-				list.add(InsnNode(IADD))
-			}, {
-				newNum -= randNumber
-				list.add(ldcInt(randNumber))
-				list.add(InsnNode(ISUB))
-			}, {
-				newNum = newNum and randNumber
-				list.add(ldcInt(randNumber))
-				list.add(InsnNode(IAND))
-			}, {
-				newNum = newNum or randNumber
-				list.add(ldcInt(randNumber))
-				list.add(InsnNode(IOR))
-			}, {
-				newNum = -newNum
-				list.add(InsnNode(INEG))
-			})
+		val firstRand = randomInt()
+		val list = InsnList().apply {
+			add(ldcLong(firstRand.toLong()))
+			add(L2I)
+			add(ldcInt(firstRand xor num))
+			add(IXOR)
 		}
-		list.add(ldcInt(num xor newNum))
-		list.add(InsnNode(IXOR))
 		modifier.replace(insn, list)
 	}
 	
 	private fun obfLong(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Long) {
-		val randNumbers = randomLongArray()
-		val list = InsnList()
-		var newNum = random.nextLong()
-		list.insert(ldcLong(newNum))
-		
-		val lastOp = MutableInteger(-1)
-		for (randNumber in randNumbers) {
-			randomBranchExcluding(random, lastOp, {
-				newNum = newNum xor randNumber
-				list.add(ldcLong(randNumber))
-				list.add(InsnNode(LXOR))
-			}, {
-				val randInt = random.nextInt(Integer.MAX_VALUE)
-				newNum = newNum shl randInt
-				list.add(ldcInt(randInt))
-				list.add(InsnNode(LSHL))
-			}, {
-				val randInt = random.nextInt(Integer.MAX_VALUE)
-				newNum = newNum shr randInt
-				list.add(ldcInt(randInt))
-				list.add(InsnNode(LSHR))
-			}, {
-				val randInt = random.nextInt(Integer.MAX_VALUE)
-				newNum = newNum ushr randInt
-				list.add(ldcInt(randInt))
-				list.add(InsnNode(LUSHR))
-			}, {
-				newNum += randNumber
-				list.add(ldcLong(randNumber))
-				list.add(InsnNode(LSUB))
-			}, {
-				newNum -= randNumber
-				list.add(ldcLong(randNumber))
-				list.add(InsnNode(LADD))
-			}, {
-				newNum = newNum and randNumber
-				list.add(ldcLong(randNumber))
-				list.add(InsnNode(LAND))
-			}, {
-				newNum = newNum or randNumber
-				list.add(ldcLong(randNumber))
-				list.add(InsnNode(LOR))
-			}, {
-				newNum = -newNum
-				list.add(InsnNode(LNEG))
-			})
+		val firstRand = randomInt()
+		val list = InsnList().apply {
+			add(ldcInt(firstRand))
+			add(I2L)
+			add(ldcLong(firstRand.toLong() xor num))
+			add(LXOR)
 		}
-		list.add(ldcLong(num xor newNum))
-		list.add(InsnNode(IXOR))
 		modifier.replace(insn, list)
 	}
 	
-	private fun randomIntArray(): IntArray = IntArray( random.nextInt(7)).apply {
-		for (i in 0 until size) this[i] = random.nextInt(Integer.MAX_VALUE)
-	}
-	private fun randomLongArray(): LongArray = LongArray( random.nextInt(7)).apply {
-		for (i in 0 until size) this[i] = random.nextLong()
-	}
 	private fun randomDoubleArray(): DoubleArray = DoubleArray( random.nextInt(7)).apply {
 		for (i in 0 until size) this[i] = random.nextDouble()
 	}

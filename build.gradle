@@ -11,7 +11,7 @@ version 'alpha'
 jar {
     manifest {
         attributes (
-                "Main-Class": "cookiedragon.obfuscator.MainKt"
+                "Main-Class": "dev.binclub.binscure.MainKt"
         )
     }
 }
@@ -20,7 +20,7 @@ shadowJar() {
     classifier = "release"
 
     manifest {
-        attributes 'Main-Class': "cookiedragon.obfuscator.MainKt"
+        attributes 'Main-Class': "dev.binclub.binscure.MainKt"
     }
 }
 

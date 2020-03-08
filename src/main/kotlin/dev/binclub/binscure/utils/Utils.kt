@@ -6,18 +6,17 @@ import dev.binclub.binscure.kotlin.add
 import dev.binclub.binscure.kotlin.internalName
 import dev.binclub.binscure.kotlin.random
 import dev.binclub.binscure.kotlin.toInsn
-import org.objectweb.asm.*
+import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassReader.EXPAND_FRAMES
+import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.ClassWriter.COMPUTE_FRAMES
+import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import org.objectweb.asm.util.CheckClassAdapter
 import java.io.PrintStream
 import java.security.SecureRandom
-import java.util.*
-import kotlin.Comparator
-import kotlin.ConcurrentModificationException
-import kotlin.NoSuchElementException
 
 
 /**
@@ -280,6 +279,7 @@ fun constructLookupSwitch(
 fun newLabel(): LabelNode = BlameableLabelNode()
 
 fun randomInt() = if (random.nextBoolean()) random.nextInt(Integer.MAX_VALUE) else -random.nextInt(Integer.MAX_VALUE)
+fun randomLong() = if (random.nextBoolean()) random.nextLong() else -random.nextLong()
 
 fun getClinit(classNode: ClassNode): MethodNode {
 	for (method in classNode.methods) {
@@ -292,3 +292,9 @@ fun getClinit(classNode: ClassNode): MethodNode {
 		classNode.methods.add(this)
 	}
 }
+
+infix fun Float.xor(b: Float) =
+	java.lang.Float.intBitsToFloat(java.lang.Float.floatToIntBits(this) xor java.lang.Float.floatToIntBits(b))
+
+infix fun Double.xor(b: Double) =
+	java.lang.Double.longBitsToDouble(java.lang.Double.doubleToLongBits(this) xor java.lang.Double.doubleToLongBits(b))
