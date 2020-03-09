@@ -160,13 +160,13 @@ object StringObfuscator: IClassProcessor {
 		val l5 = BlameableLabelNode()
 		
 		decryptorMethod.tryCatchBlocks.apply {
-			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
-			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
-			add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
-			add(TryCatchBlockNode(start, end, handler, null))
-			add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
-			add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Throwable"))
-			add(TryCatchBlockNode(getCurrentThread, xors, secondCatch, null))
+			//add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
+			//add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
+			//add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
+			//add(TryCatchBlockNode(start, end, handler, null))
+			//add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
+			//add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Throwable"))
+			//add(TryCatchBlockNode(getCurrentThread, xors, secondCatch, null))
 		}
 		
 		// First check if the value is cached

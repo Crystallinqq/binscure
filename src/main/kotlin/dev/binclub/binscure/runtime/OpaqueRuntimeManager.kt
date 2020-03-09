@@ -19,18 +19,8 @@ import kotlin.math.max
  */
 object OpaqueRuntimeManager: IClassProcessor {
 	lateinit var classes: MutableCollection<ClassNode>
-	val classNode by lazy {
-		ClassNode().apply {
-			this.access = Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL
-			this.version = classes.first().version
-			this.name = ClassRenamer.namer.uniqueRandomString()
-			this.signature = null
-			this.superName = "java/lang/Object"
-			classes.add(this)
-			ClassPath.classes[this.name] = this
-			ClassPath.classPath[this.name] = this
-		}
-	}
+	lateinit var classNode: ClassNode
+	
 	val clinit by lazy {
 		MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also {
 			it.instructions.add(InsnNode(RETURN))
@@ -91,6 +81,14 @@ object OpaqueRuntimeManager: IClassProcessor {
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		this.classes = classes
+		classNode = ClassNode().apply {
+			this.access = Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL
+			this.version = OpaqueRuntimeManager.classes.first().version
+			this.name = ClassRenamer.namer.uniqueRandomString()
+			this.signature = null
+			this.superName = "java/lang/Object"
+			println("Opaque " + this.name)
+		}
 	}
 	
 	data class FieldInfo(val fieldNode: FieldNode, val trueOpcode: Int, val falseOpcode: Int)

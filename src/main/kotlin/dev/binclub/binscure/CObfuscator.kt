@@ -18,6 +18,7 @@ import dev.binclub.binscure.processors.debug.AccessStripper
 import dev.binclub.binscure.processors.debug.KotlinMetadataStripper
 import dev.binclub.binscure.processors.debug.SourceStripper
 import dev.binclub.binscure.processors.exploit.BadClinit
+import dev.binclub.binscure.processors.exploit.BadIndyConstant
 import dev.binclub.binscure.processors.flow.CfgFucker
 import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
 import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
@@ -95,6 +96,7 @@ object CObfuscator {
 			AccessStripper,
 			BadClinit,
 			ClassInitMonitor,
+			StaticMethodMerger,
 			
 			SourceStripper,
 			KotlinMetadataStripper,
@@ -105,7 +107,9 @@ object CObfuscator {
 			ClassRenamer,
 			
 			StringObfuscator,
-			DynamicCallObfuscation,
+			//DynamicCallObfuscation,
+			
+			BadIndyConstant,
 			
 			ManifestResourceProcessor
 		)
@@ -126,6 +130,11 @@ object CObfuscator {
 				progress += 1
 			}
 			print("\r")
+		}
+		OpaqueRuntimeManager.classNode.apply {
+			classes.add(this)
+			ClassPath.classes[this.name] = this
+			ClassPath.classPath[this.name] = this
 		}
 		
 		ClassPathIO.writeOutput(rootConfig.output)
@@ -152,6 +161,7 @@ object CObfuscator {
 		return false
 	}
 	fun isExcluded(classNode: ClassNode): Boolean {
+		if (classNode == OpaqueRuntimeManager.classNode) return true
 		if (classNode.visibleAnnotations?.any { it.desc == ExcludeAll::class.internalName } == true) return true
 		for (exclusion in exclusions) {
 			if (exclusion.isExcluded(classNode))
