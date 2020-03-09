@@ -1,5 +1,5 @@
-#input: out/artifacts/obftest_jar/obftest.jar
-input: obftest-obf.jar
+input: out/artifacts/obftest_jar/obftest.jar
+output: obftest-obf.jar
 
 # The mappings created by the obfuscator are saved to this csv file
 mappingFile: mappings.csv
