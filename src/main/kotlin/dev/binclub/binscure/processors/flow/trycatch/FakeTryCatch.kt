@@ -3,6 +3,7 @@ package dev.binclub.binscure.processors.flow.trycatch
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager
+import dev.binclub.binscure.kotlin.add
 import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.BlameableLabelNode
@@ -42,13 +43,14 @@ object FakeTryCatch: IClassProcessor {
 		val end = BlameableLabelNode()
 		val secondCatch = BlameableLabelNode()
 		val dead = BlameableLabelNode()
+		val dead2 = BlameableLabelNode()
 		
 		val list = InsnList()
 			.apply {
 				add(switchStart)
 				add(start)
 				add(InsnNode(ACONST_NULL))
-				add(randomOpaqueJump(secondCatch))
+				add(randomOpaqueJump(secondCatch, false))
 				add(InsnNode(POP))
 				add(InsnNode(ACONST_NULL))
 				if (ConfigurationManager.rootConfig.crasher.enabled) {
@@ -64,7 +66,7 @@ object FakeTryCatch: IClassProcessor {
 			.apply {
 				add(dead)
 				add(POP)
-				add(JumpInsnNode(GOTO, start))
+				add(JumpInsnNode(GOTO, end))
 				add(dead2)
 				add(POP)
 				add(ACONST_NULL)
@@ -75,7 +77,6 @@ object FakeTryCatch: IClassProcessor {
 				add(InsnNode(ATHROW))
 				add(secondCatch)
 				add(DUP)
-				val dead2 = BlameableLabelNode()
 				add(JumpInsnNode(IFNULL, dead2))
 				add(InsnNode(ATHROW))
 			}

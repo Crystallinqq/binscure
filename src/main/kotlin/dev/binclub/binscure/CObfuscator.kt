@@ -21,6 +21,7 @@ import dev.binclub.binscure.processors.exploit.BadClinit
 import dev.binclub.binscure.processors.exploit.BadIndyConstant
 import dev.binclub.binscure.processors.flow.CfgFucker
 import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
+import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
 import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.processors.renaming.impl.FieldRenamer
@@ -110,6 +111,7 @@ object CObfuscator {
 			//DynamicCallObfuscation,
 			
 			BadIndyConstant,
+			FakeTryCatch,
 			
 			ManifestResourceProcessor
 		)
