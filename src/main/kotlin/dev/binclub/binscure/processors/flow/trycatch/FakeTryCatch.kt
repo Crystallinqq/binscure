@@ -41,6 +41,7 @@ object FakeTryCatch: IClassProcessor {
 		val handler = BlameableLabelNode()
 		val end = BlameableLabelNode()
 		val secondCatch = BlameableLabelNode()
+		val dead = BlameableLabelNode()
 		
 		val list = InsnList()
 			.apply {
@@ -61,14 +62,22 @@ object FakeTryCatch: IClassProcessor {
 		
 		val endList = InsnList()
 			.apply {
+				add(dead)
+				add(POP)
+				add(JumpInsnNode(GOTO, start))
+				add(dead2)
+				add(POP)
+				add(ACONST_NULL)
+				add(JumpInsnNode(GOTO, dead))
 				add(handler)
-				add(InsnNode(POP))
-				add(InsnNode(ACONST_NULL))
-				add(JumpInsnNode(GOTO, fakeEnd))
+				add(DUP)
+				add(JumpInsnNode(IFNULL, dead))
+				add(InsnNode(ATHROW))
 				add(secondCatch)
-				add(JumpInsnNode(IFNULL, end))
-				add(InsnNode(ACONST_NULL))
-				add(JumpInsnNode(GOTO, fakeEnd))
+				add(DUP)
+				val dead2 = BlameableLabelNode()
+				add(JumpInsnNode(IFNULL, dead2))
+				add(InsnNode(ATHROW))
 			}
 		
 		insnList.insert(list)
