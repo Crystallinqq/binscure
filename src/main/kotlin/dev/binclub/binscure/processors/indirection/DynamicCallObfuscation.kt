@@ -18,11 +18,11 @@ import kotlin.properties.Delegates
  * @author cookiedragon234 22/Jan/2020
  */
 object DynamicCallObfuscation: IClassProcessor {
-	val targetOps = arrayOf(INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE)
+	private val targetOps = arrayOf(INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE)
 	
-	var classVersion by Delegates.notNull<Int>()
-	var isInit: Boolean = false
-	val decryptNode: ClassNode by lazy {
+	private var classVersion by Delegates.notNull<Int>()
+	private var isInit: Boolean = false
+	private val decryptNode: ClassNode by lazy {
 		isInit = true
 		ClassNode().apply {
 			access = ACC_PUBLIC + ACC_FINAL
@@ -33,7 +33,7 @@ object DynamicCallObfuscation: IClassProcessor {
 		}
 	}
 	
-	val stringDecryptMethod: MethodNode by lazy {
+	private val stringDecryptMethod: MethodNode by lazy {
 		MethodNode(
 			ACC_PRIVATE + ACC_STATIC,
 			"a",
@@ -46,7 +46,7 @@ object DynamicCallObfuscation: IClassProcessor {
 		}
 	}
 	
-	val bootStrapMethod: MethodNode by lazy {
+	private val bootStrapMethod: MethodNode by lazy {
 		MethodNode(
 			ACC_PUBLIC + ACC_STATIC,
 			"b",
@@ -59,7 +59,7 @@ object DynamicCallObfuscation: IClassProcessor {
 		}
 	}
 	
-	val handler: Handle by lazy {
+	private val handler: Handle by lazy {
 		Handle(H_INVOKESTATIC, decryptNode.name, bootStrapMethod.name, bootStrapMethod.desc, false)
 	}
 	
@@ -160,13 +160,6 @@ object DynamicCallObfuscation: IClassProcessor {
 			classes.add(decryptNode)
 			ClassPath.classes[decryptNode.name] = decryptNode
 			ClassPath.classPath[decryptNode.name] = decryptNode
-		}
-	}
-	
-	private fun genericType(type: Type): Type {
-		return when (type.sort) {
-			Type.OBJECT -> Type.getType(Any::class.java)
-			else -> type
 		}
 	}
 	

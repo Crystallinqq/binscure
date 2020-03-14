@@ -2,6 +2,7 @@ package dev.binclub.binscure.processors.flow.trycatch
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.kotlin.random
 import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.utils.BlameableLabelNode
@@ -16,14 +17,19 @@ import org.objectweb.asm.tree.*
  */
 object UselessTryCatch: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		if (!ConfigurationManager.rootConfig.flowObfuscation.enabled) {
+			return
+		}
 		
-		for (classNode in CObfuscator.getProgressBar("Adding useless try catches").wrap(classes)) {
+		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			
 			for (method in classNode.methods) {
 				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
+				
+				method.tryCatchBlocks = method.tryCatchBlocks ?: arrayListOf()
 				
 				var isInitialised = !method.name.startsWith("<")
 				

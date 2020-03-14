@@ -18,7 +18,7 @@ object ClassInitMonitor: IClassProcessor {
 		if (!rootConfig.flowObfuscation.enabled) {
 			return
 		}
-		var aggresiveness = FlowObfuscationSeverity.values().size - (rootConfig.flowObfuscation.severity.ordinal + 1)
+		val aggresiveness = FlowObfuscationSeverity.values().size - (rootConfig.flowObfuscation.severity.ordinal)
 		
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))

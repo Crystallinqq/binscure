@@ -297,6 +297,9 @@ fun getClinit(classNode: ClassNode): MethodNode {
 	
 	return MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).apply {
 		classNode.methods.add(this)
+		instructions = InsnList().apply {
+			add(RETURN)
+		}
 	}
 }
 
@@ -305,3 +308,10 @@ infix fun Float.xor(b: Float) =
 
 infix fun Double.xor(b: Double) =
 	java.lang.Double.longBitsToDouble(java.lang.Double.doubleToLongBits(this) xor java.lang.Double.doubleToLongBits(b))
+
+fun genericType(type: Type): Type {
+	return when (type.sort) {
+		Type.OBJECT -> Type.getType(Any::class.java)
+		else -> type
+	}
+}

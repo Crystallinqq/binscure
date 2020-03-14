@@ -2,7 +2,10 @@ package dev.binclub.binscure.processors.classmerge
 
 import dev.binclub.binscure.CObfuscator.isExcluded
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.transformers.MergeMethods
+import dev.binclub.binscure.api.transformers.MergeMethods.NONE
 import dev.binclub.binscure.classpath.ClassPath
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.kotlin.add
 import dev.binclub.binscure.kotlin.clone
 import dev.binclub.binscure.kotlin.hasAccess
@@ -35,6 +38,10 @@ object StaticMethodMerger: IClassProcessor {
 	}
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		if (!rootConfig.flowObfuscation.enabled || rootConfig.flowObfuscation.mergeMethods == NONE) {
+			return
+		}
+		
 		val staticMethods = hashMapOf<String, MutableSet<Pair<ClassNode, MethodNode>>>()
 		
 		for (classNode in classes) {
@@ -45,15 +52,15 @@ object StaticMethodMerger: IClassProcessor {
 					!method.access.hasAccess(ACC_ABSTRACT)
 					&&
 					!method.access.hasAccess(ACC_NATIVE)
-					&&
-					random.nextBoolean()
-					&&
-					!containsSpecial(method.instructions)
+					//&&
+					//random.nextBoolean()
 				) {
 					staticMethods.getOrPut(method.desc, { hashSetOf() }).add(Pair(classNode, method))
 				}
 			}
 		}
+		
+		var classNode: ClassNode? = null
 		
 		if (staticMethods.isNotEmpty()) {
 			val namer = NameGenerator("\$o")
@@ -64,15 +71,26 @@ object StaticMethodMerger: IClassProcessor {
 					val (firstClass, firstMethod) = it.next()
 					
 					val (secondClass, secondMethod) =
-						(if (it.hasNext()) it.next() else continue/*Pair(null, null)*/)
+						if (it.hasNext()) it.next() else continue
 					
 					val firstStatic = firstMethod.access.hasAccess(ACC_STATIC)
 					val secondStatic = secondMethod.access.hasAccess(ACC_STATIC)
 					
-					var newNode: ClassNode
-					do {
-						newNode = classes.random(random)
-					} while (newNode.access.hasAccess(ACC_INTERFACE) || isExcluded(newNode))
+					//var newNode: ClassNode
+					//do {
+					//	newNode = classes.random(random)
+					//} while (newNode.access.hasAccess(ACC_INTERFACE) || isExcluded(newNode))
+					
+					if (classNode == null || classNode.methods.size >= 65530) {
+						classNode = ClassNode().apply {
+							access = ACC_PUBLIC
+							version = classes.first().version
+							name = ClassRenamer.namer.uniqueRandomString()
+							superName = "java/lang/Object"
+							ClassPath.classes[this.name] = this
+							ClassPath.classPath[this.name] = this
+						}
+					}
 					
 					val newMethod = MethodNode(
 						ACC_PUBLIC + ACC_STATIC,
@@ -81,7 +99,7 @@ object StaticMethodMerger: IClassProcessor {
 						null,
 						null
 					)
-					newNode.methods.add(newMethod)
+					classNode.methods.add(newMethod)
 					
 					newMethod.tryCatchBlocks = firstMethod.tryCatchBlocks ?: arrayListOf()
 					firstMethod.tryCatchBlocks = null
@@ -123,7 +141,7 @@ object StaticMethodMerger: IClassProcessor {
 						for ((index, param) in params.withIndex()) {
 							add(VarInsnNode(getLoadForType(param), if (firstStatic) index else (index + 1)))
 						}
-						add(MethodInsnNode(INVOKESTATIC, newNode.name, newMethod.name, newMethod.desc))
+						add(MethodInsnNode(INVOKESTATIC, classNode.name, newMethod.name, newMethod.desc))
 						add(getRetForType(getReturnType(firstMethod.desc)))
 					}
 					

@@ -25,7 +25,7 @@ object StringObfuscator: IClassProcessor {
 		}
 		
 		val stringInsns = arrayListOf<EncryptedString>()
-		for (classNode in CObfuscator.getProgressBar("Obfuscating Strings").wrap(classes)) {
+		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			
@@ -271,7 +271,7 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
 			add(VarInsnNode(ILOAD, 10)) // index
 			add(InsnNode(CALOAD))
-			add(ldcInt(2))
+			add(ldcInt(4))
 			add(InsnNode(IXOR))
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			
@@ -281,7 +281,7 @@ object StringObfuscator: IClassProcessor {
 			add(InsnNode(CALOAD))
 			add(VarInsnNode(ILOAD, 7)) // methodhash
 			add(VarInsnNode(ILOAD, 6)) // classhash
-			add(InsnNode(IADD))
+			add(InsnNode(ISUB))
 			add(InsnNode(IXOR))
 			add(JumpInsnNode(GOTO, setCharArrVal))
 			
@@ -494,11 +494,11 @@ object StringObfuscator: IClassProcessor {
 		
 		for ((index, char) in old.withIndex()) {
 			new[index] = when (index % 5) {
-				0 -> char xor 2
+				0 -> char xor 4
 				1 -> char xor key
 				2 -> char xor classHash
 				3 -> char xor methodHash
-				4 -> char xor (methodHash + classHash)
+				4 -> char xor (methodHash - classHash)
 				5 -> char xor index
 				else -> throw IllegalStateException("Impossible Value ($index % 6 = ${index % 6})")
 			}
@@ -519,11 +519,11 @@ object StringObfuscator: IClassProcessor {
 		
 		for (i in 0 until (old.size)) {
 			when (i % 5) {
-				0 -> new[i] = old[i] xor 2
+				0 -> new[i] = old[i] xor 4
 				1 -> new[i] = old[i] xor key
 				2 -> new[i] = old[i] xor classHash
 				3 -> new[i] = old[i] xor methodHash
-				4 -> new[i] = old[i] xor (methodHash + classHash)
+				4 -> new[i] = old[i] xor (methodHash - classHash)
 				5 -> new[i] = old[i] xor i
 			}
 		}

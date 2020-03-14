@@ -17,19 +17,15 @@ abstract class AbstractRenamer: IClassProcessor {
 		if (!isEnabled())
 			return
 		
-		val progressBar = CObfuscator.getProgressBar(getTaskName())
-		progressBar.maxHint((classes.size * 2).toLong())
 		
 		val remapper = CustomRemapper()
-		remap(progressBar, remapper, classes, passThrough)
+		remap(remapper, classes, passThrough)
 		val replacements = mutableMapOf<ClassNode, ClassNode>()
 		for (classNode in classes) {
 			val newNode = ClassNode()
 			val classMapper = ClassRemapper(newNode, remapper)
 			classNode.accept(classMapper)
 			replacements[classNode] = newNode
-			
-			progressBar.step()
 		}
 		
 		for ((old, new) in replacements) {
@@ -43,11 +39,10 @@ abstract class AbstractRenamer: IClassProcessor {
 		}
 		
 		CObfuscator.mappings.putAll(remapper.dumpMappings())
-		progressBar.close()
 		ClassPath.constructHierarchy()
 	}
 	
-	abstract fun remap(progressBar: ProgressBar, remapper: CustomRemapper, classes: Collection<ClassNode>, passThrough: MutableMap<String, ByteArray>)
+	abstract fun remap(remapper: CustomRemapper, classes: Collection<ClassNode>, passThrough: MutableMap<String, ByteArray>)
 	
 	abstract fun getTaskName(): String
 	abstract fun isEnabled(): Boolean

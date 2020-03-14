@@ -10,7 +10,8 @@ public class Main {
 		new StaticMethodTest(),
 		new EnumTest(),
 		new StaticFieldTest(),
-		new NumberTest()
+		new NumberTest(),
+		new ThrowableTest()
 	};
 	
     public static void main(String[] args) {

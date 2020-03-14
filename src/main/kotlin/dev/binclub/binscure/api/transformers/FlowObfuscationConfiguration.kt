@@ -7,12 +7,19 @@ import dev.binclub.binscure.api.TransformerConfiguration
  */
 data class FlowObfuscationConfiguration(
 	override val enabled: Boolean = false,
-	val severity: FlowObfuscationSeverity = FlowObfuscationSeverity.HARD
+	val severity: FlowObfuscationSeverity = FlowObfuscationSeverity.HARD,
+	val mergeMethods: MergeMethods = MergeMethods.BLOAT_CLASSES
 ): TransformerConfiguration(enabled)
 
 enum class FlowObfuscationSeverity {
-	AGGRESSIVE(),
-	SEVERE(),
-	HARD(),
-	NORMAL()
+	AGGRESSIVE,
+	SEVERE,
+	HARD,
+	NORMAL
+}
+
+enum class MergeMethods {
+	EXISTING_CLASSES,
+	BLOAT_CLASSES,
+	NONE
 }

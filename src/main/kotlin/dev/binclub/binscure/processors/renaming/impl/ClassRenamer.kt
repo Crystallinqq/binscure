@@ -18,17 +18,14 @@ object ClassRenamer: AbstractRenamer() {
 	val namer = NameGenerator(rootConfig.remap.classPrefix)
 	
 	override fun remap(
-		progressBar: ProgressBar,
 		remapper: CustomRemapper,
 		classes: Collection<ClassNode>,
 		passThrough: MutableMap<String, ByteArray>
 	) {
-		progressBar.extraMessage = "Classes"
 		for (classNode in classes) {
 			if (!CObfuscator.isExcluded(classNode)) {
 				remapper.map(classNode.name, namer.uniqueRandomString())
 			}
-			progressBar.step()
 		}
 	}
 }

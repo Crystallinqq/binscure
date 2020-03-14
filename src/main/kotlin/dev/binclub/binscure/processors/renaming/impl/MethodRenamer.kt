@@ -25,14 +25,11 @@ object MethodRenamer: AbstractRenamer() {
 	override fun getTaskName(): String = "Remapping Methods"
 	
 	override fun remap(
-		progressBar: ProgressBar,
 		remapper: CustomRemapper,
 		classes: Collection<ClassNode>,
 		passThrough: MutableMap<String, ByteArray>
 	) {
-		progressBar.extraMessage = "Methods"
 		for (classNode in classes) {
-			progressBar.step()
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			

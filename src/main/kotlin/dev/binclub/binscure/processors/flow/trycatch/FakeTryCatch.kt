@@ -2,7 +2,10 @@ package dev.binclub.binscure.processors.flow.trycatch
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.transformers.FlowObfuscationSeverity
+import dev.binclub.binscure.api.transformers.FlowObfuscationSeverity.NORMAL
 import dev.binclub.binscure.configuration.ConfigurationManager
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.kotlin.add
 import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.runtime.randomOpaqueJump
@@ -17,7 +20,11 @@ import org.objectweb.asm.tree.*
  */
 object FakeTryCatch: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (classNode in CObfuscator.getProgressBar("Adding try catches").wrap(classes)) {
+		if (!rootConfig.flowObfuscation.enabled) {
+			return
+		}
+		
+		for (classNode in classes) {
 			if (!CObfuscator.isExcluded(classNode)) {
 				for (method in classNode.methods) {
 					if (CObfuscator.noMethodInsns(method))// || !CObfuscator.randomWeight(5))
@@ -29,13 +36,14 @@ object FakeTryCatch: IClassProcessor {
 		}
 	}
 	
-	fun addFakeTryCatches(methodNode: MethodNode) {
+	private fun addFakeTryCatches(methodNode: MethodNode) {
+		methodNode.tryCatchBlocks = methodNode.tryCatchBlocks ?: arrayListOf()
 		methodNode.tryCatchBlocks.addAll(
 			addFakeTryCatches(methodNode.instructions)
 		)
 	}
 	
-	fun addFakeTryCatches(insnList: InsnList): Array<TryCatchBlockNode> {
+	private fun addFakeTryCatches(insnList: InsnList): Array<TryCatchBlockNode> {
 		val switchStart = BlameableLabelNode()
 		val fakeEnd = BlameableLabelNode()
 		val start = BlameableLabelNode()
@@ -45,25 +53,41 @@ object FakeTryCatch: IClassProcessor {
 		val dead = BlameableLabelNode()
 		val dead2 = BlameableLabelNode()
 		
-		val list = InsnList()
-			.apply {
+		val list = if (rootConfig.flowObfuscation.severity == NORMAL) {
+			InsnList()
+				.apply {
+					add(start)
+					add(ACONST_NULL)
+					add(randomOpaqueJump(handler, false))
+					if (rootConfig.crasher.enabled) {
+						add(TypeInsnNode(CHECKCAST, "give up"))
+					}
+					add(end)
+					add(POP)
+				} to InsnList().apply {
+					add(handler)
+					add(DUP)
+					add(JumpInsnNode(IFNULL, end))
+					add(ATHROW)
+					add(secondCatch)
+				}
+		} else {
+			InsnList().apply {
 				add(switchStart)
 				add(start)
 				add(InsnNode(ACONST_NULL))
 				add(randomOpaqueJump(secondCatch, false))
 				add(InsnNode(POP))
 				add(InsnNode(ACONST_NULL))
-				if (ConfigurationManager.rootConfig.crasher.enabled) {
+				if (rootConfig.crasher.enabled) {
 					add(TypeInsnNode(CHECKCAST, "give up"))
 				}
 				add(JumpInsnNode(GOTO, handler))
 				add(fakeEnd)
+				add(TypeInsnNode(CHECKCAST, "java/lang/Throwable"))
 				add(InsnNode(ATHROW))
 				add(end)
-			}
-		
-		val endList = InsnList()
-			.apply {
+			} to InsnList().apply {
 				add(dead)
 				add(POP)
 				add(JumpInsnNode(GOTO, end))
@@ -74,20 +98,25 @@ object FakeTryCatch: IClassProcessor {
 				add(handler)
 				add(DUP)
 				add(JumpInsnNode(IFNULL, dead))
+				add(TypeInsnNode(CHECKCAST, "java/lang/Throwable"))
 				add(InsnNode(ATHROW))
 				add(secondCatch)
 				add(DUP)
 				add(JumpInsnNode(IFNULL, dead2))
+				add(TypeInsnNode(CHECKCAST, "java/lang/Throwable"))
 				add(InsnNode(ATHROW))
 			}
+		}
 		
-		insnList.insert(list)
-		insnList.add(endList)
+		insnList.insert(list.first)
+		insnList.add(list.second)
 		return arrayOf(
 			TryCatchBlockNode(start, end, handler, randomThrowable()),
-			TryCatchBlockNode(fakeEnd, end, secondCatch, randomThrowable()),
-			TryCatchBlockNode(handler, secondCatch, handler, randomThrowable()),
-			TryCatchBlockNode(start, fakeEnd, secondCatch, randomThrowable())
+			TryCatchBlockNode(handler, secondCatch, handler, randomThrowable())
+			//TryCatchBlockNode(start, end, handler, randomThrowable()),
+			//TryCatchBlockNode(fakeEnd, end, secondCatch, randomThrowable()),
+			//TryCatchBlockNode(handler, secondCatch, handler, randomThrowable()),
+			//TryCatchBlockNode(start, fakeEnd, secondCatch, randomThrowable())
 		
 		)
 	}

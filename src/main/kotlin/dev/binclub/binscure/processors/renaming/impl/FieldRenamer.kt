@@ -24,7 +24,6 @@ object FieldRenamer: AbstractRenamer() {
 	override fun getTaskName(): String = "Remapping Fields"
 	
 	override fun remap(
-		progressBar: ProgressBar,
 		remapper: CustomRemapper,
 		classes: Collection<ClassNode>,
 		passThrough: MutableMap<String, ByteArray>
@@ -55,8 +54,6 @@ object FieldRenamer: AbstractRenamer() {
 					remapChildren(remapper, classTree, field.name, field.desc, newName)
 				}
 			}
-			
-			progressBar.step()
 		}
 	}
 	

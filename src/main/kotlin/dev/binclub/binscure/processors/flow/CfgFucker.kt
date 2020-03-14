@@ -19,7 +19,7 @@ object CfgFucker: IClassProcessor {
 		if (!rootConfig.flowObfuscation.enabled) {
 			return
 		}
-		var aggresiveness = FlowObfuscationSeverity.values().size - (rootConfig.flowObfuscation.severity.ordinal + 1)
+		val aggresiveness = FlowObfuscationSeverity.values().size - (rootConfig.flowObfuscation.severity.ordinal)
 		
 		for (classNode in classes.toTypedArray()) {
 			if (CObfuscator.isExcluded(classNode) || classNode.access.hasAccess(ACC_INTERFACE))

@@ -17,7 +17,7 @@ object LocalVariableRenamer: IClassProcessor {
 			return
 		
 		val name = ConfigurationManager.rootConfig.remap.localVariableName
-		for (classNode in CObfuscator.getProgressBar("Renaming Local Variables").wrap(classes)) {
+		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			

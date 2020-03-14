@@ -1,5 +1,5 @@
-input: out/artifacts/obftest_jar/obftest.jar
-output: obftest-obf.jar
+input: BasicStringObfuscation.jar
+output: BasicStringObfuscation-obf.jar
 
 # The mappings created by the obfuscator are saved to this csv file
 mappingFile: mappings.csv
@@ -7,12 +7,12 @@ mappingFile: mappings.csv
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
-    enabled: false
+    enabled: true
     localVariableName: ""
 
 # Strip source file information
 sourceStrip:
-    enabled: false
+    enabled: true
     # Default is REMOVE, options [KEEP/REMOVE]
     lineNumbers: REMOVE
 
@@ -23,21 +23,20 @@ kotlinMetadata:
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
-    enabled: false
+    enabled: true
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: false
+    enabled: true
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
 stringObfuscation:
-    enabled: false
+    enabled: true
 
 flowObfuscation:
     enabled: true
-    severity: NORMAL
-    mergeMethods: BLOAT_CLASSES
+    severity: AGGRESSIVE
 
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false

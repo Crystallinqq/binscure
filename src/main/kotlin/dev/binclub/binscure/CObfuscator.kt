@@ -20,8 +20,10 @@ import dev.binclub.binscure.processors.debug.SourceStripper
 import dev.binclub.binscure.processors.exploit.BadClinit
 import dev.binclub.binscure.processors.exploit.BadIndyConstant
 import dev.binclub.binscure.processors.flow.CfgFucker
+import dev.binclub.binscure.processors.flow.ObscurePop
 import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
 import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
+import dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch
 import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.processors.renaming.impl.FieldRenamer
@@ -90,14 +92,13 @@ object CObfuscator {
 		val processors = arrayOf(
 			OpaqueRuntimeManager,
 			FieldInitialiser,
+			AccessStripper,
 			
 			NumberObfuscation,
 			
 			CfgFucker,
-			AccessStripper,
 			BadClinit,
 			ClassInitMonitor,
-			StaticMethodMerger,
 			
 			SourceStripper,
 			KotlinMetadataStripper,
@@ -112,6 +113,8 @@ object CObfuscator {
 			
 			BadIndyConstant,
 			FakeTryCatch,
+			UselessTryCatch,
+			StaticMethodMerger,
 			
 			ManifestResourceProcessor
 		)
@@ -134,7 +137,6 @@ object CObfuscator {
 			print("\r")
 		}
 		OpaqueRuntimeManager.classNode.apply {
-			classes.add(this)
 			ClassPath.classes[this.name] = this
 			ClassPath.classPath[this.name] = this
 		}

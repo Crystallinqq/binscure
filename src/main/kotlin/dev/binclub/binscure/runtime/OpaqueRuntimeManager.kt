@@ -11,6 +11,7 @@ import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import kotlin.math.max
 
@@ -20,8 +21,9 @@ import kotlin.math.max
 object OpaqueRuntimeManager: IClassProcessor {
 	lateinit var classes: MutableCollection<ClassNode>
 	lateinit var classNode: ClassNode
+	lateinit var consumeMethodName: String
 	
-	val clinit by lazy {
+	private val clinit by lazy {
 		MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also {
 			it.instructions.add(InsnNode(RETURN))
 			classNode.methods.add(it)
@@ -32,9 +34,9 @@ object OpaqueRuntimeManager: IClassProcessor {
 		Array(num) { generateField() }
 	}
 	
-	val namer = NameGenerator()
+	private val namer = NameGenerator()
 	
-	fun generateField(): FieldInfo {
+	private fun generateField(): FieldInfo {
 		val fieldNode = FieldNode(
 			ACC_PUBLIC + ACC_STATIC,
 			namer.uniqueRandomString(),
@@ -82,16 +84,38 @@ object OpaqueRuntimeManager: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		this.classes = classes
 		classNode = ClassNode().apply {
-			this.access = Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL
+			this.access = ACC_PUBLIC
 			this.version = OpaqueRuntimeManager.classes.first().version
 			this.name = ClassRenamer.namer.uniqueRandomString()
 			this.signature = null
 			this.superName = "java/lang/Object"
-			println("Opaque " + this.name)
+			
+			consumeMethodName = namer.uniqueRandomString()
+			methods.add(makeConsumeMethod(consumeMethodName, "Z"))
+			methods.add(makeConsumeMethod(consumeMethodName, "C"))
+			methods.add(makeConsumeMethod(consumeMethodName, "B"))
+			methods.add(makeConsumeMethod(consumeMethodName, "S"))
+			methods.add(makeConsumeMethod(consumeMethodName, "I"))
+			methods.add(makeConsumeMethod(consumeMethodName, "F"))
+			methods.add(makeConsumeMethod(consumeMethodName, "J"))
+			methods.add(makeConsumeMethod(consumeMethodName, "D"))
+			methods.add(makeConsumeMethod(consumeMethodName, "Ljava/lang/Object;"))
 		}
 	}
 	
 	data class FieldInfo(val fieldNode: FieldNode, val trueOpcode: Int, val falseOpcode: Int)
+	
+	private fun makeConsumeMethod(name: String, type: String): MethodNode = MethodNode(
+		ACC_PUBLIC + ACC_STATIC,
+		name,
+		"($type)V",
+		null,
+		null
+	).apply {
+		instructions = InsnList().apply {
+			add(RETURN)
+		}
+	}
 }
 
 fun randomOpaqueJump(target: LabelNode, jumpOver: Boolean = true): InsnList {
