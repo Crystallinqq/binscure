@@ -16,6 +16,8 @@ import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import org.objectweb.asm.util.CheckClassAdapter
 import java.io.PrintStream
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import java.security.SecureRandom
 
 
@@ -314,4 +316,13 @@ fun genericType(type: Type): Type {
 		Type.OBJECT -> Type.getType(Any::class.java)
 		else -> type
 	}
+}
+
+@Throws(Exception::class)
+fun Field.setFinalStatic(newValue: Any?) {
+	isAccessible = true
+	val modifiersField: Field = Field::class.java.getDeclaredField("modifiers")
+	modifiersField.isAccessible = true
+	modifiersField.setInt(this, modifiers and Modifier.FINAL.inv())
+	this.set(null, newValue)
 }

@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import static java.util.Objects.hash;
+
 /**
  * A {@link MethodVisitor} that generates a corresponding 'method_info' structure, as defined in the
  * Java Virtual Machine Specification (JVMS).
@@ -1241,7 +1243,19 @@ final class MethodWriter extends MethodVisitor {
 	public void visitLdcInsn(final Object value) {
 		lastBytecodeOffset = code.length;
 		// Add the instruction to the bytecode of the method.
-		Symbol constantSymbol = symbolTable.addConstant(value);
+		SymbolTable.Entry constantSymbol = (SymbolTable.Entry) symbolTable.addConstant(value);
+		/*if (value.toString().equals("INVALID_LDC_BINSCURE")) {
+			constantSymbol = new SymbolTable.Entry(
+					symbolTable.addConstantUtf8((String)value),
+					Symbol.CONSTANT_UTF8_TAG,
+					null,
+					null,
+					(String)value,
+					0,
+					hash(Symbol.CONSTANT_UTF8_TAG, value)
+			);
+		}*/
+		
 		int constantIndex = constantSymbol.index;
 		char firstDescriptorChar;
 		boolean isLongOrDouble =

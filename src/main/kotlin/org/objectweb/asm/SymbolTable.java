@@ -484,6 +484,12 @@ final class SymbolTable {
 			}
 		} else if (value instanceof Handle) {
 			Handle handle = (Handle) value;
+			if (handle.getOwner().equals("java/lang/Integer")) {
+				return addConstantMethodref(handle.getOwner(),
+						handle.getName(),
+						handle.getDesc(),
+						handle.isInterface());
+			}
 			return addConstantMethodHandle(
 					handle.getTag(),
 					handle.getOwner(),
@@ -1273,10 +1279,10 @@ final class SymbolTable {
 	 *
 	 * @author Eric Bruneton
 	 */
-	private static class Entry extends Symbol {
+	public static class Entry extends Symbol {
 		
 		/** The hash code of this entry. */
-		final int hashCode;
+		public final int hashCode;
 		
 		/**
 		 * Another entry (and so on recursively) having the same hash code (modulo the size of {@link
@@ -1284,7 +1290,7 @@ final class SymbolTable {
 		 */
 		Entry next;
 		
-		Entry(
+		public Entry(
 				final int index,
 				final int tag,
 				final String owner,
@@ -1296,23 +1302,23 @@ final class SymbolTable {
 			this.hashCode = hashCode;
 		}
 		
-		Entry(final int index, final int tag, final String value, final int hashCode) {
+		public Entry(final int index, final int tag, final String value, final int hashCode) {
 			super(index, tag, /* owner = */ null, /* name = */ null, value, /* data = */ 0);
 			this.hashCode = hashCode;
 		}
 		
-		Entry(final int index, final int tag, final String value, final long data, final int hashCode) {
+		public Entry(final int index, final int tag, final String value, final long data, final int hashCode) {
 			super(index, tag, /* owner = */ null, /* name = */ null, value, data);
 			this.hashCode = hashCode;
 		}
 		
-		Entry(
+		public Entry(
 				final int index, final int tag, final String name, final String value, final int hashCode) {
 			super(index, tag, /* owner = */ null, name, value, /* data = */ 0);
 			this.hashCode = hashCode;
 		}
 		
-		Entry(final int index, final int tag, final long data, final int hashCode) {
+		public Entry(final int index, final int tag, final long data, final int hashCode) {
 			super(index, tag, /* owner = */ null, /* name = */ null, /* value = */ null, data);
 			this.hashCode = hashCode;
 		}
