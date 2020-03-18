@@ -6,6 +6,7 @@ import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.kotlin.*
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
+import dev.binclub.binscure.runtime.OpaqueRuntimeManager
 import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes.*
@@ -56,7 +57,7 @@ object StringObfuscator: IClassProcessor {
 					this.version = stringInsns[0].classNode.version
 					this.name = ClassRenamer.namer.uniqueRandomString()
 					this.signature = null
-					this.superName = "java/util/concurrent/ConcurrentHashMap"
+					this.superName = OpaqueRuntimeManager.classNode.name
 					classes.add(this)
 					ClassPath.classes[this.name] = this
 					ClassPath.classPath[this.name] = this
@@ -420,11 +421,20 @@ object StringObfuscator: IClassProcessor {
 			instructions.apply {
 				add(VarInsnNode(ALOAD, 0))
 				add(DUP)
-				add(MethodInsnNode(INVOKESPECIAL, classNode.superName, "<init>", "()V"))
+				add(MethodInsnNode(INVOKESPECIAL, OpaqueRuntimeManager.classNode.superName, "<init>", "()V"))
+				add(TypeInsnNode(CHECKCAST, storageField.desc))
 				add(FieldInsnNode(PUTSTATIC, classNode.name, storageField.name, storageField.desc))
 				add(RETURN)
 			}
-			classNode.methods.add(this)
+			OpaqueRuntimeManager.classNode.methods.add(this)
+			
+			classNode.methods.add(MethodNode(0, "<init>", "()V", null, null).apply {
+				instructions.apply {
+					add(VarInsnNode(ALOAD, 0))
+					add(MethodInsnNode(INVOKESPECIAL, classNode.superName, "<init>", "()V"))
+					add(RETURN)
+				}
+			})
 		}
 	}
 	

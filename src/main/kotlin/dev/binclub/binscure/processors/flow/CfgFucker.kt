@@ -31,6 +31,7 @@ object CfgFucker: IClassProcessor {
 				
 				val modifier = InstructionModifier()
 				val endings = hashSetOf<InsnList>()
+				
 				for (insn in method.instructions) {
 					if (
 						insn.next != null

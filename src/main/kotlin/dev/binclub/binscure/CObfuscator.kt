@@ -92,12 +92,6 @@ object CObfuscator {
 			FieldInitialiser,
 			AccessStripper,
 			
-			/*NumberObfuscation,
-			
-			CfgFucker,
-			BadClinit,
-			ClassInitMonitor,
-			
 			SourceStripper,
 			KotlinMetadataStripper,
 			
@@ -106,13 +100,17 @@ object CObfuscator {
 			FieldRenamer,
 			ClassRenamer,
 			
-			FakeTryCatch,
-			UselessTryCatch,
-			*/
-			
 			StringObfuscator,
 			//DynamicCallObfuscation,
+			
+			CfgFucker,
+			BadClinit,
+			ClassInitMonitor,
+			FakeTryCatch,
+			UselessTryCatch,
+			
 			StaticMethodMerger,
+			NumberObfuscation,
 			
 			BadAttributeExploit,
 			BadIndyConstant,

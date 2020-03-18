@@ -88,7 +88,7 @@ object OpaqueRuntimeManager: IClassProcessor {
 			this.version = OpaqueRuntimeManager.classes.first().version
 			this.name = ClassRenamer.namer.uniqueRandomString()
 			this.signature = null
-			this.superName = "java/lang/Object"
+			this.superName = "java/util/concurrent/ConcurrentHashMap"
 			
 			consumeMethodName = namer.uniqueRandomString()
 			methods.add(makeConsumeMethod(consumeMethodName, "Z"))
