@@ -21,7 +21,8 @@ data class RootConfiguration(
 	val indirection: IndirectionConfiguration,
 	val stringObfuscation: StringObfuscationConfiguration,
 	val flowObfuscation: FlowObfuscationConfiguration,
-	val ignoreClassPathNotFound: Boolean = false
+	val ignoreClassPathNotFound: Boolean = false,
+	val useJavaClassloader: Boolean = false
 ) {
 	override fun toString(): String  = """
 		|RootConfig

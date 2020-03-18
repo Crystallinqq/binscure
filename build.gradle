@@ -54,10 +54,6 @@ dependencies {
     compile 'org.ow2.asm:asm-commons:7.1'
     compile 'org.ow2.asm:asm-util:7.1'
 
-    //compile "codes.som.anthony:koffee:7.1.0"
-
-    compile group: 'me.tongfei', name: 'progressbar', version: '0.8.0'
-
     compile 'com.sksamuel.hoplite:hoplite-core:1.1.4'
     compile 'com.sksamuel.hoplite:hoplite-yaml:1.1.4'
     compile 'com.sksamuel.hoplite:hoplite-json:1.1.4'

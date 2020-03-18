@@ -9,31 +9,16 @@ import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
 import dev.binclub.binscure.kotlin.internalName
 import dev.binclub.binscure.kotlin.whenNotNull
-import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
-import dev.binclub.binscure.processors.constants.FieldInitialiser
-import dev.binclub.binscure.processors.constants.NumberObfuscation
-import dev.binclub.binscure.processors.constants.StringObfuscator
-import dev.binclub.binscure.processors.debug.AccessStripper
-import dev.binclub.binscure.processors.debug.KotlinMetadataStripper
-import dev.binclub.binscure.processors.debug.SourceStripper
-import dev.binclub.binscure.processors.exploit.BadAttributeExploit
-import dev.binclub.binscure.processors.exploit.BadClinit
-import dev.binclub.binscure.processors.exploit.BadIndyConstant
-import dev.binclub.binscure.processors.flow.CfgFucker
-import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
-import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
-import dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch
-import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
-import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
-import dev.binclub.binscure.processors.renaming.impl.FieldRenamer
-import dev.binclub.binscure.processors.renaming.impl.LocalVariableRenamer
-import dev.binclub.binscure.processors.renaming.impl.MethodRenamer
-import dev.binclub.binscure.processors.resources.ManifestResourceProcessor
-import dev.binclub.binscure.runtime.OpaqueRuntimeManager
-import me.tongfei.progressbar.CustomProcessRenderer
-import me.tongfei.progressbar.ProgressBar
-import me.tongfei.progressbar.ProgressBarStyle
-import me.tongfei.progressbar.getConsoleConsumer
+import dev.binclub.binscure.processors.classmerge.*
+import dev.binclub.binscure.processors.constants.*
+import dev.binclub.binscure.processors.debug.*
+import dev.binclub.binscure.processors.exploit.*
+import dev.binclub.binscure.processors.flow.*
+import dev.binclub.binscure.processors.flow.classinit.*
+import dev.binclub.binscure.processors.flow.trycatch.*
+import dev.binclub.binscure.processors.renaming.impl.*
+import dev.binclub.binscure.processors.resources.*
+import dev.binclub.binscure.runtime.*
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
@@ -42,7 +27,6 @@ import java.io.FileOutputStream
 import java.io.PrintWriter
 import java.lang.reflect.Modifier
 import java.security.SecureRandom
-import java.text.DecimalFormat
 import java.time.Duration
 import java.time.Instant
 
@@ -57,21 +41,6 @@ object CObfuscator {
 		}
 	}
 	val mappings = mutableMapOf<String, String>()
-	
-	fun getProgressBar(taskName: String) =
-		ProgressBar(
-			" " + taskName.padEnd(24),
-			0,
-			200,
-			CustomProcessRenderer(
-				ProgressBarStyle.ASCII,
-				"",
-				1,
-				false,
-				DecimalFormat("#.0")
-			),
-			getConsoleConsumer()
-		)
 	
 	operator fun invoke() {
 		val start = Instant.now()

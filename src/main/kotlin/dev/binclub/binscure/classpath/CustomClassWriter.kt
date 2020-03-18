@@ -18,8 +18,8 @@ class CustomClassWriter(flags: Int): ClassWriter(flags) {
 	}
 	
 	private fun <T> warn(type: String, out: T): T {
-		if (!rootConfig.ignoreClassPathNotFound && warnings.add(type)) {
-			System.err.println("WARNING: <$type> was not found in the classpath, may cause sideaffects")
+		if (!rootConfig.ignoreClassPathNotFound && type != "give up" && type != "java/lang/YourMum" && warnings.add(type)) {
+			System.err.println("WARNING: $type was not found in the classpath, may cause sideaffects")
 		}
 		return out
 	}

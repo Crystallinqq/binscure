@@ -191,7 +191,6 @@ object StaticMethodMerger: IClassProcessor {
 									modifier.prepend(insn, InsnList().apply {
 										add(ldcInt(3))
 									})
-									println("Prepended to ${newMethod.name}")
 								}
 							}
 						}

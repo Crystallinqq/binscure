@@ -43,3 +43,6 @@ flowObfuscation:
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false
 ignoreClassPathNotFound: false
+
+# Use the java classloader rather than ASM to load libraries, might offer better peformane
+useJavaClassloader: false

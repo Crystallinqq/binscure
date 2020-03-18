@@ -10,26 +10,27 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.reflect.Field
-import java.nio.file.attribute.FileTime
+import java.net.URL
+import java.net.URLClassLoader
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.zip.CRC32
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import kotlin.random.Random
+
 
 /**
  * @author cookiedragon234 25/Jan/2020
  */
 object ClassPathIO {
 	fun loadInputJar(file: File) {
-		//CObfuscator.getProgressBar("Loading Input").use { progressBar ->
+		if (rootConfig.useJavaClassloader) {
+			addFileToClassPath(file)
+		} else {
 			JarFile(file).use {
-				//progressBar.maxHint(it.size().toLong())
 				for (entry in it.entries()) {
 					val bytes = it.getInputStream(entry).readBytes()
 					if (!entry.isDirectory && entry.name.endsWith(".class") && !entry.name.endsWith("module-info.class")) {
@@ -47,17 +48,16 @@ object ClassPathIO {
 					} else if (!entry.isDirectory) {
 						ClassPath.passThrough[entry.name] = bytes
 					}
-					//progressBar.step()
 				}
 			}
-		//}
+		}
 	}
 	
 	fun loadClassPath(files: Collection<File>) {
 		if (files.isEmpty())
 			return
 		
-		for (file in CObfuscator.getProgressBar("Loading Libraries").wrap(files)) {
+		for (file in files) {
 			JarFile(file).use {
 				for (entry in it.entries()) {
 					if (!entry.isDirectory && entry.name.endsWith(".class")) {
@@ -176,4 +176,10 @@ object ClassPathIO {
 			}
 		}
 	}
+	
+	private fun addFileToClassPath(file: File) =
+		URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java).let {
+			it.isAccessible = true
+			it(ClassLoader.getSystemClassLoader(), file.toURI().toURL())
+		}
 }
