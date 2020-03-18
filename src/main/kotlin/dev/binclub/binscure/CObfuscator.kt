@@ -108,10 +108,11 @@ object CObfuscator {
 			
 			FakeTryCatch,
 			UselessTryCatch,
-			StaticMethodMerger,*/
+			*/
 			
 			StringObfuscator,
 			//DynamicCallObfuscation,
+			StaticMethodMerger,
 			
 			BadAttributeExploit,
 			BadIndyConstant,

@@ -19,6 +19,7 @@ object StringObfuscator: IClassProcessor {
 	val key = random.nextInt(Int.MAX_VALUE)
 	
 	var decryptNode: ClassNode? = null
+	var decryptMethod: MethodNode? = null
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!ConfigurationManager.rootConfig.stringObfuscation.enabled) {
@@ -74,6 +75,7 @@ object StringObfuscator: IClassProcessor {
 			generateInitFunc(decryptNode, storageField)
 			
 			val decryptorMethod = generateDecrypterMethod(decryptNode, storageField, stringInsns)
+			this.decryptMethod = decryptorMethod
 			
 			decryptNode.methods.add(MethodNode(ACC_PUBLIC + ACC_STATIC, "0", "(Ljava/lang/String;)Ljava/lang/String;", null, null).apply {
 				instructions.apply {
@@ -187,11 +189,6 @@ object StringObfuscator: IClassProcessor {
 			add(ldcInt(9))
 			add(IADD)
 			add(JumpInsnNode(GOTO, switchImmediate))
-			//add(LookupSwitchInsnNode(
-			//	switchEnd,
-			//	intArrayOf(0, 1, 2, 3, 4, 5),
-			//	arrayOf(l0, l1, l2, l3, l4, l5)
-			//))
 			
 			// Fake try catch start
 			add(start)

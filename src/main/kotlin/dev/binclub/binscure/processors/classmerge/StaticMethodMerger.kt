@@ -1,5 +1,6 @@
 package dev.binclub.binscure.processors.classmerge
 
+import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.isExcluded
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.transformers.MergeMethods
@@ -10,6 +11,7 @@ import dev.binclub.binscure.kotlin.add
 import dev.binclub.binscure.kotlin.clone
 import dev.binclub.binscure.kotlin.hasAccess
 import dev.binclub.binscure.kotlin.random
+import dev.binclub.binscure.processors.constants.StringObfuscator
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.runtime.OpaqueRuntimeManager
@@ -42,7 +44,16 @@ object StaticMethodMerger: IClassProcessor {
 		val staticMethods = hashMapOf<String, MutableSet<Pair<ClassNode, MethodNode>>>()
 		
 		for (classNode in classes) {
+			if (classNode.name == StringObfuscator.decryptNode?.name)
+				continue
+			
+			if (CObfuscator.isExcluded(classNode))
+				continue
+			
 			for (method in classNode.methods) {
+				if (CObfuscator.isExcluded(classNode, method))
+					continue
+				
 				if (
 					!method.name.startsWith('<')
 					&&
@@ -60,7 +71,7 @@ object StaticMethodMerger: IClassProcessor {
 		var classNode: ClassNode? = null
 		
 		if (staticMethods.isNotEmpty()) {
-			val namer = NameGenerator("\$o")
+			val namer = NameGenerator(rootConfig.remap.methodPrefix)
 			
 			for ((desc, methods) in staticMethods) {
 				val it = methods.shuffled(random).iterator()
@@ -166,6 +177,26 @@ object StaticMethodMerger: IClassProcessor {
 					secondMethod.tryCatchBlocks = null
 					if (secondMethod.localVariables != null) newMethod.localVariables.addAll(incrementLocalVars(secondMethod.localVariables, secondStatic))
 					secondMethod.localVariables = null
+					
+					if (StringObfuscator.decryptNode != null) {
+						val modifier = InstructionModifier()
+						for (insn in newMethod.instructions) {
+							if (insn is MethodInsnNode) {
+								if (
+									insn.owner == StringObfuscator.decryptNode!!.name
+									&&
+									insn.name == StringObfuscator.decryptMethod!!.name
+								) {
+									insn.desc = "(Ljava/lang/String;I)Ljava/lang/String;"
+									modifier.prepend(insn, InsnList().apply {
+										add(ldcInt(3))
+									})
+									println("Prepended to ${newMethod.name}")
+								}
+							}
+						}
+						modifier.apply(newMethod)
+					}
 				}
 			}
 		}
