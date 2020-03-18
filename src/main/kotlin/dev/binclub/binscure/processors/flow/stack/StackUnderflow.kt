@@ -4,6 +4,7 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.InstructionModifier
+import dev.binclub.binscure.utils.newLabel
 import dev.binclub.binscure.utils.randomStaticInvoke
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.IFNONNULL
@@ -21,7 +22,7 @@ object StackUnderflow: IClassProcessor {
 					val modifier = InstructionModifier()
 					for (insn in method.instructions) {
 						if (insn is JumpInsnNode) {
-							val start = BlameableLabelNode()
+							val start = newLabel()
 							val before = InsnList().apply {
 								add(randomStaticInvoke())
 								add(JumpInsnNode(IFNONNULL, start))

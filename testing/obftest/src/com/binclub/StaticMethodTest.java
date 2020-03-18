@@ -14,30 +14,21 @@ public class StaticMethodTest implements Test {
 	}
 	
 	public static boolean doOne(String thing) {
-		try {
-			if (thing.equals("hello")) {
-				if (thing.charAt(0) == 'h') {
-					return true;
-				}
+		if (thing.equals("hello")) {
+			if (thing.charAt(0) == 'h') {
+				return true;
 			}
-		} catch (Exception e) {
-			return false;
 		}
-		return false;
+		throw new AssertionError(thing + " != " + "hello");
 	}
 	
 	public static boolean doTwo(String thing) {
-		try {
-			if (thing.equals("goodbye")) {
-				if (thing.charAt(0) == 'g') {
-					return true;
-				}
+		if (thing.equals("goodbye")) {
+			if (thing.charAt(0) == 'g') {
+				throw new AssertionError(thing + " == " + "goodbye");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			return false;
 		}
+		return false;
 	}
 	
 	public static boolean doThree(String thing) {
@@ -46,6 +37,6 @@ public class StaticMethodTest implements Test {
 				return true;
 			}
 		}
-		return false;
+		throw new AssertionError(thing + " != " + "goodbye");
 	}
 }

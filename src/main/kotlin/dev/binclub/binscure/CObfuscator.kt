@@ -9,9 +9,25 @@ import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
 import dev.binclub.binscure.kotlin.internalName
 import dev.binclub.binscure.kotlin.whenNotNull
+import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
 import dev.binclub.binscure.processors.constants.FieldInitialiser
+import dev.binclub.binscure.processors.constants.NumberObfuscation
+import dev.binclub.binscure.processors.constants.StringObfuscator
 import dev.binclub.binscure.processors.debug.AccessStripper
+import dev.binclub.binscure.processors.debug.KotlinMetadataStripper
+import dev.binclub.binscure.processors.debug.SourceStripper
 import dev.binclub.binscure.processors.exploit.BadAttributeExploit
+import dev.binclub.binscure.processors.exploit.BadClinit
+import dev.binclub.binscure.processors.exploit.BadIndyConstant
+import dev.binclub.binscure.processors.flow.CfgFucker
+import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
+import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
+import dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch
+import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
+import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
+import dev.binclub.binscure.processors.renaming.impl.FieldRenamer
+import dev.binclub.binscure.processors.renaming.impl.LocalVariableRenamer
+import dev.binclub.binscure.processors.renaming.impl.MethodRenamer
 import dev.binclub.binscure.processors.resources.ManifestResourceProcessor
 import dev.binclub.binscure.runtime.OpaqueRuntimeManager
 import me.tongfei.progressbar.CustomProcessRenderer
@@ -90,15 +106,15 @@ object CObfuscator {
 			FieldRenamer,
 			ClassRenamer,
 			
-			StringObfuscator,
-			//DynamicCallObfuscation,
-			
-			BadIndyConstant,
 			FakeTryCatch,
 			UselessTryCatch,
 			StaticMethodMerger,*/
 			
+			StringObfuscator,
+			//DynamicCallObfuscation,
+			
 			BadAttributeExploit,
+			BadIndyConstant,
 			
 			ManifestResourceProcessor
 		)

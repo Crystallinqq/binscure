@@ -8,6 +8,7 @@ import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.InstructionModifier
 import dev.binclub.binscure.utils.ldcInt
+import dev.binclub.binscure.utils.newLabel
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -34,10 +35,10 @@ object TableSwitchJump: IClassProcessor {
 						if (insn.opcode == GOTO)
 							continue
 						
-						val trueL = BlameableLabelNode()
-						val proxyTrue = BlameableLabelNode()
-						val switch = BlameableLabelNode()
-						val falseGoto = BlameableLabelNode()
+						val trueL = newLabel()
+						val proxyTrue = newLabel()
+						val switch = newLabel()
+						val falseGoto = newLabel()
 						
 						val rand = if (random.nextBoolean()) {
 							random.nextInt(Integer.MAX_VALUE)
@@ -58,7 +59,7 @@ object TableSwitchJump: IClassProcessor {
 							add(JumpInsnNode(GOTO, switch))
 							add(proxyTrue)
 							
-							val al = BlameableLabelNode()
+							val al = newLabel()
 							add(randomOpaqueJump(al))
 							if (!method.isStatic()) {
 								add(VarInsnNode(ALOAD, 0))

@@ -30,14 +30,14 @@ object OpaqueJumps: IClassProcessor {
 							} while (other == randInt || other == randInt - 1)
 							
 							val target = insn.label
-							val `else` = BlameableLabelNode()
+							val `else` = newLabel()
 							
-							val start = BlameableLabelNode()
-							val trueLabel = BlameableLabelNode()
-							val falseLabel = BlameableLabelNode()
-							val dummyLabel = BlameableLabelNode()
-							val switch = BlameableLabelNode()
-							val end = BlameableLabelNode()
+							val start = newLabel()
+							val trueLabel = newLabel()
+							val falseLabel = newLabel()
+							val dummyLabel = newLabel()
+							val switch = newLabel()
+							val end = newLabel()
 							
 							val list = insnListOf(
 								start,

@@ -7,6 +7,7 @@ import dev.binclub.binscure.kotlin.random
 import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.InstructionModifier
+import dev.binclub.binscure.utils.newLabel
 import dev.binclub.binscure.utils.randomThrowable
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
@@ -34,9 +35,9 @@ object UselessTryCatch: IClassProcessor {
 				var isInitialised = !method.name.startsWith("<")
 				
 				var handler: LabelNode? = null
-				val handlerEnd = BlameableLabelNode()
-				val endHandler = BlameableLabelNode()
-				val endHandlerEnd = BlameableLabelNode()
+				val handlerEnd = newLabel()
+				val endHandler = newLabel()
+				val endHandlerEnd = newLabel()
 				
 				val modifier = InstructionModifier()
 				for (insn in method.instructions) {
@@ -54,7 +55,7 @@ object UselessTryCatch: IClassProcessor {
 							continue
 						
 						if (handler == null) {
-							handler = BlameableLabelNode()
+							handler = newLabel()
 							
 							val handlerList = InsnList().apply {
 								add(JumpInsnNode(GOTO, handlerEnd))
@@ -77,11 +78,11 @@ object UselessTryCatch: IClassProcessor {
 							method.tryCatchBlocks.add(TryCatchBlockNode(endHandler, endHandlerEnd, handler, randomThrowable()))
 						}
 						
-						val beforeLabel2 = BlameableLabelNode()
-						val beforeLabel3 = BlameableLabelNode()
-						val afterLabel = BlameableLabelNode()
-						val afterLabel2 = BlameableLabelNode()
-						val afterLabel3 = BlameableLabelNode()
+						val beforeLabel2 = newLabel()
+						val beforeLabel3 = newLabel()
+						val afterLabel = newLabel()
+						val afterLabel2 = newLabel()
+						val afterLabel3 = newLabel()
 						
 						val before = InsnList().apply {
 							add(JumpInsnNode(GOTO, beforeLabel2))

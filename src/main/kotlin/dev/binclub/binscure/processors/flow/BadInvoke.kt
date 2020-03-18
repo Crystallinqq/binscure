@@ -5,6 +5,7 @@ import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.InstructionModifier
+import dev.binclub.binscure.utils.newLabel
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
@@ -34,7 +35,7 @@ object BadInvoke: IClassProcessor {
 							field = FieldNode(ACC_PUBLIC + ACC_STATIC, "\$badInvoke", Type.getDescriptor(String::class.java), null, null)
 						}
 						
-						val end = BlameableLabelNode()
+						val end = newLabel()
 						
 						val list = InsnList()
 							.apply {

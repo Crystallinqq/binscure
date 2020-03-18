@@ -19,19 +19,21 @@ public class StaticFieldTest implements Test {
 	
 	@Override
 	public void execute() {
-		if (
-			first.equals("first")
-			&&
-				second.equals("second")
-			&&
-				third.equals("third")
-			&&
-				fourth.equals("fourth")
-			&&
-				fifth.equals("fifth")
-		) {
-			return;
+		if (first.equals("first")) {
+			if (second.equals("second")) {
+				if (third.equals("third")) {
+					if (fourth.equals("fourth")) {
+						if (fifth.equals("fifth")) {
+							return;
+						}
+						throw new AssertionError(fifth + "!=" + "fifth");
+					}
+					throw new AssertionError(fourth + "!=" + "fourth");
+				}
+				throw new AssertionError(third + "!=" + "third");
+			}
+			throw new AssertionError(second + "!=" + "second");
 		}
-		throw new AssertionError();
+		throw new AssertionError(first + "!=" + "first");
 	}
 }

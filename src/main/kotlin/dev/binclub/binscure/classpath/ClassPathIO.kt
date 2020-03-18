@@ -86,11 +86,9 @@ object ClassPathIO {
 		JarOutputStream(fileOut).use {
 			namesField[it] = DummyHashSet<String>()
 			val crc = DummyCRC(0xDEADBEEF)
-			if (rootConfig.crasher.enabled) {
+			if (rootConfig.crasher.enabled && rootConfig.crasher.checksums) {
 				crcField[it] = crc
-				commentField[it] = ByteArray(32000) {0x06054b50.toByte()}
 				it.putNextEntry(ZipEntry("â\u3B25\u00d4\ud400®©¯\u00EB\u00A9\u00AE\u008D\u00AA\u002E"))
-				
 			}
 			
 			for ((name, bytes) in ClassPath.passThrough) {

@@ -13,10 +13,7 @@ import dev.binclub.binscure.kotlin.random
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.runtime.OpaqueRuntimeManager
-import dev.binclub.binscure.utils.BlameableLabelNode
-import dev.binclub.binscure.utils.getLoadForType
-import dev.binclub.binscure.utils.getRetForType
-import dev.binclub.binscure.utils.ldcInt
+import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
@@ -110,10 +107,10 @@ object StaticMethodMerger: IClassProcessor {
 					val baseInt = random.nextInt(Integer.MAX_VALUE - 2)
 					val keyInt = random.nextInt(Integer.MAX_VALUE)
 					
-					val firstStart = BlameableLabelNode()
-					val secondStart = BlameableLabelNode()
+					val firstStart = newLabel()
+					val secondStart = newLabel()
 					newMethod.instructions = InsnList().apply {
-						val default = BlameableLabelNode()
+						val default = newLabel()
 						add(default)
 						add(VarInsnNode(ILOAD, 1))
 						add(ldcInt(keyInt))

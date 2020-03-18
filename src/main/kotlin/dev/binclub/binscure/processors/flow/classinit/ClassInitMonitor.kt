@@ -7,6 +7,7 @@ import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.InstructionModifier
+import dev.binclub.binscure.utils.newLabel
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -32,7 +33,7 @@ object ClassInitMonitor: IClassProcessor {
 				
 				for (insn in method.instructions) {
 					if (insn is TypeInsnNode && insn.opcode == NEW) {
-						val fakeJump = BlameableLabelNode()
+						val fakeJump = newLabel()
 						
 						val heavy = CObfuscator.randomWeight(aggresiveness);
 						
