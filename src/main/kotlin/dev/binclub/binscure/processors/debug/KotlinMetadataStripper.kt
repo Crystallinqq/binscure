@@ -18,11 +18,7 @@ object KotlinMetadataStripper: IClassProcessor {
 			return
 		
 		for (classNode in classes) {
-			classNode.visibleAnnotations =
-				classNode.visibleAnnotations
-					?.stream()
-					?.filter {it.desc != "Lkotlin/Metadata;"}
-					?.collect(Collectors.toList())
+			classNode.visibleAnnotations = classNode.visibleAnnotations?.filter {it.desc != "Lkotlin/Metadata;"}
 			/*for (annotation in classNode.visibleAnnotations) {
 				if (annotation.desc == "Lkotlin/Metadata;") {
 					val header = createHeader(annotation)

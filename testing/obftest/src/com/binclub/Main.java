@@ -1,5 +1,6 @@
 package com.binclub;
 
+import com.binclub.annotationtest.AnnotationTest;
 import com.binclub.enumtest.EnumTest;
 
 import java.text.MessageFormat;
@@ -11,7 +12,8 @@ public class Main {
 		new EnumTest(),
 		new StaticFieldTest(),
 		new NumberTest(),
-		new ThrowableTest()
+		new ThrowableTest(),
+		new AnnotationTest()
 	};
 	
     public static void main(String[] args) {

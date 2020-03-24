@@ -1,6 +1,8 @@
 package com.binclub.annotationtest;
 
 import com.binclub.Test;
+import com.binclub.enumtest.EnumTest;
+import com.binclub.enumtest.TestEnum;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -8,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * @author cookiedragon234 24/Mar/2020
  */
-@TestAnnotation(first = "ghi", second = "jkl", third = false, fourth = @Deprecated())
+@TestAnnotation(first = "ghi", second = "jkl", third = false, fourth = @Deprecated(), fifth = TestEnum.FOUR)
 public class AnnotationTest implements Test {
 	@Override
 	public void execute() {
@@ -19,7 +21,10 @@ public class AnnotationTest implements Test {
 				if (annotation.second().equals("jkl")) {
 					if (annotation.third() == false) {
 						if (annotation.fourth() != null) {
-							break a;
+							if (annotation.fifth().name().equals("FOUR")) {
+								break a;
+							}
+							throw new AssertionError();
 						}
 						throw new AssertionError();
 					}
@@ -35,7 +40,10 @@ public class AnnotationTest implements Test {
 				if (annotation.second().equals("def")) {
 					if (annotation.third() == true) {
 						if (annotation.fourth() != null) {
-							break b;
+							if (annotation.fifth().name().equals("FIVE")) {
+								break b;
+							}
+							throw new AssertionError();
 						}
 						throw new AssertionError();
 					}
@@ -49,10 +57,11 @@ public class AnnotationTest implements Test {
 }
 
 @Retention(RetentionPolicy.RUNTIME)
-@TestAnnotation(first = "abc", second = "def", third = true, fourth = @Deprecated())
+@TestAnnotation(first = "abc", second = "def", third = true, fourth = @Deprecated(), fifth = TestEnum.FIVE)
 @interface TestAnnotation {
 	String first();
 	String second();
 	boolean third();
 	Deprecated fourth();
+	TestEnum fifth();
 }

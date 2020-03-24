@@ -1,6 +1,7 @@
 package dev.binclub.binscure.processors.renaming.impl
 
 import dev.binclub.binscure.CObfuscator
+import dev.binclub.binscure.CObfuscator.isExcluded
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager
@@ -32,7 +33,7 @@ object MethodRenamer: AbstractRenamer() {
 		passThrough: MutableMap<String, ByteArray>
 	) {
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode) || classNode.access.hasAccess(Opcodes.ACC_ANNOTATION))
+			if (isExcluded(classNode))
 				continue
 			
 			val classTree = ClassPath.hierachy[classNode.name] ?: continue

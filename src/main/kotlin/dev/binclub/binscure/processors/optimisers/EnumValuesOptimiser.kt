@@ -27,7 +27,7 @@ object EnumValuesOptimiser: IClassProcessor {
 					it.desc == "()$desc"
 					&&
 					it.instructions.size() >= 4
-				} ?: println("1").let {return}
+				} ?: return
 				
 				for (insn in valuesMethod.instructions) {
 					if (insn is MethodInsnNode) {
@@ -40,9 +40,7 @@ object EnumValuesOptimiser: IClassProcessor {
 								valuesMethod.instructions.remove(insn.next)
 							}
 							valuesMethod.instructions.remove(insn)
-							println("3")
 						}
-						println("2: " + "[${classNode.name}")
 					}
 				}
 			}
