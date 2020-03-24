@@ -13,6 +13,7 @@ import dev.binclub.binscure.processors.renaming.AbstractRenamer
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Opcodes.ACC_ENUM
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodNode
 import java.lang.RuntimeException
@@ -42,6 +43,9 @@ object MethodRenamer: AbstractRenamer() {
 					continue
 				
 				if (method.name.startsWith("<"))
+					continue
+				
+				if (classNode.access.hasAccess(ACC_ENUM) && method.name == "values")
 					continue
 				
 				if (!parentsHaveMethod(classTree, method)) {

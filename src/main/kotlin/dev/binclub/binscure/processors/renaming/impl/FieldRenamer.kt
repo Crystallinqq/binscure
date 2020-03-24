@@ -3,15 +3,10 @@ package dev.binclub.binscure.processors.renaming.impl
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
-import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.kotlin.hasAccess
-import dev.binclub.binscure.processors.constants.EnumObfuscator
 import dev.binclub.binscure.processors.renaming.AbstractRenamer
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
-import org.objectweb.asm.Opcodes.ACC_ANNOTATION
-import org.objectweb.asm.Opcodes.ACC_ENUM
 import org.objectweb.asm.tree.ClassNode
 import java.lang.RuntimeException
 
@@ -44,10 +39,6 @@ object FieldRenamer: AbstractRenamer() {
 						||
 						!checkConflictingDownwardsRemaps(remapper, classTree, newName, field.desc)
 					)
-					
-					if (field.access.hasAccess(ACC_ENUM) && classNode.access.hasAccess(ACC_ENUM)) {
-						EnumObfuscator.enumMappings.getOrPut(classNode, { hashMapOf() })[newName] = field.name
-					}
 					
 					if (!remapper.mapFieldName(classNode.name, field.name, field.desc, newName, false))
 						throw IllegalStateException("Illegal State mapping methods (Race Condition?)")
