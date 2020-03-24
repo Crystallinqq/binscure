@@ -4,7 +4,6 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.kotlin.replaceLast
-import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.utils.DummyHashSet
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -58,14 +57,18 @@ object ClassPathIO {
 			return
 		
 		for (file in files) {
-			JarFile(file).use {
-				for (entry in it.entries()) {
-					if (!entry.isDirectory && entry.name.endsWith(".class")) {
-						val classNode = ClassNode()
-						ClassReader(it.getInputStream(entry).readBytes())
-							.accept(classNode, ClassReader.EXPAND_FRAMES)
-						ClassPath.classPath[classNode.name] = classNode
-						ClassPath.originalNames[classNode] = classNode.name
+			if (file.isDirectory) {
+				loadClassPath(file.listFiles()!!.asList())
+			} else if (file.extension == "jar" || file.extension == "zip") {
+				JarFile(file).use {
+					for (entry in it.entries()) {
+						if (!entry.isDirectory && entry.name.endsWith(".class")) {
+							val classNode = ClassNode()
+							ClassReader(it.getInputStream(entry).readBytes())
+								.accept(classNode, ClassReader.EXPAND_FRAMES)
+							ClassPath.classPath[classNode.name] = classNode
+							ClassPath.originalNames[classNode] = classNode.name
+						}
 					}
 				}
 			}
@@ -98,45 +101,49 @@ object ClassPathIO {
 				it.closeEntry()
 			}
 			for (classNode in ClassPath.classes.values) {
-				if (!CObfuscator.isExcluded(classNode)) {
-					crc.overwrite = true
-					classNode.fields?.shuffle(random)
-					classNode.methods?.shuffle(random)
-					classNode.innerClasses?.shuffle(random)
-				}
-				
-				var name = "${classNode.name}.class"
-				if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
-					crc.overwrite = true
-					
-					it.putNextEntry(ZipEntry(name.replaceLast('/', "/\u0000")))
-					it.write(0x00)
-				}
-				
-				val entry = ZipEntry(name)
-				
-				if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
-					it.putNextEntry(ZipEntry(entry.name))
-				}
-				
-				it.putNextEntry(entry)
-				
-				var writer: ClassWriter
 				try {
-					writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
-					classNode.accept(writer)
-				} catch (e: Throwable) {
-					println("Error while writing class ${classNode.name}")
-					e.printStackTrace()
+					if (!CObfuscator.isExcluded(classNode)) {
+						crc.overwrite = true
+						classNode.fields?.shuffle(random)
+						classNode.methods?.shuffle(random)
+						classNode.innerClasses?.shuffle(random)
+					}
 					
-					writer = CustomClassWriter(0)
-					classNode.accept(writer)
+					var name = "${classNode.name}.class"
+					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
+						crc.overwrite = true
+						
+						it.putNextEntry(ZipEntry(name.replaceLast('/', "/\u0000")))
+						it.write(0x00)
+					}
+					
+					val entry = ZipEntry(name)
+					
+					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
+						it.putNextEntry(ZipEntry(entry.name))
+					}
+					
+					it.putNextEntry(entry)
+					
+					var writer: ClassWriter
+					try {
+						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
+						classNode.accept(writer)
+					} catch (e: Throwable) {
+						println("Error while writing class ${classNode.name}")
+						e.printStackTrace()
+						
+						writer = CustomClassWriter(0)
+						classNode.accept(writer)
+					}
+					val arr = writer.toByteArray()
+					it.write(arr)
+					it.closeEntry()
+					
+					crc.overwrite = false
+				} catch (e: Throwable) {
+					e.printStackTrace()
 				}
-				val arr = writer.toByteArray()
-				it.write(arr)
-				it.closeEntry()
-				
-				crc.overwrite = false
 			}
 		}
 	}

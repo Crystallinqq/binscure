@@ -2,7 +2,6 @@ package dev.binclub.binscure.processors.flow
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.InstructionModifier
 import dev.binclub.binscure.utils.newLabel
@@ -19,7 +18,7 @@ object BadInvoke: IClassProcessor {
 	val badText = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (classNode in CObfuscator.getProgressBar("Adding invalid invocations").wrap(classes)) {
+		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			

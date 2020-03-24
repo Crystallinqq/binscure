@@ -3,7 +3,6 @@ package dev.binclub.binscure.processors.flow.jump
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.kotlin.isStatic
-import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.InstructionModifier
@@ -20,7 +19,7 @@ object TableSwitchJump: IClassProcessor {
 	//val eqJumps = arrayOf(IF_ACMPEQ, IF_ACMPNE, IF_ICMPEQ, IF_ICMPNE)
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (classNode in CObfuscator.getProgressBar("Jumps to switches").wrap(classes)) {
+		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			

@@ -3,7 +3,6 @@ package dev.binclub.binscure.processors.debug
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.kotlin.wrap
 import org.objectweb.asm.tree.ClassNode
 import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata

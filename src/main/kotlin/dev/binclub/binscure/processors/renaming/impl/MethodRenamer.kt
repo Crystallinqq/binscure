@@ -7,11 +7,12 @@ import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.kotlin.getOrPut
 import dev.binclub.binscure.kotlin.getOrPutLazy
+import dev.binclub.binscure.kotlin.hasAccess
 import dev.binclub.binscure.kotlin.toPrettyString
 import dev.binclub.binscure.processors.renaming.AbstractRenamer
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
-import me.tongfei.progressbar.ProgressBar
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodNode
 import java.lang.RuntimeException
@@ -30,7 +31,7 @@ object MethodRenamer: AbstractRenamer() {
 		passThrough: MutableMap<String, ByteArray>
 	) {
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (CObfuscator.isExcluded(classNode) || classNode.access.hasAccess(Opcodes.ACC_ANNOTATION))
 				continue
 			
 			val classTree = ClassPath.hierachy[classNode.name] ?: continue

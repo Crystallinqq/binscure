@@ -422,7 +422,7 @@ object StringObfuscator: IClassProcessor {
 				add(VarInsnNode(ALOAD, 0))
 				add(DUP)
 				add(MethodInsnNode(INVOKESPECIAL, OpaqueRuntimeManager.classNode.superName, "<init>", "()V"))
-				add(TypeInsnNode(CHECKCAST, storageField.desc))
+				add(TypeInsnNode(CHECKCAST, classNode.name))
 				add(FieldInsnNode(PUTSTATIC, classNode.name, storageField.name, storageField.desc))
 				add(RETURN)
 			}

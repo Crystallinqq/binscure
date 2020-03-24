@@ -2,7 +2,6 @@ package dev.binclub.binscure.processors.flow.jump
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
@@ -13,7 +12,7 @@ import org.objectweb.asm.tree.*
  */
 object OpaqueJumps: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (classNode in CObfuscator.getProgressBar("Adding opauque jumps").wrap(classes)) {
+		for (classNode in classes) {
 			if (!CObfuscator.isExcluded(classNode)) {
 				for (method in classNode.methods) {
 					if (CObfuscator.noMethodInsns(method))

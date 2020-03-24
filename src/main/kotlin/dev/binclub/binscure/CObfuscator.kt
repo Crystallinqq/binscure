@@ -16,6 +16,7 @@ import dev.binclub.binscure.processors.exploit.*
 import dev.binclub.binscure.processors.flow.*
 import dev.binclub.binscure.processors.flow.classinit.*
 import dev.binclub.binscure.processors.flow.trycatch.*
+import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
 import dev.binclub.binscure.processors.renaming.impl.*
 import dev.binclub.binscure.processors.resources.*
 import dev.binclub.binscure.runtime.*
@@ -60,6 +61,7 @@ object CObfuscator {
 			OpaqueRuntimeManager,
 			FieldInitialiser,
 			AccessStripper,
+			EnumValuesOptimiser,
 			
 			SourceStripper,
 			KotlinMetadataStripper,

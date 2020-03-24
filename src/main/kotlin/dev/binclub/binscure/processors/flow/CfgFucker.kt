@@ -2,7 +2,6 @@ package dev.binclub.binscure.processors.flow
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.api.transformers.FlowObfuscationSeverity
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.kotlin.add
 import dev.binclub.binscure.kotlin.hasAccess
@@ -19,7 +18,7 @@ object CfgFucker: IClassProcessor {
 		if (!rootConfig.flowObfuscation.enabled) {
 			return
 		}
-		val aggresiveness = FlowObfuscationSeverity.values().size - (rootConfig.flowObfuscation.severity.ordinal)
+		val aggresiveness = rootConfig.flowObfuscation.severity
 		
 		for (classNode in classes.toTypedArray()) {
 			if (CObfuscator.isExcluded(classNode) || classNode.access.hasAccess(ACC_INTERFACE))

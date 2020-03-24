@@ -4,7 +4,6 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.kotlin.random
-import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.InstructionModifier
 import dev.binclub.binscure.utils.newLabel

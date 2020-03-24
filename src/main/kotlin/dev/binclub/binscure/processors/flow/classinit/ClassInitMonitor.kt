@@ -2,7 +2,6 @@ package dev.binclub.binscure.processors.flow.classinit
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.api.transformers.FlowObfuscationSeverity
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.BlameableLabelNode
@@ -19,7 +18,7 @@ object ClassInitMonitor: IClassProcessor {
 		if (!rootConfig.flowObfuscation.enabled) {
 			return
 		}
-		val aggresiveness = FlowObfuscationSeverity.values().size - (rootConfig.flowObfuscation.severity.ordinal)
+		val aggresiveness = rootConfig.flowObfuscation.severity
 		
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))

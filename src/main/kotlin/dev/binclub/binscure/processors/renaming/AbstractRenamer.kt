@@ -5,7 +5,7 @@ import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.kotlin.originalName
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
-import me.tongfei.progressbar.ProgressBar
+import org.objectweb.asm.commons.AnnotationRemapper
 import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.tree.ClassNode
 

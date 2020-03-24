@@ -6,7 +6,6 @@ import dev.binclub.binscure.processors.renaming.AbstractRenamer
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import dev.binclub.binscure.runtime.OpaqueRuntimeManager
-import me.tongfei.progressbar.ProgressBar
 import org.objectweb.asm.tree.ClassNode
 
 /**

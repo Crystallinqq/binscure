@@ -10,6 +10,7 @@ hardExclusions:
 
 exclusions:
     - me/tigermouthbear/ares/mixin/
+    - me/tigermouthbear/clantags/
 
 # The mappings created by the obfuscator are saved to this csv file
 mappingFile: mappings.csv
@@ -36,6 +37,8 @@ kotlinMetadata:
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
     enabled: false
+    checksums: false
+    antiAsm: false
 
 # Attempts to conceal method invocations
 indirection:
@@ -46,6 +49,15 @@ indirection:
 stringObfuscation:
     enabled: true
 
+flowObfuscation:
+    enabled: true
+    severity: 100
+    mergeMethods: NONE
+
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false
 ignoreClassPathNotFound: false
+
+libraries:
+    - D:\Computing\backdoored_old\dependencies\forge-1.12.2-14.23.1.2584-srgBin.jar
+    - D:\Computing\backdoored_old\dependencies\forge-1.12.2-14.23.1.2584-binpatched.jar

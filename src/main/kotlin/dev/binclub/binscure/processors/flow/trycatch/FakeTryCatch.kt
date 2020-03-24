@@ -2,12 +2,9 @@ package dev.binclub.binscure.processors.flow.trycatch
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.api.transformers.FlowObfuscationSeverity
-import dev.binclub.binscure.api.transformers.FlowObfuscationSeverity.NORMAL
 import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.kotlin.add
-import dev.binclub.binscure.kotlin.wrap
 import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.newLabel
@@ -54,7 +51,7 @@ object FakeTryCatch: IClassProcessor {
 		val dead = newLabel()
 		val dead2 = newLabel()
 		
-		val list = if (rootConfig.flowObfuscation.severity == NORMAL) {
+		val list = if (rootConfig.flowObfuscation.severity >= 5) {
 			InsnList()
 				.apply {
 					add(start)

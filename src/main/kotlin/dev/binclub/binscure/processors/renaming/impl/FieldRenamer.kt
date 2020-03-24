@@ -10,7 +10,7 @@ import dev.binclub.binscure.processors.constants.EnumObfuscator
 import dev.binclub.binscure.processors.renaming.AbstractRenamer
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
-import me.tongfei.progressbar.ProgressBar
+import org.objectweb.asm.Opcodes.ACC_ANNOTATION
 import org.objectweb.asm.Opcodes.ACC_ENUM
 import org.objectweb.asm.tree.ClassNode
 import java.lang.RuntimeException
@@ -19,7 +19,7 @@ import java.lang.RuntimeException
  * @author cookiedragon234 25/Jan/2020
  */
 object FieldRenamer: AbstractRenamer() {
-	override fun isEnabled(): Boolean = ConfigurationManager.rootConfig.remap.areFieldsEnabled()
+	override fun isEnabled(): Boolean = rootConfig.remap.areFieldsEnabled()
 	
 	override fun getTaskName(): String = "Remapping Fields"
 	

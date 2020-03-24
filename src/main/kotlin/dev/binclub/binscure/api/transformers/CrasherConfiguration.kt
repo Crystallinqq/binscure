@@ -7,5 +7,6 @@ import dev.binclub.binscure.api.TransformerConfiguration
  */
 data class CrasherConfiguration(
 	override val enabled: Boolean = false,
-	val checksums: Boolean = true
+	val checksums: Boolean = true,
+	val antiAsm: Boolean = true
 ): TransformerConfiguration(enabled)

@@ -2,7 +2,6 @@ package dev.binclub.binscure.processors.resources
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.kotlin.wrap
 import org.objectweb.asm.tree.ClassNode
 
 /**

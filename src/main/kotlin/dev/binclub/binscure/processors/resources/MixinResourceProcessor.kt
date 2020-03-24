@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.kotlin.wrap
 import org.objectweb.asm.tree.ClassNode
 import java.time.Duration
 import java.time.Instant
@@ -22,7 +21,7 @@ object MixinResourceProcessor: IClassProcessor {
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		val mapper = ObjectMapper()
 		
-		for ((name, bytes) in CObfuscator.getProgressBar("Remapping Mixins Resource").wrap(passThrough)) {
+		for ((name, bytes) in passThrough) {
 			if (name.endsWith(".json") && name.contains("mixin")) {
 				val objectNode = mapper.readValue<ObjectNode>(bytes, ObjectNode::class.java)
 				

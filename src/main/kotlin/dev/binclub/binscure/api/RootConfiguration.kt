@@ -21,6 +21,7 @@ data class RootConfiguration(
 	val indirection: IndirectionConfiguration,
 	val stringObfuscation: StringObfuscationConfiguration,
 	val flowObfuscation: FlowObfuscationConfiguration,
+	val optimisation: OptimisationConfiguration,
 	val ignoreClassPathNotFound: Boolean = false,
 	val useJavaClassloader: Boolean = false
 ) {

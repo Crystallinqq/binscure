@@ -23,22 +23,26 @@ kotlinMetadata:
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
-    enabled: true
+    enabled: false
     checksums: true
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: true
+    enabled: false
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
 stringObfuscation:
-    enabled: true
+    enabled: false
 
 flowObfuscation:
-    enabled: true
-    severity: AGGRESSIVE
+    enabled: false
+    severity: 5
     mergeMethods: BLOAT_CLASSES
+
+optimisation:
+    enabled: true
+    mutableEnumValues: true
 
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false

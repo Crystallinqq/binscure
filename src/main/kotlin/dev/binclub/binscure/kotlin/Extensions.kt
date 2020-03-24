@@ -2,10 +2,6 @@ package dev.binclub.binscure.kotlin
 
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.utils.BlameableLabelNode
-import me.tongfei.progressbar.ProgressBar
-import me.tongfei.progressbar.ProgressBarIterable
-import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterator
-import me.tongfei.progressbar.wrapped.ProgressBarWrappedSpliterator
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -58,25 +54,6 @@ fun <K, V> MutableMap<K, V>.getOrPutLazy(key: K, default: () -> V): V {
 		this[key] = out
 	}
 	return out
-}
-
-fun <T> ProgressBar.wrap(sp: Spliterator<T>): Spliterator<T> {
-	val size = sp.exactSizeIfKnown
-	if (size != -1L)
-		this.maxHint(size)
-	return ProgressBarWrappedSpliterator(sp, this)
-}
-
-fun <T> ProgressBar.wrap(it: Iterator<T>): Iterator<T> {
-	return ProgressBarWrappedIterator<T>(it, this)
-}
-
-fun <T> ProgressBar.wrap(it: Iterable<T>): Iterable<T> {
-	return ProgressBarIterable(it, this)
-}
-
-fun <K, V> ProgressBar.wrap(it: Map<K, V>): Iterator<Map.Entry<K, V>> {
-	return ProgressBarWrappedIterator(it.iterator(), this)
 }
 
 fun String.clampStart(length: Int, padding: Char = ' '): String {
