@@ -2,6 +2,7 @@ package dev.binclub.binscure.utils
 
 import dev.binclub.binscure.kotlin.internalName
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
+import org.objectweb.asm.Type
 import org.objectweb.asm.commons.Remapper
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.ClassNode
@@ -58,13 +59,21 @@ object AnnotationFieldRemapper {
 				value.desc
 			}
 			is List<*> -> {
-				"L${value.firstOrNull()?.let {
-					it::class.internalName
-				} ?: value::class.internalName};"
+				val first = value.firstOrNull()
+				if (first is Type) {
+					first.descriptor
+				} else {
+					Type.getDescriptor(first?.let { it::class.java } ?: value::class.java, true)
+				}.let {
+					if (it.startsWith('[')) {
+						it
+					} else {
+						"[$it"
+					}
+				}.also { println(it) }
 			}
-			else -> "L${value::class.internalName};"
+			else -> Type.getDescriptor(value::class.java, true)
 		}.let { "()$it" }
-		
 		val owner = annotation.desc.removePrefix("L").removeSuffix(";")
 		return remapper.mapMethodName(owner, name, desc)
 	}

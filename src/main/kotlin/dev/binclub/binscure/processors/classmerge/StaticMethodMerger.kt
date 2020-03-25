@@ -6,6 +6,7 @@ import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.transformers.MergeMethods
 import dev.binclub.binscure.api.transformers.MergeMethods.NONE
 import dev.binclub.binscure.classpath.ClassPath
+import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.kotlin.add
 import dev.binclub.binscure.kotlin.clone
@@ -36,6 +37,17 @@ object StaticMethodMerger: IClassProcessor {
 		return false
 	}
 	
+	private fun containsSpecial(insnList: InsnList, classTree: ClassTree?, classNode: ClassNode): Boolean {
+		val supers = classTree?.parents?.map {it.getName()}?.toMutableList()?.also {
+			it.add(classNode.name)
+		} ?: arrayListOf(classNode.name, classNode.superName)
+		for (insn in insnList) {
+			if (insn is MethodInsnNode && insn.opcode == INVOKESPECIAL && supers.contains(insn.owner)) return true
+		}
+		
+		return false
+	}
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!rootConfig.flowObfuscation.enabled || rootConfig.flowObfuscation.mergeMethods == NONE) {
 			return
@@ -47,11 +59,13 @@ object StaticMethodMerger: IClassProcessor {
 			if (classNode.name == StringObfuscator.decryptNode?.name)
 				continue
 			
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
+			val hierarchy = ClassPath.getHierarchy(classNode.name)
+			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (isExcluded(classNode, method))
 					continue
 				
 				if (
@@ -60,6 +74,8 @@ object StaticMethodMerger: IClassProcessor {
 					!method.access.hasAccess(ACC_ABSTRACT)
 					&&
 					!method.access.hasAccess(ACC_NATIVE)
+					&&
+					!containsSpecial(method.instructions, hierarchy, classNode)
 					//&&
 					//random.nextBoolean()
 				) {
@@ -145,33 +161,46 @@ object StaticMethodMerger: IClassProcessor {
 					}
 					
 					firstMethod.instructions = InsnList().apply {
-						val params = getArgumentTypes(firstMethod.desc)
-						for ((index, param) in params.withIndex()) {
-							add(VarInsnNode(getLoadForType(param), if (firstStatic) index else (index + 1)))
-						}
-						add(MethodInsnNode(INVOKESTATIC, classNode.name, newMethod.name, newMethod.desc))
-						add(getRetForType(getReturnType(firstMethod.desc)))
-					}
-					
-					secondMethod.instructions = firstMethod.instructions.clone()
-					secondMethod.instructions.insert(
-						InsnList().apply {
-							if (!secondStatic) {
-								add(VarInsnNode(ALOAD, 0))
-							} else {
-								add(ACONST_NULL)
-							}
-							add(ldcInt((baseInt + 1) xor keyInt))
-						})
-					
-					firstMethod.instructions.insert(InsnList().apply {
 						if (!firstStatic) {
 							add(VarInsnNode(ALOAD, 0))
 						} else {
 							add(ACONST_NULL)
 						}
 						add(ldcInt(baseInt xor keyInt))
-					})
+						
+						val params = getArgumentTypes(firstMethod.desc)
+						var i = if (firstStatic) 0 else (1)
+						for (param in params) {
+							add(VarInsnNode(getLoadForType(param), i))
+							i += 1
+							if (param.sort == Type.DOUBLE || param.sort == Type.LONG) {
+								i += 1
+							}
+						}
+						add(MethodInsnNode(INVOKESTATIC, classNode.name, newMethod.name, newMethod.desc))
+						add(getRetForType(getReturnType(firstMethod.desc)))
+					}
+					
+					secondMethod.instructions = InsnList().apply {
+						if (!secondStatic) {
+							add(VarInsnNode(ALOAD, 0))
+						} else {
+							add(ACONST_NULL)
+						}
+						add(ldcInt((baseInt + 1) xor keyInt))
+						
+						val params = getArgumentTypes(secondMethod.desc)
+						var i = if (secondStatic) 0 else (1)
+						for (param in params) {
+							add(VarInsnNode(getLoadForType(param), i))
+							i += 1
+							if (param.sort == Type.DOUBLE || param.sort == Type.LONG) {
+								i += 1
+							}
+						}
+						add(MethodInsnNode(INVOKESTATIC, classNode.name, newMethod.name, newMethod.desc))
+						add(getRetForType(getReturnType(secondMethod.desc)))
+					}
 					
 					if (secondMethod.tryCatchBlocks != null) newMethod.tryCatchBlocks.addAll(secondMethod.tryCatchBlocks)
 					secondMethod.tryCatchBlocks = null
@@ -215,6 +244,7 @@ object StaticMethodMerger: IClassProcessor {
 	}
 	
 	private fun incAllVarInsn(insnList: InsnList, static: Boolean, classType: String): InsnList {
+		val incAmmount = if (static) 2 else 1
 		return InsnList().apply {
 			for (insn in insnList) {
 				if (insn is VarInsnNode) {
@@ -223,11 +253,11 @@ object StaticMethodMerger: IClassProcessor {
 						add(TypeInsnNode(CHECKCAST, classType))
 						continue
 					} else {
-						add(VarInsnNode(insn.opcode, insn.`var` + (2)))
+						add(VarInsnNode(insn.opcode, insn.`var` + (incAmmount)))
 						continue
 					}
 				} else if (insn is IincInsnNode) {
-					add(IincInsnNode(insn.`var` + (2), insn.incr))
+					add(IincInsnNode(insn.`var` + (incAmmount), insn.incr))
 					continue
 				}
 				add(insn)

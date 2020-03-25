@@ -92,15 +92,22 @@ object UselessTryCatch: IClassProcessor {
 						
 						val list = InsnList().apply {
 							add(JumpInsnNode(GOTO, afterLabel3))
+							add(afterLabel)
 							add(afterLabel2)
 							add(InsnNode(ATHROW))
-							add(afterLabel)
 							add(afterLabel3)
 						}
 						
+						method.tryCatchBlocks.add(TryCatchBlockNode(
+							beforeLabel3,
+							afterLabel2,
+							afterLabel2,
+							null
+						))
+						
 						val availableHandlers = arrayOf(afterLabel2, beforeLabel3, handler)
 						val possibleStarts = arrayOf(beforeLabel2, beforeLabel3)
-						val possibleEnds = arrayOf(afterLabel, afterLabel3, afterLabel2)
+						val possibleEnds = arrayOf(afterLabel, afterLabel2)
 						
 						method.tryCatchBlocks.add(TryCatchBlockNode(
 							possibleStarts.random(random),

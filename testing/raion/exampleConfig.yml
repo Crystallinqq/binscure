@@ -1,5 +1,5 @@
-input: loader.jar
-output: loader-obf.jar
+input: client.jar
+output: client-obf.jar
 
 libraries:
     - D:/Computing/backdoored_old/dependencies/forge-1.12.2-14.23.1.2584-binpatched.jar
@@ -25,7 +25,7 @@ mappingFile: mappings.csv
 remap:
     # Must be specified, strategies are by default disabled
     enabled: true
-    classPrefix: "me/robeart/raion/loader"
+    classPrefix: "me/robeart/raion/client"
     localVariableName: ""
     aggressiveOverloading: false
 
@@ -46,12 +46,17 @@ crasher:
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: false
+    enabled: true
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
 stringObfuscation:
     enabled: true
+
+flowObfuscation:
+    enabled: true
+    severity: 50
+    mergeMethods: BLOAT_CLASSES
 
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false
