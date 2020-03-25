@@ -70,7 +70,7 @@ object AnnotationFieldRemapper {
 					} else {
 						"[$it"
 					}
-				}.also { println(it) }
+				}
 			}
 			else -> Type.getDescriptor(value::class.java, true)
 		}.let { "()$it" }
