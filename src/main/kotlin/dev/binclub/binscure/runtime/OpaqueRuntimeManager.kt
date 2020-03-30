@@ -14,14 +14,22 @@ import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import kotlin.math.max
+import kotlin.math.min
 
 /**
+ * This class creates constants that are used for opaque jumps
+ *
+ * Essentially these are a bunch of fields with predetermined values that we know but are hard for deobfuscators to
+ * statically infer
+ *
+ * We can create jumps on these values like if(a < 0) knowing that a is larger than 0 and therefore the if statement
+ * will never succeed
+ *
  * @author cookiedragon234 11/Feb/2020
  */
 object OpaqueRuntimeManager: IClassProcessor {
 	lateinit var classes: MutableCollection<ClassNode>
 	lateinit var classNode: ClassNode
-	lateinit var consumeMethodName: String
 	
 	private val clinit by lazy {
 		MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also {
@@ -29,8 +37,10 @@ object OpaqueRuntimeManager: IClassProcessor {
 			classNode.methods.add(it)
 		}
 	}
+	// The larger the application, the larger the number of fields we want available
+	// We will use the number of classes / 2, at least 3 and at most 25
 	val fields by lazy {
-		val num = max(classes.size / 2, 5)
+		val num = min(max(classes.size / 2, 3), 25)
 		Array(num) { generateField() }
 	}
 	
@@ -46,39 +56,33 @@ object OpaqueRuntimeManager: IClassProcessor {
 		).also {
 			classNode.fields.add(it)
 		}
-		return when (random.nextInt(6)) {
-			0 -> {
+		return randomBranch(random,
+			{
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(0))
 				FieldInfo(fieldNode, IFEQ, IFGT)
-			}
-			1 -> {
+			}, {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(1))
 				FieldInfo(fieldNode, IFGE, IFLT)
-			}
-			2 -> {
+			}, {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(1))
 				FieldInfo(fieldNode, IFGT, IFEQ)
-			}
-			3 -> {
+			}, {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(-1))
 				FieldInfo(fieldNode, IFLT, IFGE)
-			}
-			4 -> {
+			}, {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(-1))
 				FieldInfo(fieldNode, IFLE, IFGT)
-			}
-			5 -> {
+			}, {
 				clinit.instructions.insert(FieldInsnNode(PUTSTATIC, classNode.name, fieldNode.name, fieldNode.desc))
 				clinit.instructions.insert(ldcInt(-1))
 				FieldInfo(fieldNode, IFNE, IFEQ)
 			}
-			else -> throw IllegalStateException()
-		}
+		)
 	}
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
@@ -89,33 +93,14 @@ object OpaqueRuntimeManager: IClassProcessor {
 			this.name = ClassRenamer.namer.uniqueRandomString()
 			this.signature = null
 			this.superName = "java/util/concurrent/ConcurrentHashMap"
-			
-			consumeMethodName = namer.uniqueRandomString()
-			methods.add(makeConsumeMethod(consumeMethodName, "Z"))
-			methods.add(makeConsumeMethod(consumeMethodName, "C"))
-			methods.add(makeConsumeMethod(consumeMethodName, "B"))
-			methods.add(makeConsumeMethod(consumeMethodName, "S"))
-			methods.add(makeConsumeMethod(consumeMethodName, "I"))
-			methods.add(makeConsumeMethod(consumeMethodName, "F"))
-			methods.add(makeConsumeMethod(consumeMethodName, "J"))
-			methods.add(makeConsumeMethod(consumeMethodName, "D"))
-			methods.add(makeConsumeMethod(consumeMethodName, "Ljava/lang/Object;"))
 		}
 	}
 	
-	data class FieldInfo(val fieldNode: FieldNode, val trueOpcode: Int, val falseOpcode: Int)
-	
-	private fun makeConsumeMethod(name: String, type: String): MethodNode = MethodNode(
-		ACC_PUBLIC + ACC_STATIC,
-		name,
-		"($type)V",
-		null,
-		null
-	).apply {
-		instructions = InsnList().apply {
-			add(RETURN)
-		}
-	}
+	data class FieldInfo(
+		val fieldNode: FieldNode, // Reference to the field
+		val trueOpcode: Int, // An if statement opcode that will return true when compared to this fields value
+		val falseOpcode: Int // An if statement opcode that will return false when compared to this fields value
+	)
 }
 
 fun randomOpaqueJump(target: LabelNode, jumpOver: Boolean = true): InsnList {

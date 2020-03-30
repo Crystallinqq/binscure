@@ -7,19 +7,20 @@ mappingFile: mappings.csv
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
-    enabled: true
+    enabled: false
     localVariableName: ""
 
 # Strip source file information
 sourceStrip:
-    enabled: true
+    enabled: false
     # Default is REMOVE, options [KEEP/REMOVE]
     lineNumbers: REMOVE
 
 # Removes additional data created by the kotlin compiler
 # WARNING: Can break the kotlin.reflect library
 kotlinMetadata:
-    enabled: true
+    enabled: false
+    type: CENSOR
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
@@ -36,13 +37,13 @@ stringObfuscation:
     enabled: false
 
 flowObfuscation:
-    enabled: false
-    severity: 5
+    enabled: true
+    severity: 500000
     mergeMethods: BLOAT_CLASSES
 
 optimisation:
-    enabled: true
-    mutableEnumValues: true
+    enabled: false
+    mutableEnumValues: false
 
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false

@@ -1,5 +1,5 @@
-input: ares-2.2-release.jar
-output: ares-obf.jar
+input: ares-2.2.3-plus.jar
+output: ares-2.2.3-plus-obf.jar
 
 hardExclusions:
     - club/
@@ -11,6 +11,7 @@ hardExclusions:
 exclusions:
     - me/tigermouthbear/ares/mixin/
     - me/tigermouthbear/clantags/
+    - me/tigermouthbear/simpleevents/
 
 # The mappings created by the obfuscator are saved to this csv file
 mappingFile: mappings.csv
@@ -18,7 +19,7 @@ mappingFile: mappings.csv
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
-    enabled: true
+    enabled: false
     classPrefix: "me/tigermouthbear/ares/"
     localVariableName: ""
     aggressiveOverloading: false
@@ -42,7 +43,7 @@ crasher:
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: false
+    enabled: true
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time

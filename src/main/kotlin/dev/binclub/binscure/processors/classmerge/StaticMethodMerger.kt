@@ -75,7 +75,7 @@ object StaticMethodMerger: IClassProcessor {
 					&&
 					!method.access.hasAccess(ACC_NATIVE)
 					&&
-					!containsSpecial(method.instructions, hierarchy, classNode)
+					!containsSpecial(method.instructions)//, hierarchy, classNode)
 					//&&
 					//random.nextBoolean()
 				) {

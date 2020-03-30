@@ -8,10 +8,26 @@ import dev.binclub.binscure.utils.ldcDouble
 import dev.binclub.binscure.utils.ldcInt
 import dev.binclub.binscure.utils.ldcLong
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Opcodes.ALOAD
+import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
 /**
+ * This transformer removes the default values from fields and instead assigns their value inside the static initializer
+ *
+ * The following code:
+ * ```Java
+ * int i = 0;
+ * ```
+ *
+ * becomes:
+ * ```Java
+ * int i;
+ *
+ * static {
+ *  i = 0;
+ * }
+ * ```
+ *
  * @author cookiedragon234 07/Mar/2020
  */
 object FieldInitialiser: IClassProcessor {
@@ -26,7 +42,7 @@ object FieldInitialiser: IClassProcessor {
 				if (CObfuscator.isExcluded(classNode, field) || field.value == null)
 					continue
 				
-				if (field.access.hasAccess(Opcodes.ACC_STATIC)) {
+				if (field.access.hasAccess(ACC_STATIC)) {
 					staticFields
 				} else {
 					instanceFields
@@ -37,7 +53,7 @@ object FieldInitialiser: IClassProcessor {
 				val clinit = getClinit(classNode)
 				clinit.instructions.apply {
 					for (field in staticFields) {
-						insert(FieldInsnNode(Opcodes.PUTSTATIC, classNode.name, field.name, field.desc))
+						insert(FieldInsnNode(PUTSTATIC, classNode.name, field.name, field.desc))
 						insert(when (field.value) {
 							is Int -> ldcInt(field.value as Int)
 							is Double -> ldcDouble(field.value as Double)

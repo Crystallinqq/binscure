@@ -93,8 +93,8 @@ val throwables = arrayOf(
 )
 
 fun randomThrowable(nonNull: Boolean = false): String? =
-	if (CObfuscator.random.nextBoolean() || nonNull) throwables.random(
-		CObfuscator.random
+	if (random.nextBoolean() || nonNull) throwables.random(
+		random
 	) else null
 
 val throwableActions = arrayOf(
@@ -197,13 +197,7 @@ val staticInvokes = arrayOf(
 	Handle(INVOKESTATIC, System::class.internalName, "lineSeparator", "()Ljava/lang/String;")
 )
 
-fun randomStaticInvoke(): MethodInsnNode = staticInvokes.random(CObfuscator.random).toInsn()
-
-fun insnListOf(vararg insns: AbstractInsnNode) = InsnList().also {
-	for (insn in insns) {
-		it.add(insn)
-	}
-}
+fun randomStaticInvoke(): MethodInsnNode = staticInvokes.random(random).toInsn()
 
 fun getRetForType(type: Type): Int {
 	return when (type) {
@@ -325,4 +319,8 @@ fun Field.setFinalStatic(newValue: Any?) {
 	modifiersField.isAccessible = true
 	modifiersField.setInt(this, modifiers and Modifier.FINAL.inv())
 	this.set(null, newValue)
+}
+
+fun insnListOf(vararg insns: AbstractInsnNode) = InsnList().apply {
+	for (insn in insns) add(insn)
 }

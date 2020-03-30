@@ -1,6 +1,5 @@
 package dev.binclub.binscure.processors.debug
 
-import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.api.transformers.LineNumberAction.*
@@ -9,6 +8,8 @@ import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.LineNumberNode
 
 /**
+ * This transformer removes unecessary debugging information typically emitted by javac from class file
+ *
  * @author cookiedragon234 22/Jan/2020
  */
 object SourceStripper: IClassProcessor {

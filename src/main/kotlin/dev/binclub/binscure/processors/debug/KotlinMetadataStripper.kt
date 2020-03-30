@@ -1,15 +1,20 @@
 package dev.binclub.binscure.processors.debug
 
-import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.transformers.KotlinMetadataType
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import org.objectweb.asm.tree.ClassNode
+import dev.binclub.binscure.utils.InstructionModifier
 import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata
-import org.objectweb.asm.tree.AnnotationNode
-import java.util.stream.Collectors
+import org.objectweb.asm.Opcodes.ACONST_NULL
+import org.objectweb.asm.Opcodes.POP
+import org.objectweb.asm.Type
+import org.objectweb.asm.tree.*
+import kotlin.jvm.internal.Intrinsics
 
 /**
+ * This transformer removes metadata emitted by the kotlin compiler
+ *
  * @author cookiedragon234 22/Jan/2020
  */
 object KotlinMetadataStripper: IClassProcessor {
@@ -17,8 +22,40 @@ object KotlinMetadataStripper: IClassProcessor {
 		if (!rootConfig.kotlinMetadata.enabled)
 			return
 		
+		val remove = rootConfig.kotlinMetadata.type == KotlinMetadataType.REMOVE
+		
 		for (classNode in classes) {
 			classNode.visibleAnnotations = classNode.visibleAnnotations?.filter {it.desc != "Lkotlin/Metadata;"}
+			
+			for (method in classNode.methods) {
+				val modifier = InstructionModifier()
+				for (insn in method.instructions) {
+					if (insn is MethodInsnNode && insn.owner == "kotlin/jvm/internal/Intrinsics") {
+						if (insn.name == "checkParameterIsNotNull") {
+							if (insn.previous is LdcInsnNode) {
+								val prev = insn.previous as LdcInsnNode
+								if (remove) {
+									modifier.remove(prev)
+									modifier.replace(insn, InsnNode(POP))
+								} else {
+									prev.cst = "."
+								}
+							}
+						} else if (insn.name == "checkExpressionValueIsNotNull") {
+							if (insn.previous is LdcInsnNode) {
+								val prev = insn.previous as LdcInsnNode
+								if (remove) {
+									modifier.remove(prev)
+									modifier.replace(insn, InsnNode(POP))
+								} else {
+									prev.cst = "."
+								}
+							}
+						}
+					}
+				}
+				modifier.apply(method)
+			}
 			/*for (annotation in classNode.visibleAnnotations) {
 				if (annotation.desc == "Lkotlin/Metadata;") {
 					val header = createHeader(annotation)

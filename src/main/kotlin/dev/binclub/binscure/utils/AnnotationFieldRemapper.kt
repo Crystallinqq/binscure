@@ -45,6 +45,10 @@ object AnnotationFieldRemapper {
 	}
 	
 	private fun remapNameValue(annotation: AnnotationNode, name: String, value: Any, remapper: Remapper): String {
+		if (value is Array<*>) {
+			return name
+		}
+		
 		val desc = when (value) {
 			is Array<*> -> {
 				when {

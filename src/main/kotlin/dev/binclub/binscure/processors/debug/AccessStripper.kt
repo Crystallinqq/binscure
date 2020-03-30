@@ -10,6 +10,8 @@ import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Modifier
 
 /**
+ * This transformer removes all unecessary access flags, such as private, protected, final, etc
+ *
  * @author cookiedragon234 21/Feb/2020
  */
 object AccessStripper: IClassProcessor {
@@ -44,8 +46,8 @@ object AccessStripper: IClassProcessor {
 			access = access.removeAccess(ACC_PROTECTED)
 		if (access.hasAccess(ACC_SYNTHETIC))
 			access = access.removeAccess(ACC_SYNTHETIC)
-		if (access.hasAccess(ACC_SYNTHETIC))
-			access = access.removeAccess(ACC_SYNTHETIC)
+		if (access.hasAccess(ACC_BRIDGE))
+			access = access.removeAccess(ACC_BRIDGE)
 		if (access.hasAccess(ACC_FINAL) && !isInterface)
 			access = access.removeAccess(ACC_FINAL)
 		if (!access.hasAccess(ACC_PUBLIC))

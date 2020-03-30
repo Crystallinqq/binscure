@@ -46,7 +46,7 @@ object ObscurePop: IClassProcessor {
 							}
 						).descriptor
 						
-						modifier.replace(insn, InsnList().apply {
+						/*modifier.replace(insn, InsnList().apply {
 							add(MethodInsnNode(
 								INVOKESTATIC,
 								OpaqueRuntimeManager.classNode.name,
@@ -58,7 +58,7 @@ object ObscurePop: IClassProcessor {
 							if (insn.opcode == POP2) {
 								add(POP)
 							}
-						})
+						})*/
 						
 						if (insn.previous.opcode == CHECKCAST) {
 							modifier.remove(insn.previous)

@@ -3,13 +3,13 @@ package dev.binclub.binscure.utils
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.MethodNode
-import java.util.*
 
 class InstructionModifier {
+	private val replacements = hashMapOf<AbstractInsnNode, InsnList>()
+	private val appends = hashMapOf<AbstractInsnNode, InsnList>()
+	private val prepends = hashMapOf<AbstractInsnNode, InsnList>()
 	
-	private val replacements = HashMap<AbstractInsnNode, InsnList>()
-	private val appends = HashMap<AbstractInsnNode, InsnList>()
-	private val prepends = HashMap<AbstractInsnNode, InsnList>()
+	fun append(original: AbstractInsnNode, vararg appends: AbstractInsnNode) = append(original, insnListOf(*appends))
 	
 	fun append(original: AbstractInsnNode, append: InsnList) {
 		if (append.size() > 0) {
@@ -17,21 +17,15 @@ class InstructionModifier {
 		}
 	}
 	
-	fun prepend(original: AbstractInsnNode, append: InsnList) {
-		if (append.size() > 0) {
-			prepends[original] = append
+	fun prepend(original: AbstractInsnNode, vararg prepends: AbstractInsnNode) = prepend(original, insnListOf(*prepends))
+	
+	fun prepend(original: AbstractInsnNode, prepend: InsnList) {
+		if (prepend.size() > 0) {
+			prepends[original] = prepend
 		}
 	}
 	
-	fun replace(original: AbstractInsnNode, vararg insns: AbstractInsnNode) {
-		val singleton = InsnList()
-		for (replacement in insns) {
-			singleton.add(replacement)
-		}
-		if (singleton.size() > 0) {
-			replacements[original] = singleton
-		}
-	}
+	fun replace(original: AbstractInsnNode, vararg replacements: AbstractInsnNode) = replace(original, insnListOf(*replacements))
 	
 	fun replace(original: AbstractInsnNode, replacements: InsnList) {
 		if (replacements.size() > 0) {
@@ -43,19 +37,15 @@ class InstructionModifier {
 		replacements[original] = EMPTY_LIST
 	}
 	
-	fun removeAll(toRemove: List<AbstractInsnNode>) {
-		for (insn in toRemove) {
-			remove(insn)
-		}
-	}
+	fun apply(methodNode: MethodNode) = apply(methodNode.instructions)
 	
-	fun apply(methodNode: MethodNode) {
-		replacements.forEach { (insn, list) ->
-			methodNode.instructions.insert(insn, list)
-			methodNode.instructions.remove(insn)
+	fun apply(instructions: InsnList) {
+		for ((insn, list) in replacements) {
+			instructions.insert(insn, list)
+			instructions.remove(insn)
 		}
-		prepends.forEach { (insn, list) -> methodNode.instructions.insertBefore(insn, list) }
-		appends.forEach { (insn, list) -> methodNode.instructions.insert(insn, list) }
+		for ((insn, list) in appends) { instructions.insert(insn, list) }
+		for ((insn, list) in prepends) { instructions.insertBefore(insn, list) }
 	}
 	
 	companion object {

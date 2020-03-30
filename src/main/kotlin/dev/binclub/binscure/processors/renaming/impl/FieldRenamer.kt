@@ -4,9 +4,11 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
+import dev.binclub.binscure.kotlin.hasAccess
 import dev.binclub.binscure.processors.renaming.AbstractRenamer
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import java.lang.RuntimeException
 
@@ -29,6 +31,8 @@ object FieldRenamer: AbstractRenamer() {
 				val classTree = ClassPath.hierachy[classNode.name] ?: throw RuntimeException("$classNode not in classpath")
 				
 				for (field in classNode.fields) {
+					//if (classNode.access.hasAccess(Opcodes.ACC_ENUM) && field.name == "\$VALUES")
+					//	continue
 					
 					val generator =  names.getOrPut(field.desc) {NameGenerator(rootConfig.remap.fieldPrefix)}
 					var newName: String

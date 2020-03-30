@@ -110,7 +110,7 @@ object ClassPathIO {
 					}
 					
 					var name = "${classNode.name}.class"
-					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
+					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled && rootConfig.crasher.checksums) {
 						crc.overwrite = true
 						
 						it.putNextEntry(ZipEntry(name.replaceLast('/', "/\u0000")))
@@ -119,7 +119,7 @@ object ClassPathIO {
 					
 					val entry = ZipEntry(name)
 					
-					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled) {
+					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled && rootConfig.crasher.checksums) {
 						it.putNextEntry(ZipEntry(entry.name))
 					}
 					
