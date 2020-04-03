@@ -19,7 +19,7 @@ mappingFile: mappings.csv
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
-    enabled: false
+    enabled: true
     classPrefix: "me/tigermouthbear/ares/"
     localVariableName: ""
     aggressiveOverloading: false

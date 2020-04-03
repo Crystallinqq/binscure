@@ -23,6 +23,7 @@ object SourceStripper: IClassProcessor {
 			classNode.sourceDebug = null
 			classNode.sourceFile = null
 			classNode.signature = null
+			classNode.innerClasses?.clear()
 			
 			if (action == KEEP)
 				continue
