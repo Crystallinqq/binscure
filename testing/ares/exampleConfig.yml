@@ -1,5 +1,5 @@
-input: ares-2.2.3-plus.jar
-output: ares-2.2.3-plus-obf.jar
+input: ares-2.3-plus.jar
+output: ares-2.3-plus-obf.jar
 
 hardExclusions:
     - club/
@@ -52,7 +52,7 @@ stringObfuscation:
 
 flowObfuscation:
     enabled: true
-    severity: 100
+    severity: 5
     mergeMethods: NONE
 
 # Disable "WARNING: class was not found in the classpath" warnings

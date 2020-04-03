@@ -12,7 +12,7 @@ object ManifestResourceProcessor: IClassProcessor {
 		for ((name, bytes) in passThrough) {
 			if (name.endsWith(".json") || name.endsWith(".MF")) {
 				var contents = String(bytes)
-				for (mapping in CObfuscator.mappings) {
+				for (mapping in CObfuscator.mappings.entries.sortedBy { it.key.length }.reversed()) {
 					if (!mapping.key.contains('.')) {
 						contents = contents.replace(mapping.key.replace('/', '.'), mapping.value.replace('/', '.'))
 					}

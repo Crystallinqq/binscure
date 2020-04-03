@@ -74,8 +74,9 @@ public class AnnotationRemapper extends AnnotationVisitor {
 	
 	@Override
 	public void visitEnum(final String name, final String descriptor, final String value) {
-		String enumName = descriptor.substring(0, descriptor.length() -1).substring(1);
-		super.visitEnum(name, remapper.mapDesc(descriptor), remapper.mapFieldName(enumName, value, descriptor));
+		//String enumName = descriptor.substring(0, descriptor.length() -1).substring(1);
+		//super.visitEnum(name, remapper.mapDesc(descriptor), remapper.mapFieldName(enumName, value, descriptor));
+		super.visitEnum(name, remapper.mapDesc(descriptor), value);
 	}
 	
 	@Override

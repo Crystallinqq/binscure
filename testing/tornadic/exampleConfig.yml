@@ -1,61 +1,59 @@
-input: out\artifacts\obftest_jar\obftest.jar
-output: obftest-obf.jar
+input: modid-0.1.jar
+output: modid-0.1-obf.jar
+
+libraries:
+    - D:/Computing/backdoored_old/dependencies/forge-1.12.2-14.23.1.2584-binpatched.jar
+    - D:/Computing/backdoored_old/dependencies/forge-1.12.2-14.23.1.2584-srgBin.jar
+
+hardExclusions:
+    - club/
+    - com/
+    - javassist/
+    - net/
+    - org/
+    - kotlin/
+    - team/
 
 # The mappings created by the obfuscator are saved to this csv file
 mappingFile: mappings.csv
-
-hardExclusions:
-    - ibxm/
-    - javax/
-    - kotlin/
-    - kotlinx/
-    - net/
-    - org/
 
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
     enabled: true
+    classPrefix: "wtf/tornadic/"
     localVariableName: ""
+    aggressiveOverloading: false
 
 # Strip source file information
 sourceStrip:
-    enabled: false
+    enabled: true
     # Default is REMOVE, options [KEEP/REMOVE]
     lineNumbers: REMOVE
 
 # Removes additional data created by the kotlin compiler
 # WARNING: Can break the kotlin.reflect library
 kotlinMetadata:
-    enabled: false
-    type: CENSOR
+    enabled: true
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
     enabled: false
-    checksums: false
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: false
+    enabled: true
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
 stringObfuscation:
-    enabled: false
+    enabled: true
 
 flowObfuscation:
-    enabled: false
-    severity: 5
+    enabled: true
+    severity: 2
     mergeMethods: BLOAT_CLASSES
-
-optimisation:
-    enabled: false
-    mutableEnumValues: false
 
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false
 ignoreClassPathNotFound: false
-
-# Use the java classloader rather than ASM to load libraries, might offer better peformane
-useJavaClassloader: false

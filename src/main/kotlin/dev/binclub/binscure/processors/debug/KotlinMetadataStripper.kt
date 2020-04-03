@@ -25,7 +25,7 @@ object KotlinMetadataStripper: IClassProcessor {
 		val remove = rootConfig.kotlinMetadata.type == KotlinMetadataType.REMOVE
 		
 		for (classNode in classes) {
-			classNode.visibleAnnotations = classNode.visibleAnnotations?.filter {it.desc != "Lkotlin/Metadata;"}
+			classNode.visibleAnnotations = classNode.visibleAnnotations?.filter {it.desc != "Lkotlin/Metadata;" && it.desc != "Lkotlin/coroutines/jvm/internal/DebugMetadata;"}
 			
 			for (method in classNode.methods) {
 				val modifier = InstructionModifier()

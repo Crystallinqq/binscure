@@ -6,7 +6,7 @@ import dev.binclub.binscure.kotlin.random
 /**
  * @author cookiedragon234 22/Jan/2020
  */
-class NameGenerator(val prefix: String = "") {
+open class NameGenerator(val prefix: String = "") {
 	companion object {
 		val CHARSET = "c0123456789abdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()
 		
@@ -32,13 +32,7 @@ class NameGenerator(val prefix: String = "") {
 			return String(buf, charPos, 65 - charPos)
 		}
 	}
-	var index = 0
+	protected var index = 0
 	
-	fun randomString(length: Int) = prefix + String(
-		CharArray(length) {
-			CHARSET.random(CObfuscator.random)
-		}
-	)
-	
-	fun uniqueRandomString() = prefix + intToStr(index++, CHARSET)
+	open fun uniqueRandomString() = prefix + intToStr(index++, CHARSET)
 }

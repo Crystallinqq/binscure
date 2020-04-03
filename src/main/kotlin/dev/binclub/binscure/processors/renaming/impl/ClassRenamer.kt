@@ -3,6 +3,7 @@ package dev.binclub.binscure.processors.renaming.impl
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.processors.renaming.AbstractRenamer
+import dev.binclub.binscure.processors.renaming.generation.CreeperNameGeneration
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import dev.binclub.binscure.runtime.OpaqueRuntimeManager
