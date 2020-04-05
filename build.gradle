@@ -11,7 +11,7 @@ version 'alpha'
 jar {
     manifest {
         attributes (
-                "Main-Class": "dev.binclub.binscure.MainKt"
+                "Main-Class": "dev.binclub.binscure.EntryPoint"
         )
     }
 }
@@ -20,7 +20,7 @@ shadowJar() {
     classifier = "release"
 
     manifest {
-        attributes 'Main-Class': "dev.binclub.binscure.MainKt"
+        attributes 'Main-Class': "dev.binclub.binscure.EntryPoint"
     }
 }
 

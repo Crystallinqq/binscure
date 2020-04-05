@@ -110,6 +110,8 @@ object CObfuscator {
 			ClassPath.classes[this.name] = this
 			ClassPath.classPath[this.name] = this
 		}
+
+		checkLicense()
 		
 		ClassPathIO.writeOutput(rootConfig.output)
 		

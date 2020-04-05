@@ -8,14 +8,16 @@ import java.io.FileNotFoundException
 /**
  * @author cookiedragon234 20/Jan/2020
  */
-fun main(args: Array<String>) {
-	if (args.isEmpty()) {
-		throw IllegalArgumentException("A config file must be provided")
+object Main {
+	fun main(args: Array<String>) {
+		if (args.isEmpty()) {
+			throw IllegalArgumentException("A config file must be provided")
+		}
+		val configFile = File(args[0])
+		if (!configFile.exists()) {
+			throw FileNotFoundException("Could not find file $configFile")
+		}
+		ConfigurationManager.init(configFile)
+		CObfuscator()
 	}
-	val configFile = File(args[0])
-	if (!configFile.exists()) {
-		throw FileNotFoundException("Could not find file $configFile")
-	}
-	ConfigurationManager.init(configFile)
-	CObfuscator()
 }
