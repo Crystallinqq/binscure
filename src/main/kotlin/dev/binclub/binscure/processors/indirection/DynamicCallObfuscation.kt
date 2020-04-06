@@ -20,13 +20,12 @@ import kotlin.properties.Delegates
 object DynamicCallObfuscation: IClassProcessor {
 	private val targetOps = arrayOf(INVOKESTATIC, INVOKEVIRTUAL, INVOKEINTERFACE)
 	
-	private var classVersion by Delegates.notNull<Int>()
 	private var isInit: Boolean = false
 	private val decryptNode: ClassNode by lazy {
 		isInit = true
 		ClassNode().apply {
 			access = ACC_PUBLIC + ACC_FINAL
-			version = classVersion
+			version = V1_8
 			name = ClassRenamer.namer.uniqueRandomString()
 			signature = null
 			superName = "java/lang/Object"
@@ -67,8 +66,6 @@ object DynamicCallObfuscation: IClassProcessor {
 		if (!ConfigurationManager.rootConfig.indirection.enabled) {
 			return
 		}
-		
-		classVersion = if (classes.isEmpty()) V1_7 else classes.first().version
 		
 		for (classNode in ArrayList(classes)) {
 			if (CObfuscator.isExcluded(classNode))

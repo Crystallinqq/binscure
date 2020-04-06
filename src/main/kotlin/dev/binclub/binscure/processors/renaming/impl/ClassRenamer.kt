@@ -23,6 +23,7 @@ object ClassRenamer: AbstractRenamer() {
 		passThrough: MutableMap<String, ByteArray>
 	) {
 		for (classNode in classes) {
+			if (classNode.name.contains("entrypoint", true)) continue
 			if (!CObfuscator.isExcluded(classNode)) {
 				remapper.map(classNode.name, namer.uniqueRandomString())
 			}

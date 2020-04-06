@@ -4,6 +4,7 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
+import dev.binclub.binscure.classpath.ClassPath.classes
 import dev.binclub.binscure.kotlin.add
 import dev.binclub.binscure.kotlin.random
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
@@ -27,9 +28,16 @@ import kotlin.math.min
  *
  * @author cookiedragon234 11/Feb/2020
  */
-object OpaqueRuntimeManager: IClassProcessor {
-	lateinit var classes: MutableCollection<ClassNode>
-	lateinit var classNode: ClassNode
+object OpaqueRuntimeManager {
+	val classNode by lazy {
+		ClassNode().apply {
+			this.access = ACC_PUBLIC
+			this.version = V1_8
+			this.name = ClassRenamer.namer.uniqueRandomString() + "EntryPoint"
+			this.signature = null
+			this.superName = "java/util/concurrent/ConcurrentHashMap"
+		}
+	}
 	
 	private val clinit by lazy {
 		MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also {
@@ -83,17 +91,6 @@ object OpaqueRuntimeManager: IClassProcessor {
 				FieldInfo(fieldNode, IFNE, IFEQ)
 			}
 		)
-	}
-	
-	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		this.classes = classes
-		classNode = ClassNode().apply {
-			this.access = ACC_PUBLIC
-			this.version = OpaqueRuntimeManager.classes.first().version
-			this.name = ClassRenamer.namer.uniqueRandomString()
-			this.signature = null
-			this.superName = "java/util/concurrent/ConcurrentHashMap"
-		}
 	}
 	
 	data class FieldInfo(

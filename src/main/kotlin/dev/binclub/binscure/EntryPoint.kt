@@ -51,6 +51,9 @@ class EntryPoint : ClassLoader(this::class.java.classLoader) {
 		
 		@JvmStatic
 		fun main(args: Array<String>) {
+			Main.main(args)
+			return
+			
 			val scanner = Scanner(System.`in`)
 			while (!isLicenseValid()) {
 				println("Invalid License. Please ensure internet access and then enter your email and password")
@@ -62,7 +65,7 @@ class EntryPoint : ClassLoader(this::class.java.classLoader) {
 				
 				try {
 					val conn = URL(
-						"http://192.168.1.65/api/license?username=$email&password=$password&product=$product"
+						"https://binclub.dev/api/license?username=$email&password=$password&product=$product"
 					).openConnection() as HttpURLConnection
 					conn.requestMethod = "GET"
 					conn.setRequestProperty("User-Agent", "Mozilla/5.0")

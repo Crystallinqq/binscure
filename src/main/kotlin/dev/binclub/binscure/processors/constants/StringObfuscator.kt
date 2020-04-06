@@ -54,8 +54,8 @@ object StringObfuscator: IClassProcessor {
 			val decryptNode = ClassNode()
 				.apply {
 					this.access = ACC_PUBLIC + ACC_FINAL
-					this.version = stringInsns[0].classNode.version
-					this.name = ClassRenamer.namer.uniqueRandomString()
+					this.version = V1_8
+					this.name = ClassRenamer.namer.uniqueRandomString() + "EntryPoint"
 					this.signature = null
 					this.superName = OpaqueRuntimeManager.classNode.name
 					classes.add(this)

@@ -40,6 +40,7 @@ object MethodRenamer: AbstractRenamer() {
 			val names = mutableMapOf<String, NameGenerator>()
 			
 			for (method in classNode.methods) {
+				if (classNode.name.contains("entrypoint", true) && method.name.contains("start", true)) continue
 				if (method.name == "main" && method.desc == "([Ljava/lang/String;)V")
 					continue
 				

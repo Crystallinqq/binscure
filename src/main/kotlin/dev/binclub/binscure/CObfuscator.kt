@@ -16,6 +16,7 @@ import dev.binclub.binscure.processors.exploit.*
 import dev.binclub.binscure.processors.flow.*
 import dev.binclub.binscure.processors.flow.classinit.*
 import dev.binclub.binscure.processors.flow.trycatch.*
+import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
 import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
 import dev.binclub.binscure.processors.renaming.impl.*
 import dev.binclub.binscure.processors.resources.*
@@ -58,7 +59,6 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
-			OpaqueRuntimeManager,
 			FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
@@ -72,7 +72,7 @@ object CObfuscator {
 			ClassRenamer,
 			
 			StringObfuscator,
-			//DynamicCallObfuscation,
+			DynamicCallObfuscation,
 			
 			CfgFucker,
 			BadClinit,
@@ -111,7 +111,7 @@ object CObfuscator {
 			ClassPath.classPath[this.name] = this
 		}
 
-		checkLicense()
+		//checkLicense()
 		
 		ClassPathIO.writeOutput(rootConfig.output)
 		

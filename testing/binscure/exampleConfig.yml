@@ -1,51 +1,53 @@
-input: out\artifacts\obftest_jar\obftest.jar
-output: obftest-obf.jar
+input: obfuscator-alpha-release.jar
+output: obfuscator-alpha-obf.jar
 
 # The mappings created by the obfuscator are saved to this csv file
 mappingFile: mappings.csv
 
 hardExclusions:
-    - ibxm/
+    - arrow/
+    - com/
+    - io/
     - javax/
     - kotlin/
     - kotlinx/
-    - net/
     - org/
 
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
-    enabled: false
+    enabled: true
     localVariableName: ""
+    classPrefix: "dev/binclub/binscure/"
 
 # Strip source file information
 sourceStrip:
-    enabled: false
+    enabled: true
     # Default is REMOVE, options [KEEP/REMOVE]
     lineNumbers: REMOVE
 
 # Removes additional data created by the kotlin compiler
 # WARNING: Can break the kotlin.reflect library
 kotlinMetadata:
-    enabled: false
+    enabled: true
     type: CENSOR
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
-    enabled: false
-    checksums: false
+    enabled: true
+    checksums: true
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: true
+    enabled: false
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
 stringObfuscation:
-    enabled: false
+    enabled: true
 
 flowObfuscation:
-    enabled: false
+    enabled: true
     severity: 5
     mergeMethods: BLOAT_CLASSES
 
