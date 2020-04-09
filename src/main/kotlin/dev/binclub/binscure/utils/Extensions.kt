@@ -171,3 +171,13 @@ fun InsnList.contains(insn: AbstractInsnNode): Boolean {
 	}
 	return false
 }
+
+fun ClassNode.versionAtLeast(minVersion: Int): Boolean {
+	val thisMajor = this.version and 0xFFFF
+	val thisMinor = this.version shr 16
+	
+	val minMajor = minVersion and 0xFFFF
+	val minMinor = minVersion shr 16
+	
+	return thisMajor >= minMajor && thisMinor >= minMinor
+}

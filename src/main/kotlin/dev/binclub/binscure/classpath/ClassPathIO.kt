@@ -37,6 +37,12 @@ object ClassPathIO {
 						ClassReader(bytes)
 							.accept(classNode, ClassReader.EXPAND_FRAMES)
 						
+						if (!CObfuscator.isExcluded(classNode)) {
+							classNode.fields?.shuffle(random)
+							classNode.methods?.shuffle(random)
+							classNode.innerClasses?.shuffle(random)
+						}
+						
 						if (!rootConfig.hardExclusions.any { entry.name.startsWith(it.trim()) }) {
 							ClassPath.classes[classNode.name] = classNode
 						} else {
@@ -100,6 +106,7 @@ object ClassPathIO {
 				it.write(bytes)
 				it.closeEntry()
 			}
+			
 			for (classNode in ClassPath.classes.values) {
 				try {
 					if (!CObfuscator.isExcluded(classNode)) {
@@ -109,12 +116,15 @@ object ClassPathIO {
 						classNode.innerClasses?.shuffle(random)
 					}
 					
-					var name = "${classNode.name}.class"
+					val name = "${classNode.name}.class"
 					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled && rootConfig.crasher.checksums) {
 						crc.overwrite = true
 						
 						it.putNextEntry(ZipEntry(name.replaceLast('/', "/\u0000")))
-						it.write(0x00)
+						it.write(0x50)
+						it.write(0x4B)
+						it.write(0x03)
+						it.write(0x04)
 					}
 					
 					val entry = ZipEntry(name)

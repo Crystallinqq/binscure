@@ -59,7 +59,7 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
-			/*FieldInitialiser,
+			FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
 			
@@ -75,7 +75,7 @@ object CObfuscator {
 			DynamicCallObfuscation,
 			
 			CfgFucker,
-			BadClinit,
+			BadClinitExploit,
 			ClassInitMonitor,
 			FakeTryCatch,
 			UselessTryCatch,
@@ -83,7 +83,7 @@ object CObfuscator {
 			StaticMethodMerger,
 			NumberObfuscation,
 			
-			BadAttributeExploit,*/
+			BadAttributeExploit,
 			BadIndyConstant,
 			
 			ManifestResourceProcessor
