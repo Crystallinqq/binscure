@@ -3,12 +3,10 @@ package dev.binclub.binscure.processors.flow.trycatch
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager
-import dev.binclub.binscure.kotlin.random
-import dev.binclub.binscure.utils.BlameableLabelNode
+import dev.binclub.binscure.utils.random
 import dev.binclub.binscure.utils.InstructionModifier
 import dev.binclub.binscure.utils.newLabel
 import dev.binclub.binscure.utils.randomThrowable
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 

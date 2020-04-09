@@ -1,29 +1,21 @@
 package dev.binclub.binscure.processors.classmerge
 
-import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.isExcluded
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.api.transformers.MergeMethods
 import dev.binclub.binscure.api.transformers.MergeMethods.NONE
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.kotlin.add
-import dev.binclub.binscure.kotlin.clone
-import dev.binclub.binscure.kotlin.hasAccess
-import dev.binclub.binscure.kotlin.random
+import dev.binclub.binscure.utils.add
+import dev.binclub.binscure.utils.hasAccess
 import dev.binclub.binscure.processors.constants.StringObfuscator
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
-import dev.binclub.binscure.runtime.OpaqueRuntimeManager
 import dev.binclub.binscure.utils.*
-import org.objectweb.asm.Label
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.Type.*
 import org.objectweb.asm.tree.*
-import java.lang.reflect.Modifier
 
 /**
  * @author cookiedragon234 21/Feb/2020
@@ -53,7 +45,7 @@ object StaticMethodMerger: IClassProcessor {
 			return
 		}
 		
-		val staticMethods = hashMapOf<String, MutableSet<Pair<ClassNode, MethodNode>>>()
+		val staticMethods: MutableMap<String, MutableSet<Pair<ClassNode, MethodNode>>> = hashMapOf()
 		
 		for (classNode in classes) {
 			if (classNode.name == StringObfuscator.decryptNode?.name)
@@ -75,11 +67,9 @@ object StaticMethodMerger: IClassProcessor {
 					&&
 					!method.access.hasAccess(ACC_NATIVE)
 					&&
-					!containsSpecial(method.instructions)//, hierarchy, classNode)
-					//&&
-					//random.nextBoolean()
+					!containsSpecial(method.instructions)
 				) {
-					staticMethods.getOrPut(method.desc, { hashSetOf() }).add(Pair(classNode, method))
+					staticMethods.getOrPutLazy(method.desc, { hashSetOf() }).add(Pair(classNode, method))
 				}
 			}
 		}
@@ -99,11 +89,6 @@ object StaticMethodMerger: IClassProcessor {
 					
 					val firstStatic = firstMethod.access.hasAccess(ACC_STATIC)
 					val secondStatic = secondMethod.access.hasAccess(ACC_STATIC)
-					
-					//var newNode: ClassNode
-					//do {
-					//	newNode = classes.random(random)
-					//} while (newNode.access.hasAccess(ACC_INTERFACE) || isExcluded(newNode))
 					
 					if (classNode == null || classNode.methods.size >= 65530) {
 						classNode = ClassNode().apply {

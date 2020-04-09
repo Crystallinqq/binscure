@@ -3,8 +3,8 @@ package dev.binclub.binscure.processors.flow
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.kotlin.add
-import dev.binclub.binscure.kotlin.hasAccess
+import dev.binclub.binscure.utils.add
+import dev.binclub.binscure.utils.hasAccess
 import dev.binclub.binscure.runtime.opaqueSwitchJump
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes.*

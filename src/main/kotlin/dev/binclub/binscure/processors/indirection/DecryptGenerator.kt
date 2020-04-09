@@ -1,12 +1,11 @@
 package dev.binclub.binscure.processors.indirection
 
 import dev.binclub.binscure.CObfuscator.random
-import dev.binclub.binscure.kotlin.add
-import dev.binclub.binscure.kotlin.internalName
+import dev.binclub.binscure.utils.add
+import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import kotlin.math.max

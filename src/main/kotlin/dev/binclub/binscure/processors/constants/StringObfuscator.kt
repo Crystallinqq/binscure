@@ -4,7 +4,6 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.configuration.ConfigurationManager
-import dev.binclub.binscure.kotlin.*
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.runtime.OpaqueRuntimeManager
 import dev.binclub.binscure.runtime.randomOpaqueJump

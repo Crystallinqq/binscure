@@ -1,7 +1,5 @@
 package dev.binclub.binscure.utils
 
-import dev.binclub.binscure.kotlin.hasAccess
-import dev.binclub.binscure.kotlin.opcodeString
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.MethodNode

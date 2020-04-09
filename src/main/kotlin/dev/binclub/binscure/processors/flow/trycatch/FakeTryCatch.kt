@@ -2,14 +2,11 @@ package dev.binclub.binscure.processors.flow.trycatch
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.kotlin.add
+import dev.binclub.binscure.utils.add
 import dev.binclub.binscure.runtime.randomOpaqueJump
-import dev.binclub.binscure.utils.BlameableLabelNode
 import dev.binclub.binscure.utils.newLabel
 import dev.binclub.binscure.utils.randomThrowable
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 

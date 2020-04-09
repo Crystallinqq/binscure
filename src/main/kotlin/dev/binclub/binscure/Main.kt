@@ -1,7 +1,6 @@
 package dev.binclub.binscure
 
 import dev.binclub.binscure.configuration.ConfigurationManager
-import dev.binclub.binscure.kotlin.replaceLast
 import java.io.File
 import java.io.FileNotFoundException
 

@@ -3,10 +3,9 @@ package dev.binclub.binscure.processors.renaming
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
-import dev.binclub.binscure.kotlin.originalName
+import dev.binclub.binscure.utils.originalName
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import dev.binclub.binscure.utils.AnnotationFieldRemapper
-import org.objectweb.asm.commons.AnnotationRemapper
 import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.tree.ClassNode
 

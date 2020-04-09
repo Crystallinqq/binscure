@@ -1,8 +1,5 @@
 package dev.binclub.binscure.processors.renaming.generation
 
-import dev.binclub.binscure.CObfuscator
-import dev.binclub.binscure.kotlin.random
-
 /**
  * @author cookiedragon234 22/Jan/2020
  */

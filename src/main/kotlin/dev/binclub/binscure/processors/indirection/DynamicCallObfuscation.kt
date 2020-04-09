@@ -4,15 +4,12 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.configuration.ConfigurationManager
-import dev.binclub.binscure.kotlin.*
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Handle
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
-import kotlin.properties.Delegates
 
 /**
  * @author cookiedragon234 22/Jan/2020

@@ -3,7 +3,7 @@ package dev.binclub.binscure.classpath
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.kotlin.replaceLast
+import dev.binclub.binscure.utils.replaceLast
 import dev.binclub.binscure.utils.DummyHashSet
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter

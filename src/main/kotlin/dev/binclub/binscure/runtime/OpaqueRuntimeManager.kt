@@ -2,17 +2,13 @@ package dev.binclub.binscure.runtime
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
-import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
-import dev.binclub.binscure.classpath.ClassPath.classes
-import dev.binclub.binscure.kotlin.add
-import dev.binclub.binscure.kotlin.random
+import dev.binclub.binscure.utils.add
+import dev.binclub.binscure.utils.random
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.utils.*
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import kotlin.math.max
 import kotlin.math.min
@@ -36,6 +32,8 @@ object OpaqueRuntimeManager {
 			this.name = ClassRenamer.namer.uniqueRandomString() + "EntryPoint"
 			this.signature = null
 			this.superName = "java/util/concurrent/ConcurrentHashMap"
+			ClassPath.classes[this.name] = this
+			ClassPath.classPath[this.name] = this
 		}
 	}
 	
@@ -48,7 +46,7 @@ object OpaqueRuntimeManager {
 	// The larger the application, the larger the number of fields we want available
 	// We will use the number of classes / 2, at least 3 and at most 25
 	val fields by lazy {
-		val num = min(max(classes.size / 2, 3), 25)
+		val num = min(max(ClassPath.classes.size / 2, 3), 25)
 		Array(num) { generateField() }
 	}
 	

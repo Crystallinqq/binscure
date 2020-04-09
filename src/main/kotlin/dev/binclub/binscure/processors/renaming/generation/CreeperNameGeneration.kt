@@ -1,7 +1,5 @@
 package dev.binclub.binscure.processors.renaming.generation
 
-import dev.binclub.binscure.kotlin.clampEnd
-
 /**
  * @author cookiedragon234 01/Apr/2020
  */

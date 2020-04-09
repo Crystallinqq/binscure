@@ -1,18 +1,16 @@
 package dev.binclub.binscure.processors.indirection
 
 import dev.binclub.binscure.CObfuscator.random
-import dev.binclub.binscure.kotlin.add
-import dev.binclub.binscure.kotlin.internalName
+import dev.binclub.binscure.utils.add
+import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import java.lang.invoke.ConstantCallSite
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
-import kotlin.math.max
 
 /**
  * @author cookiedragon234 13/Feb/2020

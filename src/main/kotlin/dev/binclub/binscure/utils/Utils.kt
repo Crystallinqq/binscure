@@ -1,11 +1,6 @@
 package dev.binclub.binscure.utils
 
-import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
-import dev.binclub.binscure.kotlin.add
-import dev.binclub.binscure.kotlin.internalName
-import dev.binclub.binscure.kotlin.random
-import dev.binclub.binscure.kotlin.toInsn
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassReader.EXPAND_FRAMES
 import org.objectweb.asm.ClassWriter

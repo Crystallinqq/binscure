@@ -1,7 +1,7 @@
 package dev.binclub.binscure.processors.optimisers
 
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.kotlin.hasAccess
+import dev.binclub.binscure.utils.hasAccess
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode

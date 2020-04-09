@@ -1,7 +1,6 @@
-package dev.binclub.binscure.kotlin
+package dev.binclub.binscure.utils
 
 import dev.binclub.binscure.classpath.ClassPath
-import dev.binclub.binscure.utils.BlameableLabelNode
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type

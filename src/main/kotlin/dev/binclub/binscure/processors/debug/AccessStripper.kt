@@ -2,12 +2,11 @@ package dev.binclub.binscure.processors.debug
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.kotlin.addAccess
-import dev.binclub.binscure.kotlin.hasAccess
-import dev.binclub.binscure.kotlin.removeAccess
+import dev.binclub.binscure.utils.addAccess
+import dev.binclub.binscure.utils.hasAccess
+import dev.binclub.binscure.utils.removeAccess
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.ClassNode
-import java.lang.reflect.Modifier
 
 /**
  * This transformer removes all unecessary access flags, such as private, protected, final, etc

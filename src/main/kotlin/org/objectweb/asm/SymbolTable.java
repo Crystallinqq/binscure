@@ -37,7 +37,7 @@ package org.objectweb.asm;
  *     4.7.23</a>
  * @author Eric Bruneton
  */
-final class SymbolTable {
+public final class SymbolTable {
 	
 	/**
 	 * The ClassWriter to which this SymbolTable belongs. This is only used to get access to {@link

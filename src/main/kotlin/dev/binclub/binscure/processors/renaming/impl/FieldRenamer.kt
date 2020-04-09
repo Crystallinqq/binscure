@@ -4,11 +4,9 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.kotlin.hasAccess
 import dev.binclub.binscure.processors.renaming.AbstractRenamer
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import java.lang.RuntimeException
 

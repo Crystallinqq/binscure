@@ -2,7 +2,7 @@ package dev.binclub.binscure.processors.constants
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.kotlin.hasAccess
+import dev.binclub.binscure.utils.hasAccess
 import dev.binclub.binscure.utils.getClinit
 import dev.binclub.binscure.utils.ldcDouble
 import dev.binclub.binscure.utils.ldcInt

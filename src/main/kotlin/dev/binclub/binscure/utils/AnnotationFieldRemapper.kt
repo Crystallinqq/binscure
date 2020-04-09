@@ -1,7 +1,5 @@
 package dev.binclub.binscure.utils
 
-import dev.binclub.binscure.kotlin.internalName
-import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import org.objectweb.asm.Type
 import org.objectweb.asm.commons.Remapper
 import org.objectweb.asm.tree.AnnotationNode

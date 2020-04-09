@@ -7,8 +7,8 @@ import dev.binclub.binscure.classpath.ClassPathIO
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
-import dev.binclub.binscure.kotlin.internalName
-import dev.binclub.binscure.kotlin.whenNotNull
+import dev.binclub.binscure.utils.internalName
+import dev.binclub.binscure.utils.whenNotNull
 import dev.binclub.binscure.processors.classmerge.*
 import dev.binclub.binscure.processors.constants.*
 import dev.binclub.binscure.processors.debug.*
@@ -59,7 +59,7 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
-			FieldInitialiser,
+			/*FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
 			
@@ -83,7 +83,7 @@ object CObfuscator {
 			StaticMethodMerger,
 			NumberObfuscation,
 			
-			BadAttributeExploit,
+			BadAttributeExploit,*/
 			BadIndyConstant,
 			
 			ManifestResourceProcessor
@@ -105,10 +105,6 @@ object CObfuscator {
 				progress += 1
 			}
 			print("\r")
-		}
-		OpaqueRuntimeManager.classNode.apply {
-			ClassPath.classes[this.name] = this
-			ClassPath.classPath[this.name] = this
 		}
 
 		//checkLicense()

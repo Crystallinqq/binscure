@@ -1,5 +1,5 @@
-input: ares-2.3-plus.jar
-output: ares-2.3-plus-obf.jar
+input: ares-2.3.1-release.jar
+output: ares-2.3.1-obf.jar
 
 hardExclusions:
     - club/
@@ -43,7 +43,7 @@ crasher:
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: true
+    enabled: false
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time

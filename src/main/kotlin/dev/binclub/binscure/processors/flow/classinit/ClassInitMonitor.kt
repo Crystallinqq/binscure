@@ -32,6 +32,15 @@ object ClassInitMonitor: IClassProcessor {
 				
 				for (insn in method.instructions) {
 					if (insn is TypeInsnNode && insn.opcode == NEW) {
+						// We need to be sure that the new object is immediately initialised
+						// This is to prevent someone running binscure twice on the same jar
+						// Therefore adding multiple monitorenters on the uninitalised object
+						// The JVM spec says that if the MONITORENTER vs MONITOREXIT counter is > 1 then the JVM
+						// Will throw and exception
+						if (insn.next.opcode != INVOKEVIRTUAL || (insn.next.opcode == DUP && insn.next.next.opcode != INVOKEVIRTUAL)) {
+							continue
+						}
+						
 						val fakeJump = newLabel()
 						
 						val heavy = CObfuscator.randomWeight(aggresiveness);

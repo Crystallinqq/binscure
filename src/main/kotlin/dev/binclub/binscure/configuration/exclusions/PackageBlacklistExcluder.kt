@@ -1,6 +1,6 @@
 package dev.binclub.binscure.configuration.exclusions
 
-import dev.binclub.binscure.kotlin.originalName
+import dev.binclub.binscure.utils.originalName
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode

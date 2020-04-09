@@ -1,7 +1,7 @@
 package dev.binclub.binscure.api
 
 import dev.binclub.binscure.api.transformers.*
-import dev.binclub.binscure.kotlin.replaceLast
+import dev.binclub.binscure.utils.replaceLast
 import java.io.File
 
 /**

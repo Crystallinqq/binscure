@@ -2,8 +2,8 @@ package dev.binclub.binscure.processors.constants
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.kotlin.add
-import dev.binclub.binscure.kotlin.internalName
+import dev.binclub.binscure.utils.add
+import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.AbstractInsnNode
