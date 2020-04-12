@@ -139,6 +139,7 @@ object StringObfuscator: IClassProcessor {
 		val createCharArrays = newLabel()
 		val xors = newLabel()
 		val switchExceptionReceiver = newLabel()
+		val classNotFoundHandler = newLabel()
 		
 		// XOR SWITCH LABELS
 		val loopStart = newLabel()
@@ -152,8 +153,25 @@ object StringObfuscator: IClassProcessor {
 		val l4 = newLabel()
 		val l5 = newLabel()
 		
+		val veryveryStart = newLabel()
+		
 		decryptorMethod.tryCatchBlocks.apply {
 			add(TryCatchBlockNode(getCurrentThread, switch, switchExceptionReceiver, "java/lang/IllegalMonitorStateException"))
+			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, switchExceptionReceiver, "java/lang/IllegalMonitorStateException"))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, switchExceptionReceiver, "java/lang/IllegalMonitorStateException"))
+			add(TryCatchBlockNode(getCurrentThread, switch, classNotFoundHandler, "java/lang/BootstrapMethodError"))
+			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, classNotFoundHandler, "java/lang/BootstrapMethodError"))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, classNotFoundHandler, "java/lang/BootstrapMethodError"))
+			add(TryCatchBlockNode(getCurrentThread, switch, afterRet, "java/lang/IllegalStateException"))
+			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, afterRet, "java/lang/IllegalStateException"))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, afterRet, "java/lang/IllegalStateException"))
+			add(TryCatchBlockNode(getCurrentThread, switch, handler, "java/lang/IllegalArgumentException"))
+			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, handler, "java/lang/IllegalArgumentException"))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, handler, "java/lang/IllegalArgumentException"))
+			add(TryCatchBlockNode(getCurrentThread, switch, setCharArrVal, "java/lang/NoClassDefFoundError"))
+			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, genericCatch, "java/lang/NoClassDefFoundError"))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/NoClassDefFoundError"))
+			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, switch, "java/lang/Throwable"))
 			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
 			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
 			add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
@@ -165,6 +183,7 @@ object StringObfuscator: IClassProcessor {
 		
 		// First check if the value is cached
 		val insnList = InsnList().apply {
+			add(veryveryStart)
 			add(TypeInsnNode(NEW, "java/lang/Exception"))
 			add(ICONST_M1)
 			add(ACONST_NULL)
@@ -183,6 +202,8 @@ object StringObfuscator: IClassProcessor {
 			add(ACONST_NULL)
 			add(VarInsnNode(ASTORE, 9))
 			add(VarInsnNode(ISTORE, 10))
+			add(DUP)
+			add(VarInsnNode(ISTORE, 15))
 			add(VarInsnNode(ISTORE, 6))
 			add(ICONST_M1)
 			add(VarInsnNode(ISTORE, 7))
@@ -202,7 +223,9 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ILOAD, 7)) // methodhash
 			add(IADD)
 			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
+			add(VarInsnNode(ISTORE, 15))
+			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
+			add(JumpInsnNode(GOTO, getCurrentThread))
 			
 			add(loopStart)
 			add(VarInsnNode(ILOAD, 10))
@@ -253,9 +276,11 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ISTORE, 2))
 			add(VarInsnNode(ALOAD, 14))
 			add(MONITOREXIT) // GOTO xors
-			add(JumpInsnNode(GOTO, getCurrentThread))
+			add(JumpInsnNode(GOTO, loopStart))
 			
 			add(setCharArrVal)
+			add(POP)
+			add(VarInsnNode(ILOAD, 15))
 			add(InsnNode(I2C))
 			add(VarInsnNode(ALOAD, 9)) // Decrypted Char Array
 			add(InsnNode(SWAP))
@@ -279,7 +304,9 @@ object StringObfuscator: IClassProcessor {
 			add(InsnNode(CALOAD))
 			add(VarInsnNode(ILOAD, 7)) // methodhash
 			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
+			add(VarInsnNode(ISTORE, 15))
+			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
+			add(JumpInsnNode(GOTO, veryveryStart))
 			
 			add(xors)
 			add(ldcInt(0))
@@ -294,7 +321,9 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ILOAD, 6)) // classhash
 			add(IADD)
 			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
+			add(VarInsnNode(ISTORE, 15))
+			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
+			add(JumpInsnNode(GOTO, l4))
 			
 			add(l4) // xor methodhash + classhash
 			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
@@ -304,9 +333,17 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ILOAD, 6)) // classhash
 			add(InsnNode(IADD))
 			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
+			add(VarInsnNode(ISTORE, 15))
+			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
+			add(JumpInsnNode(GOTO, xors))
 			
 			add(finalReturn)
+			add(InvokeDynamicInsnNode("________", "()V", Handle(H_INVOKESTATIC, "________", "a", "()V")))
+			add(JumpInsnNode(GOTO, veryveryStart))
+			
+			add(classNotFoundHandler)
+			add(POP)
+			
 			add(FieldInsnNode(GETSTATIC, classNode.name, storageField.name, storageField.desc)) // Get field
 			
 			add(VarInsnNode(ALOAD, 0))
@@ -327,7 +364,9 @@ object StringObfuscator: IClassProcessor {
 			add(InsnNode(CALOAD))
 			add(VarInsnNode(ILOAD, 6)) // classhash
 			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
+			add(VarInsnNode(ISTORE, 15))
+			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
+			add(JumpInsnNode(GOTO, getCurrentThread))
 			
 			add(getMethodName)
 			add(VarInsnNode(ALOAD, 5))
@@ -348,9 +387,15 @@ object StringObfuscator: IClassProcessor {
 			add(MethodInsnNode(INVOKEVIRTUAL, classNode.name, "get", "(Ljava/lang/Object;)Ljava/lang/Object;"))
 			add(DUP)
 			// Return if not null
-			add(JumpInsnNode(IFNULL, afterRet))
+			val b4afterRet = newLabel()
+			add(JumpInsnNode(IFNULL, b4afterRet))
 			add(TypeInsnNode(CHECKCAST, "java/lang/String"))
 			add(InsnNode(ARETURN))
+			add(b4afterRet)
+			add(TypeInsnNode(NEW, "java/lang/IllegalStateException"))
+			add(DUP)
+			add(MethodInsnNode(INVOKESPECIAL, "java/lang/IllegalStateException", "<init>", "()V"))
+			add(ATHROW)
 			add(afterRet)
 			add(InsnNode(POP))
 			add(ldcInt(2))
@@ -391,7 +436,6 @@ object StringObfuscator: IClassProcessor {
 			add(InsnNode(ACONST_NULL))
 			add(InsnNode(ATHROW))
 			
-			
 			// Fake try catch second half start
 			add(handler)
 			add(InsnNode(POP))
@@ -404,7 +448,9 @@ object StringObfuscator: IClassProcessor {
 			add(InsnNode(CALOAD))
 			add(VarInsnNode(ILOAD, 1)) // key
 			add(InsnNode(IXOR))
-			add(JumpInsnNode(GOTO, setCharArrVal))
+			add(VarInsnNode(ISTORE, 15))
+			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
+			add(JumpInsnNode(GOTO, getCurrentThread))
 			
 			add(switchEnd)
 			add(InsnNode(ACONST_NULL))
