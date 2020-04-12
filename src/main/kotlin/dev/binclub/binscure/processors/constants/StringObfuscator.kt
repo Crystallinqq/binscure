@@ -8,6 +8,7 @@ import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.runtime.OpaqueRuntimeManager
 import dev.binclub.binscure.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
+import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.util.*
@@ -381,6 +382,7 @@ object StringObfuscator: IClassProcessor {
 			val popBeforeRealStart = newLabel()
 			add(JumpInsnNode(IFNULL, popBeforeRealStart))
 			add(MONITOREXIT) // GOTO getMethodName
+			add(InvokeDynamicInsnNode("", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")))
 			add(ACONST_NULL)
 			add(ATHROW)
 			
