@@ -1024,7 +1024,17 @@ final class MethodWriter extends MethodVisitor {
 			final Object... bootstrapMethodArguments) {
 		lastBytecodeOffset = code.length;
 		// Add the instruction to the bytecode of the method.
-		Symbol invokeDynamicSymbol = symbolTable.addConstantInvokeDynamic(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+		Symbol invokeDynamicSymbol;
+		if (name != null) {
+			invokeDynamicSymbol = symbolTable.addConstantInvokeDynamic(
+							name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+        } else {
+			invokeDynamicSymbol = symbolTable.addConstantInvokeDynamic(
+                "",
+                "()V",
+                new Handle(Opcodes.H_INVOKESTATIC, "", "", "(I)V", false)
+            );
+        }
         code.put12(Opcodes.INVOKEDYNAMIC, invokeDynamicSymbol.index);
         code.putShort(0);
 		// If needed, update the maximum stack size and number of locals, and stack map frames.

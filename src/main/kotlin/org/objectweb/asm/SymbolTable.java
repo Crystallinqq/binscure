@@ -1053,7 +1053,7 @@ public final class SymbolTable {
 		// and BootstrapMethods attribute first, so that the BootstrapMethods attribute is not modified
 		// while adding the given bootstrap method to it, in the rest of this method.
 		for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
-			addConstant(bootstrapMethodArgument);
+            addConstant(bootstrapMethodArgument);
 		}
 		
 		// Write the bootstrap method in the BootstrapMethods table. This is necessary to be able to
@@ -1071,14 +1071,16 @@ public final class SymbolTable {
 		int numBootstrapArguments = bootstrapMethodArguments.length;
 		bootstrapMethodsAttribute.putShort(numBootstrapArguments);
 		for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
-			bootstrapMethodsAttribute.putShort(addConstant(bootstrapMethodArgument).index);
+            bootstrapMethodsAttribute.putShort(addConstant(bootstrapMethodArgument).index);
 		}
 		
 		// Compute the length and the hash code of the bootstrap method.
 		int bootstrapMethodlength = bootstrapMethodsAttribute.length - bootstrapMethodOffset;
 		int hashCode = bootstrapMethodHandle.hashCode();
 		for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
-			hashCode ^= bootstrapMethodArgument.hashCode();
+		    if (bootstrapMethodArgument != null) {
+                hashCode ^= bootstrapMethodArgument.hashCode();
+            }
 		}
 		hashCode &= 0x7FFFFFFF;
 		

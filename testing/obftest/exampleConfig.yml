@@ -32,17 +32,17 @@ kotlinMetadata:
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
-    enabled: true
-    checksums: true
+    enabled: false
+    checksums: false
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: true
+    enabled: false
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
 stringObfuscation:
-    enabled: false
+    enabled: true
 
 flowObfuscation:
     enabled: false

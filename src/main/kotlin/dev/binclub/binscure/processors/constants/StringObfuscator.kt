@@ -137,6 +137,7 @@ object StringObfuscator: IClassProcessor {
 		val finalReturn = newLabel()
 		val createCharArrays = newLabel()
 		val xors = newLabel()
+		val switchExceptionReceiver = newLabel()
 		
 		// XOR SWITCH LABELS
 		val loopStart = newLabel()
@@ -151,21 +152,45 @@ object StringObfuscator: IClassProcessor {
 		val l5 = newLabel()
 		
 		decryptorMethod.tryCatchBlocks.apply {
-			//add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
-			//add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
-			//add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
-			//add(TryCatchBlockNode(start, end, handler, null))
-			//add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
-			//add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Throwable"))
-			//add(TryCatchBlockNode(getCurrentThread, xors, secondCatch, null))
+			add(TryCatchBlockNode(getCurrentThread, switch, switchExceptionReceiver, "java/lang/IllegalMonitorStateException"))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
+			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
+			add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
+			add(TryCatchBlockNode(start, end, handler, null))
+			add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
+			add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Throwable"))
+			add(TryCatchBlockNode(getCurrentThread, xors, secondCatch, null))
 		}
 		
 		// First check if the value is cached
 		val insnList = InsnList().apply {
+			add(TypeInsnNode(NEW, "java/lang/Exception"))
+			add(ICONST_M1)
+			add(ACONST_NULL)
+			add(ACONST_NULL)
+			add(VarInsnNode(ASTORE, 4))
+			add(VarInsnNode(ASTORE, 8))
+			add(ACONST_NULL)
+			add(VarInsnNode(ASTORE, 5))
+			add(ICONST_M1)
+			add(ICONST_M1)
+			add(VarInsnNode(ISTORE, 13))
+			add(ICONST_M1)
+			add(VarInsnNode(ISTORE, 11))
+			add(VarInsnNode(ISTORE, 2))
+			add(ICONST_M1)
+			add(ACONST_NULL)
+			add(VarInsnNode(ASTORE, 9))
+			add(VarInsnNode(ISTORE, 10))
+			add(VarInsnNode(ISTORE, 6))
+			add(ICONST_M1)
+			add(VarInsnNode(ISTORE, 7))
+			add(VarInsnNode(ASTORE, 14))
+			
 			add(JumpInsnNode(GOTO, start))
 			add(switchDefault)
 			add(InsnNode(ACONST_NULL))
-			add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
+			//add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
 			add(InsnNode(POP))
 			
 			add(l5) // xor i
@@ -211,7 +236,9 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ASTORE, 4))
 			add(ldcInt(3))
 			add(VarInsnNode(ISTORE, 2))
-			add(JumpInsnNode(GOTO, switch)) // GOTO getStackTrace
+			add(VarInsnNode(ALOAD, 14))
+			add(MONITOREXIT) // GOTO getStackTrace
+			add(JumpInsnNode(GOTO, getCurrentThread))
 			
 			add(createCharArrays)
 			add(VarInsnNode(ALOAD, 0))
@@ -223,7 +250,9 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ASTORE, 9))
 			add(ldcInt(8))
 			add(VarInsnNode(ISTORE, 2))
-			add(JumpInsnNode(GOTO, switch)) // GOTO xors
+			add(VarInsnNode(ALOAD, 14))
+			add(MONITOREXIT) // GOTO xors
+			add(JumpInsnNode(GOTO, getCurrentThread))
 			
 			add(setCharArrVal)
 			add(InsnNode(I2C))
@@ -239,7 +268,9 @@ object StringObfuscator: IClassProcessor {
 			add(exitLoop)
 			add(ldcInt(1))
 			add(VarInsnNode(ISTORE, 2))
-			add(JumpInsnNode(GOTO, switch)) // GOTO finalReturn
+			add(VarInsnNode(ALOAD, 14))
+			add(MONITOREXIT) // GOTO finalReturn
+			add(JumpInsnNode(GOTO, xors))
 			
 			add(l3) // xor methodhash
 			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
@@ -306,7 +337,8 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ISTORE, 7))
 			add(ldcInt(7))
 			add(VarInsnNode(ISTORE, 2))
-			add(JumpInsnNode(GOTO, switch)) // GOTO createCharArrays
+			add(VarInsnNode(ALOAD, 14))
+			add(MONITOREXIT) // GOTO createCharArrays
 			
 			
 			add(checkCache)
@@ -330,7 +362,10 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ASTORE, 5))
 			add(ldcInt(4))
 			add(VarInsnNode(ISTORE, 2))
-			add(JumpInsnNode(GOTO, switch)) // GOTO getClassName
+			add(VarInsnNode(ALOAD, 14))
+			add(MONITOREXIT) // GOTO getClassName
+			add(ACONST_NULL)
+			add(JumpInsnNode(GOTO, afterRet))
 			
 			add(getClassName)
 			add(VarInsnNode(ALOAD, 5))
@@ -341,7 +376,13 @@ object StringObfuscator: IClassProcessor {
 			add(VarInsnNode(ISTORE, 6))
 			add(ldcInt(5))
 			add(VarInsnNode(ISTORE, 2))
-			add(JumpInsnNode(GOTO, switch)) // GOTO getMethodName
+			add(VarInsnNode(ALOAD, 14))
+			add(DUP)
+			val popBeforeRealStart = newLabel()
+			add(JumpInsnNode(IFNULL, popBeforeRealStart))
+			add(MONITOREXIT) // GOTO getMethodName
+			add(ACONST_NULL)
+			add(ATHROW)
 			
 			add(genericCatch)
 			add(InsnNode(POP))
@@ -366,6 +407,9 @@ object StringObfuscator: IClassProcessor {
 			add(switchEnd)
 			add(InsnNode(ACONST_NULL))
 			add(InsnNode(ATHROW))
+			
+			add(popBeforeRealStart)
+			add(POP)
 			
 			add(realStart)
 			add(VarInsnNode(ILOAD, 1))
@@ -392,6 +436,11 @@ object StringObfuscator: IClassProcessor {
 			
 			add(ldcInt(0))
 			add(VarInsnNode(ISTORE, 2))
+			add(JumpInsnNode(GOTO, switch))
+			add(switchExceptionReceiver)
+			add(JumpInsnNode(IFNONNULL, switch))
+			add(ACONST_NULL)
+			add(ATHROW)
 			add(switch)
 			add(VarInsnNode(ILOAD, 2))
 			add(switchImmediate)
