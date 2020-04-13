@@ -3,7 +3,7 @@ package dev.binclub.binscure.processors.indirection
 import dev.binclub.binscure.CObfuscator.random
 import dev.binclub.binscure.utils.add
 import dev.binclub.binscure.utils.internalName
-import dev.binclub.binscure.runtime.randomOpaqueJump
+import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type

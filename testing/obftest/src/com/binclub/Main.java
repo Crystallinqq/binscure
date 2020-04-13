@@ -4,6 +4,8 @@ import com.binclub.annotationtest.AnnotationTest;
 import com.binclub.enumtest.EnumTest;
 
 import java.text.MessageFormat;
+import java.time.Duration;
+import java.time.Instant;
 
 public class Main {
 	private static final Test[] tests = new Test[]{
@@ -17,6 +19,7 @@ public class Main {
 	};
 	
     public static void main(String[] args) {
+		Instant start = Instant.now();
 		for (Test test : tests) {
 			boolean success = false;
 			try {
@@ -33,6 +36,7 @@ public class Main {
 				System.out.println("[FAILURE]");
 			}
 		}
+		System.out.println("Took " + Duration.between(start, Instant.now()).toMillis() + "ms");
     }
 	
 	private static String padRight(String s, int n) {

@@ -3,7 +3,7 @@ package dev.binclub.binscure.processors.flow.jump
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.utils.isStatic
-import dev.binclub.binscure.runtime.randomOpaqueJump
+import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.InstructionModifier
 import dev.binclub.binscure.utils.ldcInt
 import dev.binclub.binscure.utils.newLabel

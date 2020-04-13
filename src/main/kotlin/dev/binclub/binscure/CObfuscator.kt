@@ -20,7 +20,7 @@ import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
 import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
 import dev.binclub.binscure.processors.renaming.impl.*
 import dev.binclub.binscure.processors.resources.*
-import dev.binclub.binscure.runtime.*
+import dev.binclub.binscure.processors.runtime.*
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
@@ -106,6 +106,8 @@ object CObfuscator {
 			}
 			print("\r")
 		}
+		ClassPath.classes[OpaqueRuntimeManager.classNode.name] = OpaqueRuntimeManager.classNode
+		ClassPath.classPath[OpaqueRuntimeManager.classNode.name] = OpaqueRuntimeManager.classNode
 
 		//checkLicense()
 		

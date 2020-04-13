@@ -5,8 +5,8 @@ import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
-import dev.binclub.binscure.runtime.OpaqueRuntimeManager
-import dev.binclub.binscure.runtime.randomOpaqueJump
+import dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager
+import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
@@ -171,7 +171,6 @@ object StringObfuscator: IClassProcessor {
 			add(TryCatchBlockNode(getCurrentThread, switch, setCharArrVal, "java/lang/NoClassDefFoundError"))
 			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, genericCatch, "java/lang/NoClassDefFoundError"))
 			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/NoClassDefFoundError"))
-			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, switch, "java/lang/Throwable"))
 			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
 			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
 			add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
@@ -512,26 +511,16 @@ object StringObfuscator: IClassProcessor {
 		return decryptorMethod
 	}
 	
-	private fun generateInitFunc(classNode: ClassNode, storageField: FieldNode): MethodNode {
-		return MethodNode(0, "<init>", "()V", null, null).apply {
+	private fun generateInitFunc(classNode: ClassNode, storageField: FieldNode) {
+		classNode.methods.add(MethodNode(0, "<init>", "()V", null, null).apply {
 			instructions.apply {
 				add(VarInsnNode(ALOAD, 0))
 				add(DUP)
-				add(MethodInsnNode(INVOKESPECIAL, OpaqueRuntimeManager.classNode.superName, "<init>", "()V"))
-				add(TypeInsnNode(CHECKCAST, classNode.name))
+				add(MethodInsnNode(INVOKESPECIAL, classNode.superName, "<init>", "()V"))
 				add(FieldInsnNode(PUTSTATIC, classNode.name, storageField.name, storageField.desc))
 				add(RETURN)
 			}
-			OpaqueRuntimeManager.classNode.methods.add(this)
-			
-			classNode.methods.add(MethodNode(0, "<init>", "()V", null, null).apply {
-				instructions.apply {
-					add(VarInsnNode(ALOAD, 0))
-					add(MethodInsnNode(INVOKESPECIAL, classNode.superName, "<init>", "()V"))
-					add(RETURN)
-				}
-			})
-		}
+		})
 	}
 	
 	private fun generateStaticBlock(classNode: ClassNode, storageField: FieldNode): MethodNode {

@@ -1,7 +1,8 @@
-package dev.binclub.binscure.runtime
+package dev.binclub.binscure.processors.runtime
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
+import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.utils.add
 import dev.binclub.binscure.utils.random
@@ -25,32 +26,37 @@ import kotlin.math.min
  * @author cookiedragon234 11/Feb/2020
  */
 object OpaqueRuntimeManager {
-	val classNode by lazy {
-		ClassNode().apply {
-			this.access = ACC_PUBLIC
-			this.version = V1_8
-			this.name = ClassRenamer.namer.uniqueRandomString() + "EntryPoint"
-			this.signature = null
-			this.superName = "java/util/concurrent/ConcurrentHashMap"
-			ClassPath.classes[this.name] = this
-			ClassPath.classPath[this.name] = this
+	private val namer = NameGenerator()
+	
+	val classNode = ClassNode().apply {
+		this.access = ACC_PUBLIC
+		this.version = V1_8
+		this.name = ClassRenamer.namer.uniqueRandomString() + "EntryPoint"
+		this.signature = null
+		this.superName = "java/util/concurrent/ConcurrentHashMap"
+		
+		MethodNode(0, "<init>", "()V", null, null).apply {
+			instructions.apply {
+				add(VarInsnNode(ALOAD, 0))
+				add(DUP)
+				add(MethodInsnNode(INVOKESPECIAL, superName, "<init>", "()V"))
+				add(RETURN)
+			}
+			
+			methods.add(this)
 		}
 	}
 	
-	private val clinit by lazy {
+	private val clinit =
 		MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also {
 			it.instructions.add(InsnNode(RETURN))
 			classNode.methods.add(it)
 		}
-	}
+	
 	// The larger the application, the larger the number of fields we want available
 	// We will use the number of classes / 2, at least 3 and at most 25
-	val fields by lazy {
-		val num = min(max(ClassPath.classes.size / 2, 3), 25)
-		Array(num) { generateField() }
-	}
-	
-	private val namer = NameGenerator()
+	val fields =
+		Array(min(max(ClassPath.classes.size / 2, 3), 25)) { generateField() }
 	
 	private fun generateField(): FieldInfo {
 		val fieldNode = FieldNode(

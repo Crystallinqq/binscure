@@ -3,8 +3,7 @@ package dev.binclub.binscure.processors.flow.classinit
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.runtime.randomOpaqueJump
-import dev.binclub.binscure.utils.BlameableLabelNode
+import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.InstructionModifier
 import dev.binclub.binscure.utils.newLabel
 import org.objectweb.asm.Opcodes.*

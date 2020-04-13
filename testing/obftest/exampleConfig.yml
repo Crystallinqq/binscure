@@ -15,25 +15,25 @@ hardExclusions:
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
-    enabled: false
+    enabled: true
     localVariableName: ""
 
 # Strip source file information
 sourceStrip:
-    enabled: false
+    enabled: true
     # Default is REMOVE, options [KEEP/REMOVE]
     lineNumbers: REMOVE
 
 # Removes additional data created by the kotlin compiler
 # WARNING: Can break the kotlin.reflect library
 kotlinMetadata:
-    enabled: false
+    enabled: true
     type: CENSOR
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
-    enabled: false
-    checksums: false
+    enabled: true
+    checksums: true
 
 # Attempts to conceal method invocations
 indirection:
@@ -45,12 +45,12 @@ stringObfuscation:
     enabled: true
 
 flowObfuscation:
-    enabled: false
+    enabled: true
     severity: 1
     mergeMethods: BLOAT_CLASSES
 
 optimisation:
-    enabled: false
+    enabled: true
     mutableEnumValues: false
 
 # Disable "WARNING: class was not found in the classpath" warnings
