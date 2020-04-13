@@ -145,7 +145,8 @@ val opcodes: Map<Int, String> by lazy {
 fun AbstractInsnNode.opcodeString(): String {
 	when (this) {
 		is BlameableLabelNode -> return this.toString()
-		is JumpInsnNode -> return "${implOpToStr(opcode)}: $label"
+		is LabelNode -> return "lbl_${hashCode()}"
+		is JumpInsnNode -> return "${implOpToStr(opcode)}: ${label.opcodeString()}"
 		else -> {
 			if (opcode == -1) return this::class.java.simpleName ?: this::class.java.name!!
 			return implOpToStr(opcode)

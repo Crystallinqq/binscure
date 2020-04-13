@@ -21,6 +21,7 @@ import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
 import dev.binclub.binscure.processors.renaming.impl.*
 import dev.binclub.binscure.processors.resources.*
 import dev.binclub.binscure.processors.runtime.*
+import dev.binclub.binscure.utils.StackHeightCalculator
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
@@ -58,6 +59,9 @@ object CObfuscator {
 		
 		ClassPath.constructHierarchy()
 		
+		ClassPath.classes.values.filter { it.methods.isNotEmpty() }.random().also {
+			StackHeightCalculator.test(it, it.methods.random())
+		}
 		val processors = arrayOf(
 			FieldInitialiser,
 			AccessStripper,
@@ -108,7 +112,7 @@ object CObfuscator {
 		}
 		ClassPath.classes[OpaqueRuntimeManager.classNode.name] = OpaqueRuntimeManager.classNode
 		ClassPath.classPath[OpaqueRuntimeManager.classNode.name] = OpaqueRuntimeManager.classNode
-
+		
 		//checkLicense()
 		
 		ClassPathIO.writeOutput(rootConfig.output)
