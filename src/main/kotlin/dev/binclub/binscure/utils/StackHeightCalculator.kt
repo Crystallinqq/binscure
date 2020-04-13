@@ -24,11 +24,8 @@ fun calculateHeightFromInsn(stack: Stack<Type>, abstractInsnNode: AbstractInsnNo
 		
 		when (insn) {
 			is JumpInsnNode -> {
-				val stackAtTarget = stack.clone() as Stack<Type>
-				
 				when (insn.opcode) {
 					GOTO -> {
-						stack.clear()
 						next = null
 					}
 					IFEQ, IFNE, IFLT, IFGE, IFGT, IFLE, IFNULL, IFNONNULL -> {
@@ -38,8 +35,9 @@ fun calculateHeightFromInsn(stack: Stack<Type>, abstractInsnNode: AbstractInsnNo
 						stack.pop()
 						stack.pop()
 					}
-					else -> error("Unexpeceted ${insn.opcode}")
+					else -> error("Unexpected ${insn.opcode}")
 				}
+				val stackAtTarget = stack.clone() as Stack<Type>
 				
 				try {
 					calculateHeightFromInsn(stackAtTarget, insn.label, registers, tryCatchBlockNodes, out)
