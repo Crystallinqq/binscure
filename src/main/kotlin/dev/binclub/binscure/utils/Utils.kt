@@ -319,3 +319,18 @@ fun Field.setFinalStatic(newValue: Any?) {
 fun insnListOf(vararg insns: AbstractInsnNode) = InsnList().apply {
 	for (insn in insns) add(insn)
 }
+
+fun primitiveTypeFromSort(sort: Int): Type {
+	return when (sort) {
+		Type.VOID -> Type.VOID_TYPE
+		Type.BOOLEAN -> Type.BOOLEAN_TYPE
+		Type.CHAR -> Type.CHAR_TYPE
+		Type.BYTE -> Type.BYTE_TYPE
+		Type.SHORT -> Type.SHORT_TYPE
+		Type.INT -> Type.INT_TYPE
+		Type.FLOAT -> Type.FLOAT_TYPE
+		Type.LONG -> Type.LONG_TYPE
+		Type.DOUBLE -> Type.DOUBLE_TYPE
+		else -> error("Unexpected Type $sort")
+	}
+}
