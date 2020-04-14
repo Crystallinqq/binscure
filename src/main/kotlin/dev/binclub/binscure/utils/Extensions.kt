@@ -147,6 +147,10 @@ fun AbstractInsnNode.opcodeString(): String {
 		is BlameableLabelNode -> return this.toString()
 		is LabelNode -> return "lbl_${hashCode()}"
 		is JumpInsnNode -> return "${implOpToStr(opcode)}: ${label.opcodeString()}"
+		is VarInsnNode -> return "${implOpToStr(opcode)} $`var`"
+		is FieldInsnNode -> return "${implOpToStr(opcode)} $owner.$name$desc"
+		is MethodInsnNode -> return "${implOpToStr(opcode)} $owner.$name$desc"
+		is TypeInsnNode -> return "${implOpToStr(opcode)} $desc"
 		else -> {
 			if (opcode == -1) return this::class.java.simpleName ?: this::class.java.name!!
 			return implOpToStr(opcode)

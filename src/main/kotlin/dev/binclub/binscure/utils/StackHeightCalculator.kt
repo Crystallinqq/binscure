@@ -14,7 +14,7 @@ object StackHeightCalculator {
 	fun test(classNode: ClassNode, methodNode: MethodNode) {
 		val out = calculateStackHeight(classNode, methodNode)
 		for (insn in methodNode.instructions) {
-			println(insn.opcodeString() + "\t\t" + out[insn])
+			println(insn.opcodeString().padEnd(75) + "\t" + out[insn])
 		}
 	}
 	
@@ -31,19 +31,46 @@ object StackHeightCalculator {
 			}
 		})
 	
+	fun calculateStackHeight(
+		insnList: InsnList,
+		tryCatchBlockNodes: Collection<TryCatchBlockNode>,
+		registers: MutableMap<Int, Type> = hashMapOf()
+	): Map<AbstractInsnNode, Stack<Type>> {
+		val out = hashMapOf<AbstractInsnNode, Stack<Type>>()
+		val insn = insnList.first ?: return out
+		
+		try {
+			calculateHeightFromInsn(Stack(), insn, registers, tryCatchBlockNodes, out)
+		} catch (e: StackOverflowError) {
+			IllegalStateException("Found infinite loop while following stack", e).printStackTrace()
+		}
+		
+		for (tryCatch in tryCatchBlockNodes) {
+			try {
+				calculateHeightFromInsn(Stack<Type>().also {
+					it.push(Type.getType("L${tryCatch.type ?: "java/lang/Throwable"};"))
+				}, tryCatch.handler, registers, tryCatchBlockNodes, out)
+			} catch (e: StackOverflowError) {
+				IllegalStateException("Found infinite loop while following stack", e).printStackTrace()
+			}
+		}
+		
+		return out
+	}
+	
 	private fun calculateHeightFromInsn(
 		stack: Stack<Type>,
 		abstractInsnNode: AbstractInsnNode,
 		registers: MutableMap<Int, Type>,
 		tryCatchBlockNodes: Collection<TryCatchBlockNode>,
-		out: MutableMap<AbstractInsnNode, MutableList<Stack<Type>>>
+		out: MutableMap<AbstractInsnNode, Stack<Type>>
 	) {
 		fun safeCalculateHeightFromInsn(
 			stack: Stack<Type>,
 			abstractInsnNode: AbstractInsnNode,
 			registers: MutableMap<Int, Type>,
 			tryCatchBlockNodes: Collection<TryCatchBlockNode>,
-			out: MutableMap<AbstractInsnNode, MutableList<Stack<Type>>>
+			out: MutableMap<AbstractInsnNode, Stack<Type>>
 		) {
 			try {
 				calculateHeightFromInsn(stack, abstractInsnNode, registers, tryCatchBlockNodes, out)
@@ -63,9 +90,7 @@ object StackHeightCalculator {
 			
 			var next = insn.next
 			
-			out.getOrPutLazy(insn, {
-				arrayListOf()
-			}).add(stack.cloneStack())
+			out[insn] = stack.cloneStack()
 			
 			when (insn) {
 				is JumpInsnNode -> {
@@ -181,6 +206,10 @@ object StackHeightCalculator {
 						ANEWARRAY -> {
 							stack.pop() // array size
 							stack.push(Type.getType("[L${insn.desc};")) // new array
+						}
+						CHECKCAST -> {
+							stack.pop()
+							stack.push(Type.getType("[L${insn.desc};"))
 						}
 					}
 				}
@@ -388,33 +417,6 @@ object StackHeightCalculator {
 			insn = next
 		}
 	}
-	
-	fun calculateStackHeight(
-		insnList: InsnList,
-		tryCatchBlockNodes: Collection<TryCatchBlockNode>,
-		registers: MutableMap<Int, Type> = hashMapOf()
-	): Map<AbstractInsnNode, MutableList<Stack<Type>>> {
-		val out = hashMapOf<AbstractInsnNode, MutableList<Stack<Type>>>()
-		val insn = insnList.first ?: return out
-		
-		try {
-			calculateHeightFromInsn(Stack(), insn, registers, tryCatchBlockNodes, out)
-		} catch (e: StackOverflowError) {
-			IllegalStateException("Found infinite loop while following stack", e).printStackTrace()
-		}
-		
-		for (tryCatch in tryCatchBlockNodes) {
-			try {
-				calculateHeightFromInsn(Stack<Type>().also {
-					it.push(Type.getType("L${tryCatch.type ?: "java/lang/Throwable"};"))
-				}, tryCatch.handler, registers, tryCatchBlockNodes, out)
-			} catch (e: StackOverflowError) {
-				IllegalStateException("Found infinite loop while following stack", e).printStackTrace()
-			}
-		}
-		
-		return out
-	}
 }
 
 private val OBJECT_TYPE = Type.getObjectType("java/lang/Object")
@@ -423,7 +425,6 @@ private val NULL_TYPE = Type.getObjectType("null")
 private inline class VarInsnInfo(
 	val stores: Boolean
 )
-
 private val varInfoMap = hashMapOf(
 	ILOAD to VarInsnInfo(false),
 	LLOAD to VarInsnInfo(false),
@@ -436,11 +437,9 @@ private val varInfoMap = hashMapOf(
 	DSTORE to VarInsnInfo(true),
 	ASTORE to VarInsnInfo(true)
 )
-
 private inline class FieldInsnInfo(
 	val stores: Boolean
 )
-
 private val fieldInfoMap = hashMapOf(
 	GETSTATIC to FieldInsnInfo(false),
 	PUTSTATIC to FieldInsnInfo(true),
