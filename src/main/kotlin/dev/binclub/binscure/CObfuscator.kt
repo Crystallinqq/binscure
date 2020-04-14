@@ -7,19 +7,10 @@ import dev.binclub.binscure.classpath.ClassPathIO
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
+import dev.binclub.binscure.processors.VariableInitializer
 import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.whenNotNull
-import dev.binclub.binscure.processors.classmerge.*
-import dev.binclub.binscure.processors.constants.*
-import dev.binclub.binscure.processors.debug.*
-import dev.binclub.binscure.processors.exploit.*
-import dev.binclub.binscure.processors.flow.*
-import dev.binclub.binscure.processors.flow.classinit.*
-import dev.binclub.binscure.processors.flow.trycatch.*
-import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
-import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
-import dev.binclub.binscure.processors.renaming.impl.*
-import dev.binclub.binscure.processors.resources.*
+import dev.binclub.binscure.processors.flow.jump.JumpRearranger
 import dev.binclub.binscure.processors.runtime.*
 import dev.binclub.binscure.utils.StackHeightCalculator
 import org.objectweb.asm.tree.ClassNode
@@ -59,11 +50,14 @@ object CObfuscator {
 		
 		ClassPath.constructHierarchy()
 		
-		ClassPath.classes.values.filter { it.methods.isNotEmpty() }.random().also {
-			StackHeightCalculator.test(it, it.methods.random())
-		}
+		//ClassPath.classes.values.filter { it.methods.isNotEmpty() }.random().also {
+		//	StackHeightCalculator.test(it, it.methods.random())
+		//}
 		val processors = arrayOf(
-			FieldInitialiser,
+			VariableInitializer
+			//JumpRearranger
+			
+			/*FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
 			
@@ -90,7 +84,7 @@ object CObfuscator {
 			BadAttributeExploit,
 			BadIndyConstant,
 			
-			ManifestResourceProcessor
+			ManifestResourceProcessor*/
 		)
 		
 		val classes = mutableListOf<ClassNode>()
@@ -101,7 +95,7 @@ object CObfuscator {
 				try {
 					processor.process(classes, passThrough)
 					debug(processor::class.java.simpleName)
-					print("\r${(progress / (processors.size - 1)) * 100}%")
+					print("\r${(progress / processors.size) * 100}%")
 				} catch (t: Throwable) {
 					println("Exception while processing ${processor::class.java.simpleName}")
 					t.printStackTrace()

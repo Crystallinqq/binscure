@@ -203,3 +203,31 @@ fun <T> Stack<T>.cloneStack(): Stack<T> {
 		it.addAll(this)
 	}
 }
+
+val AbstractInsnNode.isAsmInsn
+	get() = this.opcode < 0
+
+fun Stack<Type>.typesEqual(other: Stack<Type>): Boolean {
+	if (this.size != other.size) return false
+	
+	for (i in this.indices) {
+		val type1 = this[i]
+		val type2 = other[i]
+		
+		if (type1.descriptor == type2.descriptor) return true
+		
+		if (
+			(type1.descriptor == "Lnull;" && type2.sort == Type.OBJECT)
+			||
+			(type2.descriptor == "Lnull;" && type1.sort == Type.OBJECT)
+		) return true
+	}
+	
+	return false
+}
+
+fun <T> fixedSizeList(size: Int): List<T>? {
+	return Arrays.asList(*arrayOfNulls<Any>(size)) as List<T>
+}
+
+inline fun <T> block(block: () -> T): T = block()

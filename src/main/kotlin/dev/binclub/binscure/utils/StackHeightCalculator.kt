@@ -147,12 +147,22 @@ object StackHeightCalculator {
 					}
 				}
 				is FieldInsnNode -> {
-					val info = fieldInfoMap[insn.opcode] ?: error("Unexpected opcode ${insn.opcode}")
-					
-					if (info.stores) {
-						stack.pop()
-					} else {
-						stack.push(Type.getType(insn.desc))
+					when (insn.opcode) {
+						GETFIELD -> {
+							stack.pop() // reference
+							stack.push(Type.getType(insn.desc)) // value
+						}
+						GETSTATIC -> {
+							stack.push(Type.getType(insn.desc)) // value
+						}
+						PUTFIELD -> {
+							stack.pop() // value
+							stack.pop() // reference
+						}
+						PUTSTATIC -> {
+							stack.pop() // value
+						}
+						else -> error("Unexpected opcode ${insn.opcode}")
 					}
 				}
 				is MethodInsnNode -> {
@@ -436,15 +446,6 @@ private val varInfoMap = hashMapOf(
 	FSTORE to VarInsnInfo(true),
 	DSTORE to VarInsnInfo(true),
 	ASTORE to VarInsnInfo(true)
-)
-private inline class FieldInsnInfo(
-	val stores: Boolean
-)
-private val fieldInfoMap = hashMapOf(
-	GETSTATIC to FieldInsnInfo(false),
-	PUTSTATIC to FieldInsnInfo(true),
-	GETFIELD to FieldInsnInfo(false),
-	PUTFIELD to FieldInsnInfo(true)
 )
 private val aloadTypeMap = hashMapOf(
 	IALOAD to Type.INT_TYPE,
