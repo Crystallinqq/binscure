@@ -190,3 +190,12 @@ fun ClassNode.versionAtMost(maxVersion: Int): Boolean {
 	
 	return thisMajor <= maxMajor
 }
+
+val Type.doubleSize: Boolean
+	get() = (this.sort == Type.DOUBLE || this.sort == Type.LONG)
+
+fun <T> Stack<T>.cloneStack(): Stack<T> {
+	return Stack<T>().also {
+		it.addAll(this)
+	}
+}

@@ -20,16 +20,14 @@ object StackHeightCalculator {
 	
 	fun calculateStackHeight(classNode: ClassNode, methodNode: MethodNode) =
 		calculateStackHeight(methodNode.instructions, methodNode.tryCatchBlocks, hashMapOf<Int, Type>().also {
-			val static = methodNode.access.hasAccess(ACC_STATIC)
-			if (!static) {
+			var i = 0
+			if (!methodNode.access.hasAccess(ACC_STATIC)) {
 				it[0] = Type.getType("L${classNode.name};")
+				i = 1
 			}
-			for ((i, type) in Type.getArgumentTypes(methodNode.desc).withIndex()) {
-				if (static) {
-					it[i] = type
-				} else {
-					it[i + 1] = type
-				}
+			for (type in Type.getArgumentTypes(methodNode.desc)) {
+				it[i] = type
+				i += (if (type.doubleSize) 2 else 1)
 			}
 		})
 	
@@ -67,7 +65,7 @@ object StackHeightCalculator {
 			
 			out.getOrPutLazy(insn, {
 				arrayListOf()
-			}).add(stack.clone() as Stack<Type>)
+			}).add(stack.cloneStack())
 			
 			when (insn) {
 				is JumpInsnNode -> {
@@ -84,7 +82,7 @@ object StackHeightCalculator {
 						}
 						else -> error("Unexpected ${insn.opcode}")
 					}
-					val stackAtTarget = stack.clone() as Stack<Type>
+					val stackAtTarget = stack.cloneStack()
 					
 					safeCalculateHeightFromInsn(stackAtTarget, insn.label, registers, tryCatchBlockNodes, out)
 				}
@@ -214,7 +212,9 @@ object StackHeightCalculator {
 							stack.pop()
 						}
 						DUP -> {
-							stack.push(stack.peek())
+							val value1 = stack.pop()
+							stack.push(value1)
+							stack.push(value1)
 						}
 						DUP_X1 -> {
 							val value1 = stack.pop()
@@ -227,40 +227,87 @@ object StackHeightCalculator {
 							val value1 = stack.pop()
 							val value2 = stack.pop()
 							val value3 = stack.pop()
-							stack.push(value1)
-							stack.push(value3)
-							stack.push(value2)
-							stack.push(value1)
+							if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
+								stack.push(value1)
+								stack.push(value3)
+								stack.push(value2)
+								stack.push(value1)
+							} else if (!value1.doubleSize && value2.doubleSize) {
+								stack.push(value3)
+								stack.push(value1)
+								stack.push(value2)
+								stack.push(value1)
+							} else {
+								error("Unexpected computational types when calculating DUP_X2")
+							}
 						}
 						DUP2 -> {
 							val value1 = stack.pop()
 							val value2 = stack.pop()
-							stack.push(value2)
-							stack.push(value1)
-							stack.push(value2)
-							stack.push(value1)
+							if (!value1.doubleSize && !value2.doubleSize) {
+								stack.push(value2)
+								stack.push(value1)
+								stack.push(value2)
+								stack.push(value1)
+							} else if (value1.doubleSize) {
+								stack.push(value2)
+								stack.push(value1)
+								stack.push(value1)
+							} else {
+								error("Unexpected computational types when calculating DUP2")
+							}
 						}
 						DUP2_X1 -> {
 							val value1 = stack.pop()
 							val value2 = stack.pop()
 							val value3 = stack.pop()
-							stack.push(value2)
-							stack.push(value1)
-							stack.push(value3)
-							stack.push(value2)
-							stack.push(value1)
+							if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
+								stack.push(value2)
+								stack.push(value1)
+								stack.push(value3)
+								stack.push(value2)
+								stack.push(value1)
+							} else if (value1.doubleSize && !value2.doubleSize) {
+								stack.push(value3)
+								stack.push(value1)
+								stack.push(value2)
+								stack.push(value1)
+							} else {
+								error("Unexpected computational types when calculating DUP2_X1")
+							}
 						}
 						DUP2_X2 -> {
 							val value1 = stack.pop()
 							val value2 = stack.pop()
 							val value3 = stack.pop()
 							val value4 = stack.pop()
-							stack.push(value2)
-							stack.push(value1)
-							stack.push(value4)
-							stack.push(value3)
-							stack.push(value2)
-							stack.push(value1)
+							if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize && !value4.doubleSize) {
+								stack.push(value2)
+								stack.push(value1)
+								stack.push(value4)
+								stack.push(value3)
+								stack.push(value2)
+								stack.push(value1)
+							} else if (value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
+								stack.push(value4)
+								stack.push(value1)
+								stack.push(value3)
+								stack.push(value2)
+								stack.push(value1)
+							} else if (!value1.doubleSize && !value2.doubleSize && value3.doubleSize) {
+								stack.push(value4)
+								stack.push(value2)
+								stack.push(value1)
+								stack.push(value3)
+								stack.push(value2)
+								stack.push(value1)
+							} else if (value1.doubleSize && value2.doubleSize) {
+								stack.push(value4)
+								stack.push(value3)
+								stack.push(value1)
+								stack.push(value2)
+								stack.push(value1)
+							}
 						}
 						IADD, LADD, FADD, DADD,
 						ISUB, LSUB, FSUB, DSUB,
@@ -294,7 +341,7 @@ object StackHeightCalculator {
 					
 					for (label in insn.labels) {
 						safeCalculateHeightFromInsn(
-							stack.clone() as Stack<Type>,
+							stack.cloneStack(),
 							label,
 							registers,
 							tryCatchBlockNodes,
@@ -302,7 +349,7 @@ object StackHeightCalculator {
 						)
 					}
 					safeCalculateHeightFromInsn(
-						stack.clone() as Stack<Type>,
+						stack.cloneStack(),
 						insn.dflt,
 						registers,
 						tryCatchBlockNodes,
@@ -317,7 +364,7 @@ object StackHeightCalculator {
 					
 					for (label in insn.labels) {
 						safeCalculateHeightFromInsn(
-							stack.clone() as Stack<Type>,
+							stack.cloneStack(),
 							label,
 							registers,
 							tryCatchBlockNodes,
@@ -325,7 +372,7 @@ object StackHeightCalculator {
 						)
 					}
 					safeCalculateHeightFromInsn(
-						stack.clone() as Stack<Type>,
+						stack.cloneStack(),
 						insn.dflt,
 						registers,
 						tryCatchBlockNodes,
@@ -373,22 +420,21 @@ object StackHeightCalculator {
 private val OBJECT_TYPE = Type.getObjectType("java/lang/Object")
 private val NULL_TYPE = Type.getObjectType("null")
 
-private data class VarInsnInfo(
-	val stores: Boolean,
-	val type: Type
+private inline class VarInsnInfo(
+	val stores: Boolean
 )
 
 private val varInfoMap = hashMapOf(
-	ILOAD to VarInsnInfo(false, Type.INT_TYPE),
-	LLOAD to VarInsnInfo(false, Type.LONG_TYPE),
-	FLOAD to VarInsnInfo(false, Type.FLOAT_TYPE),
-	DLOAD to VarInsnInfo(false, Type.DOUBLE_TYPE),
-	ALOAD to VarInsnInfo(false, OBJECT_TYPE),
-	ISTORE to VarInsnInfo(true, Type.INT_TYPE),
-	LSTORE to VarInsnInfo(true, Type.LONG_TYPE),
-	FSTORE to VarInsnInfo(true, Type.FLOAT_TYPE),
-	DSTORE to VarInsnInfo(true, Type.DOUBLE_TYPE),
-	ASTORE to VarInsnInfo(true, OBJECT_TYPE)
+	ILOAD to VarInsnInfo(false),
+	LLOAD to VarInsnInfo(false),
+	FLOAD to VarInsnInfo(false),
+	DLOAD to VarInsnInfo(false),
+	ALOAD to VarInsnInfo(false),
+	ISTORE to VarInsnInfo(true),
+	LSTORE to VarInsnInfo(true),
+	FSTORE to VarInsnInfo(true),
+	DSTORE to VarInsnInfo(true),
+	ASTORE to VarInsnInfo(true)
 )
 
 private inline class FieldInsnInfo(
