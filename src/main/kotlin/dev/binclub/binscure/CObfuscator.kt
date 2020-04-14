@@ -54,8 +54,8 @@ object CObfuscator {
 		//	StackHeightCalculator.test(it, it.methods.random())
 		//}
 		val processors = arrayOf(
-			VariableInitializer
-			//JumpRearranger
+			VariableInitializer,
+			JumpRearranger
 			
 			/*FieldInitialiser,
 			AccessStripper,

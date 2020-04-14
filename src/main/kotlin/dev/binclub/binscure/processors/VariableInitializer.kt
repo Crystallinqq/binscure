@@ -26,19 +26,16 @@ object VariableInitializer: IClassProcessor {
 				
 				// First pass, seperate variable types into different slots
 				block {
-					println("-")
 					val varMap = mutableMapOf<Int, Int>()
 					
 					var start = 0
 					if (!method.access.hasAccess(ACC_STATIC)) {
 						varMap[0] = Type.OBJECT
-						println("0 = ${varMap[0]}")
 						start = 1
 					}
 					
 					for (arg in Type.getArgumentTypes(method.desc)) {
 						varMap[start] = arg.sort
-						println("arg $start = ${varMap[start]}")
 						start += if (arg.doubleSize) 2 else 1
 					}
 					
@@ -74,13 +71,7 @@ object VariableInitializer: IClassProcessor {
 								start += if (type == Type.DOUBLE || type == Type.LONG) 2 else 1
 								
 								replacements.getOrPut(insn.`var`, { arrayListOf()}).add(Replacement(type, start))
-								if (insn.`var` == 0) {
-									println("Old ${insn.`var`}: $oldType -> $type to slot $start")
-								}
 							} else {
-								if (insn.`var` == 0) {
-									println("Updated 0 -> $type")
-								}
 								varMap[insn.`var`] = type
 							}
 						}
