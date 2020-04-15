@@ -15,8 +15,9 @@ hardExclusions:
     - team/
 
 exclusions:
-    - io/github/giantnuker/pyro/Pyro
+#    - io/github/giantnuker/pyro/Pyro
     - io/github/giantnuker/pyro/mixin
+#    - io/github/giantnuker/pyro/launcher
 
 # The mappings created by the obfuscator are saved to this csv file
 mappingFile: mappings.csv
@@ -28,6 +29,9 @@ remap:
     classPrefix: "io/github/giantnuker/pyro/"
     localVariableName: ""
     aggressiveOverloading: false
+    classes: false
+    methods: false
+    fields: false
 
 # Strip source file information
 sourceStrip:
@@ -55,7 +59,7 @@ stringObfuscation:
 
 flowObfuscation:
     enabled: true
-    severity: 5
+    severity: 1
     mergeMethods: BLOAT_CLASSES
 
 # Disable "WARNING: class was not found in the classpath" warnings

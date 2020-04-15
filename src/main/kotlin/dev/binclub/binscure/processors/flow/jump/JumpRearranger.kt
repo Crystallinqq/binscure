@@ -17,13 +17,15 @@ object JumpRearranger: IClassProcessor {
 			if (CObfuscator.isExcluded(classNode))
 				continue
 			
-			for (method in classNode.methods) {
+			methodLoop@for (method in classNode.methods) {
 				if (CObfuscator.isExcluded(classNode, method))
 					continue
 				
 				val stacks = StackHeightCalculator.calculateStackHeight(classNode, method)
 				val targets = mutableMapOf<JumpInsnNode, LabelNode>()
 				var varI = if (method.access.hasAccess(ACC_STATIC)) 0 else 1
+				val stores = hashSetOf<Int>()
+				
 				for (insn in method.instructions) {
 					if (insn is JumpInsnNode) {
 						if (stacks[insn.label]!!.size == 0) {
@@ -31,22 +33,25 @@ object JumpRearranger: IClassProcessor {
 						}
 					}
 					if (insn is VarInsnNode) {
+						if (insn.opcode == ASTORE) {
+							if (!stores.contains(insn.`var`)) {
+								stores.add(insn.`var`)
+							} else {
+								//continue@methodLoop
+							}
+						}
 						if (insn.`var` >= varI) {
 							varI = insn.`var` + 1
 						}
 					}
 				}
 				
-				if (stacks.size > 5) {
-					println("Storing in $varI")
-					val prepend = InsnList().apply {
-					}
-					
+				if (targets.size > 2) {
 					val append = InsnList().apply {
 						val dflt = newLabel()
 						val switchStart = newLabel()
 						add(dflt)
-						add(ldcInt(0))
+						add(ICONST_M1)
 						add(switchStart)
 						//add(VarInsnNode(ILOAD, varI))
 						val tblSwitch = TableSwitchInsnNode(
@@ -69,7 +74,6 @@ object JumpRearranger: IClassProcessor {
 						}
 					}
 					
-					method.instructions.insert(prepend)
 					method.instructions.add(append)
 					
 					println("Added to ${classNode.name}.${method.name}")

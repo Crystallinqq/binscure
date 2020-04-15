@@ -11,3 +11,6 @@ abstract class ClassTreeEntry {
 	abstract fun getMethods(): Set<MethodInfo>
 	abstract fun getFields(): Set<FieldInfo>
 }
+
+data class FieldInfo(val owner: String, val name: String, val description: String)
+data class MethodInfo(val owner: String, val name: String, val desc: String)

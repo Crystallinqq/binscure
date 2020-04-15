@@ -2,14 +2,12 @@ package dev.binclub.binscure.processors
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.utils.block
-import dev.binclub.binscure.utils.doubleSize
-import dev.binclub.binscure.utils.hasAccess
-import dev.binclub.binscure.utils.ldcInt
+import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import kotlin.collections.getOrPut
 
 /**
  * @author cookiedragon234 14/Apr/2020
@@ -21,7 +19,7 @@ object VariableInitializer: IClassProcessor {
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method) || method.instructions.first == null)
 					continue
 				
 				// First pass, seperate variable types into different slots
@@ -92,9 +90,19 @@ object VariableInitializer: IClassProcessor {
 				}
 				
 				block {
+					val modifier = InstructionModifier()
 					val varMap = mutableMapOf<Int, Int>()
+					var lastFrame: FrameNode? = null
 					for (insn in method.instructions) {
-						if (insn is VarInsnNode) {
+						if (insn is FrameNode) {
+							lastFrame = insn
+						} else if (insn is VarInsnNode) {
+							if (insn.opcode == ALOAD && lastFrame != null) {
+								val frame = lastFrame
+								if (frame.local.size > insn.`var` && frame.local[insn.`var`] is String) {
+									modifier.append(insn, TypeInsnNode(CHECKCAST, frame.local[insn.`var`] as String))
+								}
+							}
 							varMap[insn.`var`] = when (insn.opcode) {
 								ILOAD -> ISTORE
 								LLOAD -> LSTORE
@@ -120,12 +128,45 @@ object VariableInitializer: IClassProcessor {
 						}
 					}
 					
-					method.instructions.insert(prepend)
+					modifier.prepend(method.instructions.first, prepend)
+					modifier.apply(method)
 				}
 			}
 		}
 	}
 }
+/*
+object VariableInitializerStage2: IClassProcessor {
+	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		for (classNode in classes) {
+			if (CObfuscator.isExcluded(classNode))
+				continue
+			
+			for (method in classNode.methods) {
+				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method) || method.instructions.first == null)
+					continue
+				
+				val modifier = InstructionModifier()
+				var lastFrame: FrameNode? = null
+				for (insn in method.instructions) {
+					if (insn is FrameNode) {
+						lastFrame = insn
+					} else if (insn is VarInsnNode) {
+						if (insn.opcode == ALOAD && lastFrame != null) {
+							val frame = lastFrame
+							if (frame.local.size > insn.`var` && frame.local[insn.`var`] is String) {
+								val type = frame.local[insn.`var`]
+								if ()
+								modifier.append(insn, TypeInsnNode(CHECKCAST, frame.local[insn.`var`] as String))
+							}
+						}
+					}
+				}
+				modifier.apply(method)
+			}
+		}
+	}
+}*/
 
 fun ldcFromStore(opcode: Int): AbstractInsnNode = InsnNode(when (opcode) {
 	ISTORE -> ICONST_0

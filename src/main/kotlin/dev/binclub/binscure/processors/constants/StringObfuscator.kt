@@ -426,7 +426,7 @@ object StringObfuscator: IClassProcessor {
 			val popBeforeRealStart = newLabel()
 			add(JumpInsnNode(IFNULL, popBeforeRealStart))
 			add(MONITOREXIT) // GOTO getMethodName
-			add(InvokeDynamicInsnNode("", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")))
+			add(InvokeDynamicInsnNode("_", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")))
 			add(ACONST_NULL)
 			add(ATHROW)
 			

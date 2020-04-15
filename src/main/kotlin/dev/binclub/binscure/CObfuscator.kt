@@ -8,9 +8,30 @@ import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
 import dev.binclub.binscure.processors.VariableInitializer
+import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
+import dev.binclub.binscure.processors.constants.FieldInitialiser
+import dev.binclub.binscure.processors.constants.NumberObfuscation
+import dev.binclub.binscure.processors.constants.StringObfuscator
+import dev.binclub.binscure.processors.debug.AccessStripper
+import dev.binclub.binscure.processors.debug.KotlinMetadataStripper
+import dev.binclub.binscure.processors.debug.SourceStripper
+import dev.binclub.binscure.processors.exploit.BadAttributeExploit
+import dev.binclub.binscure.processors.exploit.BadClinitExploit
+import dev.binclub.binscure.processors.exploit.BadIndyConstant
+import dev.binclub.binscure.processors.flow.CfgFucker
+import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
 import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.whenNotNull
 import dev.binclub.binscure.processors.flow.jump.JumpRearranger
+import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
+import dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch
+import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
+import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
+import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
+import dev.binclub.binscure.processors.renaming.impl.FieldRenamer
+import dev.binclub.binscure.processors.renaming.impl.LocalVariableRenamer
+import dev.binclub.binscure.processors.renaming.impl.MethodRenamer
+import dev.binclub.binscure.processors.resources.ManifestResourceProcessor
 import dev.binclub.binscure.processors.runtime.*
 import dev.binclub.binscure.utils.StackHeightCalculator
 import org.objectweb.asm.tree.ClassNode
@@ -55,9 +76,7 @@ object CObfuscator {
 		//}
 		val processors = arrayOf(
 			VariableInitializer,
-			JumpRearranger
-			
-			/*FieldInitialiser,
+			FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
 			
@@ -72,6 +91,7 @@ object CObfuscator {
 			StringObfuscator,
 			DynamicCallObfuscation,
 			
+			JumpRearranger,
 			CfgFucker,
 			BadClinitExploit,
 			ClassInitMonitor,
@@ -84,7 +104,7 @@ object CObfuscator {
 			BadAttributeExploit,
 			BadIndyConstant,
 			
-			ManifestResourceProcessor*/
+			ManifestResourceProcessor
 		)
 		
 		val classes = mutableListOf<ClassNode>()
