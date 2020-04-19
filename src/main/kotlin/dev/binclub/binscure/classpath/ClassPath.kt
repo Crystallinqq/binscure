@@ -3,6 +3,7 @@ package dev.binclub.binscure.classpath
 import dev.binclub.binscure.classpath.tree.ClassNodeTreeEntry
 import dev.binclub.binscure.classpath.tree.ClassPathTreeEntry
 import dev.binclub.binscure.classpath.tree.ClassTreeEntry
+import dev.binclub.binscure.utils.block
 import org.objectweb.asm.tree.ClassNode
 
 /**
@@ -12,9 +13,9 @@ object ClassPath {
 	val classes = mutableMapOf<String, ClassNode>()
 	val classPath = mutableMapOf<String, ClassNode>()
 	val passThrough = mutableMapOf<String, ByteArray>()
-	private val treeEntries = mutableMapOf<String, ClassTreeEntry>()
-	val hierachy = mutableMapOf<String, ClassTree>()
-	val originalNames = mutableMapOf<ClassNode, String>()
+	private val treeEntries = hashMapOf<String, ClassTreeEntry>()
+	val hierachy = hashMapOf<String, ClassTree>()
+	val originalNames = hashMapOf<ClassNode, String>()
 	
 	fun getHierarchy(name: String): ClassTree? {
 		if (hierachy.containsKey(name))

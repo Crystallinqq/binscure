@@ -231,3 +231,19 @@ fun <T> fixedSizeList(size: Int): List<T>? {
 }
 
 inline fun <T> block(block: () -> T): T = block()
+
+fun InsnList.addLineNumber(lineNumber: Int) {
+	val lbl = newLabel()
+	add(lbl)
+	add(LineNumberNode(lineNumber, lbl))
+}
+
+fun InsnList.populateWithLineNumbers() {
+	for ((i, insn) in this.iterator().withIndex()) {
+		if (!insn.isAsmInsn) {
+			this.insertBefore(insn, InsnList().apply {
+				addLineNumber(i)
+			})
+		}
+	}
+}

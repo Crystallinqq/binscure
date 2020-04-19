@@ -1,22 +1,33 @@
-input: out\artifacts\obftest_jar\obftest.jar
-output: obftest-obf.jar
+input: client.jar
+output: client-obf.jar
 
-# The mappings created by the obfuscator are saved to this csv file
-mappingFile: mappings.csv
+libraries:
+    - D:/Computing/backdoored_old/dependencies/forge-1.12.2-14.23.1.2584-binpatched.jar
+    - D:/Computing/backdoored_old/dependencies/forge-1.12.2-14.23.1.2584-srgBin.jar
 
 hardExclusions:
-    - ibxm/
-    - javax/
-    - kotlin/
-    - kotlinx/
+    - club/
+    - com/
+    - javassist/
     - net/
     - org/
+    - kotlin/
+    - team/
+
+exclusions:
+    - me/robeart/raion/LoadClient
+    - me/robeart/raion/mixin/
+
+# The mappings created by the obfuscator are saved to this csv file
+mappingFile: clientmappings.csv
 
 # Handles renaming
 remap:
     # Must be specified, strategies are by default disabled
     enabled: true
+    classPrefix: "me/robeart/raion/client/"
     localVariableName: ""
+    aggressiveOverloading: false
 
 # Strip source file information
 sourceStrip:
@@ -28,12 +39,10 @@ sourceStrip:
 # WARNING: Can break the kotlin.reflect library
 kotlinMetadata:
     enabled: true
-    type: CENSOR
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
     enabled: false
-    checksums: true
 
 # Attempts to conceal method invocations
 indirection:
@@ -45,17 +54,10 @@ stringObfuscation:
     enabled: true
 
 flowObfuscation:
-    enabled: false
-    severity: 1
-    mergeMethods: BLOAT_CLASSES
-
-optimisation:
     enabled: true
-    mutableEnumValues: false
+    severity: 5
+    mergeMethods: BLOAT_CLASSES
 
 # Disable "WARNING: class was not found in the classpath" warnings
 # Default is false
 ignoreClassPathNotFound: false
-
-# Use the java classloader rather than ASM to load libraries, might offer better peformane
-useJavaClassloader: false

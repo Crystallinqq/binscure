@@ -19,7 +19,7 @@ exclusions:
     - me/robeart/raion/mixin/
 
 # The mappings created by the obfuscator are saved to this csv file
-mappingFile: mappings.csv
+mappingFile: loadermappings.csv
 
 # Handles renaming
 remap:
@@ -46,7 +46,7 @@ crasher:
 
 # Attempts to conceal method invocations
 indirection:
-    enabled: true
+    enabled: false
 
 # Encrypts constants constants and decrypts them dynamically at runtime
 # Uses Context checking and may also impact application startup time
@@ -55,7 +55,7 @@ stringObfuscation:
 
 flowObfuscation:
     enabled: true
-    severity: 5
+    severity: 2
     mergeMethods: BLOAT_CLASSES
 
 # Disable "WARNING: class was not found in the classpath" warnings
