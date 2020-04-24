@@ -13,6 +13,8 @@ import org.objectweb.asm.tree.ClassNode
  * @author cookiedragon234 24/Jan/2020
  */
 abstract class AbstractRenamer: IClassProcessor {
+	val ignores = arrayOf<String>()
+	
 	final override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!isEnabled())
 			return
@@ -43,8 +45,6 @@ abstract class AbstractRenamer: IClassProcessor {
 		ClassPath.constructHierarchy()
 	}
 	
-	abstract fun remap(remapper: CustomRemapper, classes: Collection<ClassNode>, passThrough: MutableMap<String, ByteArray>)
-	
-	abstract fun getTaskName(): String
-	abstract fun isEnabled(): Boolean
+	protected abstract fun remap(remapper: CustomRemapper, classes: Collection<ClassNode>, passThrough: MutableMap<String, ByteArray>)
+	protected abstract fun isEnabled(): Boolean
 }

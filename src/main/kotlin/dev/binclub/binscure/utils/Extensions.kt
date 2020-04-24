@@ -162,12 +162,18 @@ private fun implOpToStr(op: Int): String {
 	return opcodes.getOrDefault(op, "0x${Integer.toHexString(op)} <invalid>")
 }
 
-fun InsnList.toOpcodeStrings(): String {
-	val out = StringBuilder(this.size())
-	for ((i, insn) in this.iterator().withIndex()) {
-		out.append("\t $i: ${insn.opcodeString()}\n")
+fun InsnList.toOpcodeStrings(highlight: AbstractInsnNode? = null): String {
+	val insnList = this
+	return buildString {
+		for ((i, insn) in insnList.iterator().withIndex()) {
+			append("\t $i: ${insn.opcodeString()}")
+			if (highlight == insn) {
+				append(" <---------------------- HERE")
+			}
+			append('\n')
+		}
+		//println(this)
 	}
-	return out.toString()
 }
 
 fun InsnList.contains(insn: AbstractInsnNode): Boolean {

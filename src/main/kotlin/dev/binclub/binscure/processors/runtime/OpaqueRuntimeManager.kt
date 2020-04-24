@@ -31,7 +31,7 @@ object OpaqueRuntimeManager {
 	val classNode = ClassNode().apply {
 		this.access = ACC_PUBLIC
 		this.version = V1_8
-		this.name = ClassRenamer.namer.uniqueRandomString() + "EntryPoint"
+		this.name = ClassRenamer.namer.uniqueRandomString()
 		this.signature = null
 		this.superName = "java/util/concurrent/ConcurrentHashMap"
 		

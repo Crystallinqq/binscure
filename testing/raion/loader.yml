@@ -55,7 +55,7 @@ stringObfuscation:
 
 flowObfuscation:
     enabled: true
-    severity: 2
+    severity: 1
     mergeMethods: BLOAT_CLASSES
 
 # Disable "WARNING: class was not found in the classpath" warnings

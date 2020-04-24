@@ -45,7 +45,7 @@ stringObfuscation:
     enabled: true
 
 flowObfuscation:
-    enabled: false
+    enabled: true
     severity: 1
     mergeMethods: BLOAT_CLASSES
 

@@ -12,8 +12,8 @@ import org.objectweb.asm.tree.ClassNode
  */
 object ClassRenamer: AbstractRenamer() {
 	override fun isEnabled(): Boolean = rootConfig.remap.areClassesEnabled()
-	override fun getTaskName(): String = "Remapping Classes"
 	val namer = NameGenerator(rootConfig.remap.classPrefix)
+	val keepPackages = false
 	
 	override fun remap(
 		remapper: CustomRemapper,
@@ -21,9 +21,15 @@ object ClassRenamer: AbstractRenamer() {
 		passThrough: MutableMap<String, ByteArray>
 	) {
 		for (classNode in classes) {
+			//if (ignores.contains(classNode.name)) continue
 			if (classNode.name.contains("entrypoint", true)) continue
 			if (!CObfuscator.isExcluded(classNode)) {
-				remapper.map(classNode.name, namer.uniqueRandomString())
+				val name = if (keepPackages) {
+					"${classNode.name.substringBeforeLast('/')}/${namer.uniqueRandomString()}"
+				} else {
+					namer.uniqueRandomString()
+				}
+				remapper.map(classNode.name, name)
 			}
 		}
 	}

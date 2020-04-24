@@ -5,6 +5,7 @@ import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import java.lang.RuntimeException
 import java.util.*
 
 /**
@@ -43,6 +44,11 @@ object StackHeightCalculator {
 			calculateHeightFromInsn(Stack(), insn, registers, tryCatchBlockNodes, out)
 		} catch (e: StackOverflowError) {
 			IllegalStateException("Found infinite loop while following stack", e).printStackTrace()
+		} catch (e: StackHeightCalculationException) {
+			e.printStackTrace()
+			println("--- ${insnList.size()}")
+			insnList.toOpcodeStrings(e.insn)
+			println("---")
 		}
 		
 		for (tryCatch in tryCatchBlockNodes) {
@@ -52,6 +58,11 @@ object StackHeightCalculator {
 				}, tryCatch.handler, registers, tryCatchBlockNodes, out)
 			} catch (e: StackOverflowError) {
 				IllegalStateException("Found infinite loop while following stack", e).printStackTrace()
+			} catch (e: StackHeightCalculationException) {
+				e.printStackTrace()
+				println("--- ${insnList.size()}")
+				insnList.toOpcodeStrings(e.insn)
+				println("---")
 			}
 		}
 		
@@ -72,11 +83,11 @@ object StackHeightCalculator {
 			tryCatchBlockNodes: Collection<TryCatchBlockNode>,
 			out: MutableMap<AbstractInsnNode, Stack<Type>>
 		) {
-			try {
+			//try {
 				calculateHeightFromInsn(stack, abstractInsnNode, registers, tryCatchBlockNodes, out)
-			} catch (e: StackOverflowError) {
+			//} catch (e: StackOverflowError) {
 				//IllegalStateException("Found infinite loop while following stack", e).printStackTrace()
-			}
+			//}
 		}
 		
 		fun alreadyCalculatedTarget(target: AbstractInsnNode): Boolean {
@@ -86,345 +97,355 @@ object StackHeightCalculator {
 		var insn: AbstractInsnNode? = abstractInsnNode
 		
 		while (insn != null) {
-			if (alreadyCalculatedTarget(insn)) return
-			
-			var next = insn.next
-			
-			out[insn] = stack.cloneStack()
-			
-			when (insn) {
-				is JumpInsnNode -> {
-					when (insn.opcode) {
-						GOTO -> {
-							next = null
+			try {
+				if (alreadyCalculatedTarget(insn)) return
+				
+				var next = insn.next
+				
+				out[insn] = stack.cloneStack()
+				
+				when (insn) {
+					is JumpInsnNode -> {
+						when (insn.opcode) {
+							GOTO -> {
+								next = null
+							}
+							IFEQ, IFNE, IFLT, IFGE, IFGT, IFLE, IFNULL, IFNONNULL -> {
+								stack.pop()
+							}
+							IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ, IF_ACMPNE -> {
+								stack.pop()
+								stack.pop()
+							}
+							else -> error("Unexpected ${insn.opcode}")
 						}
-						IFEQ, IFNE, IFLT, IFGE, IFGT, IFLE, IFNULL, IFNONNULL -> {
-							stack.pop()
-						}
-						IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ, IF_ACMPNE -> {
-							stack.pop()
-							stack.pop()
-						}
-						else -> error("Unexpected ${insn.opcode}")
-					}
-					val stackAtTarget = stack.cloneStack()
-					
-					safeCalculateHeightFromInsn(stackAtTarget, insn.label, registers, tryCatchBlockNodes, out)
-				}
-				is VarInsnNode -> {
-					if (insn.opcode == RET) {
-						error("RET not supported")
-					} else {
-						val info = varInfoMap[insn.opcode] ?: error("Unexpected opcode ${insn.opcode}")
+						val stackAtTarget = stack.cloneStack()
 						
-						if (info.stores) {
-							registers[insn.`var`] = stack.pop()
+						safeCalculateHeightFromInsn(stackAtTarget, insn.label, registers, tryCatchBlockNodes, out)
+					}
+					is VarInsnNode -> {
+						if (insn.opcode == RET) {
+							error("RET not supported")
 						} else {
-							stack.push(registers[insn.`var`])
-						}
-					}
-				}
-				is LdcInsnNode -> {
-					when (val cst = insn.cst) {
-						is Int -> stack.push(Type.INT_TYPE)
-						is Byte -> stack.push(Type.BYTE_TYPE)
-						is Char -> stack.push(Type.CHAR_TYPE)
-						is Short -> stack.push(Type.SHORT_TYPE)
-						is Boolean -> stack.push(Type.BOOLEAN_TYPE)
-						is Float -> stack.push(Type.FLOAT_TYPE)
-						is Long -> stack.push(Type.LONG_TYPE)
-						is Double -> stack.push(Type.DOUBLE_TYPE)
-						is String -> stack.push(Type.getType("Ljava/lang/String;"))
-						is Type -> {
-							when (cst.sort) {
-								Type.OBJECT -> stack.push(Type.getType("Ljava/lang/Class;"))
-								Type.METHOD -> stack.push(Type.getType("Ljava/lang/invoke/MethodType;"))
-								else -> stack.push(Type.getObjectType(cst.descriptor))
+							val info = varInfoMap[insn.opcode] ?: error("Unexpected opcode ${insn.opcode}")
+							
+							if (info.stores) {
+								registers[insn.`var`] = stack.pop()
+							} else {
+								stack.push(registers[insn.`var`])
 							}
 						}
-						is Handle -> stack.push(Type.getType("Ljava/lang/invoke/MethodHandle;"))
-						is ConstantDynamic -> stack.push(Type.getType(cst.descriptor))
 					}
-				}
-				is FieldInsnNode -> {
-					when (insn.opcode) {
-						GETFIELD -> {
-							stack.pop() // reference
-							stack.push(Type.getType(insn.desc)) // value
-						}
-						GETSTATIC -> {
-							stack.push(Type.getType(insn.desc)) // value
-						}
-						PUTFIELD -> {
-							stack.pop() // value
-							stack.pop() // reference
-						}
-						PUTSTATIC -> {
-							stack.pop() // value
-						}
-						else -> error("Unexpected opcode ${insn.opcode}")
-					}
-				}
-				is MethodInsnNode -> {
-					for (arg in Type.getArgumentTypes(insn.desc)) {
-						stack.pop()
-					}
-					
-					if (insn.opcode == INVOKEVIRTUAL || insn.opcode == INVOKESPECIAL || insn.opcode == INVOKEINTERFACE) {
-						stack.pop()
-					}
-					
-					val retType = Type.getReturnType(insn.desc)
-					if (retType != Type.VOID_TYPE) {
-						stack.push(retType)
-					}
-				}
-				is InvokeDynamicInsnNode -> {
-					for (arg in Type.getArgumentTypes(insn.desc)) {
-						stack.pop()
-					}
-					
-					val retType = Type.getReturnType(insn.desc)
-					if (retType != Type.VOID_TYPE) {
-						stack.push(retType)
-					}
-				}
-				is MultiANewArrayInsnNode -> {
-					for (i in 0..insn.dims) {
-						stack.pop()
-					}
-				}
-				is IntInsnNode -> {
-					when (insn.opcode) {
-						BIPUSH -> {
-							stack.push(Type.BYTE_TYPE)
-						}
-						SIPUSH -> {
-							stack.push(Type.SHORT_TYPE)
-						}
-						NEWARRAY -> {
-							stack.pop() // array size
-							stack.push(Type.getType("[${primitiveTypeFromSort(insn.operand)}"))
+					is LdcInsnNode -> {
+						when (val cst = insn.cst) {
+							is Int -> stack.push(Type.INT_TYPE)
+							is Byte -> stack.push(Type.BYTE_TYPE)
+							is Char -> stack.push(Type.CHAR_TYPE)
+							is Short -> stack.push(Type.SHORT_TYPE)
+							is Boolean -> stack.push(Type.BOOLEAN_TYPE)
+							is Float -> stack.push(Type.FLOAT_TYPE)
+							is Long -> stack.push(Type.LONG_TYPE)
+							is Double -> stack.push(Type.DOUBLE_TYPE)
+							is String -> stack.push(Type.getType("Ljava/lang/String;"))
+							is Type -> {
+								when (cst.sort) {
+									Type.OBJECT -> stack.push(Type.getType("Ljava/lang/Class;"))
+									Type.METHOD -> stack.push(Type.getType("Ljava/lang/invoke/MethodType;"))
+									else -> stack.push(Type.getObjectType(cst.descriptor))
+								}
+							}
+							is Handle -> stack.push(Type.getType("Ljava/lang/invoke/MethodHandle;"))
+							is ConstantDynamic -> stack.push(Type.getType(cst.descriptor))
 						}
 					}
-				}
-				is TypeInsnNode -> {
-					when (insn.opcode) {
-						NEW -> {
-							stack.push(Type.getType("L${insn.desc};"))
+					is FieldInsnNode -> {
+						when (insn.opcode) {
+							GETFIELD -> {
+								stack.pop() // reference
+								stack.push(Type.getType(insn.desc)) // value
+							}
+							GETSTATIC -> {
+								stack.push(Type.getType(insn.desc)) // value
+							}
+							PUTFIELD -> {
+								stack.pop() // value
+								stack.pop() // reference
+							}
+							PUTSTATIC -> {
+								stack.pop() // value
+							}
+							else -> error("Unexpected opcode ${insn.opcode}")
 						}
-						ANEWARRAY -> {
-							stack.pop() // array size
-							stack.push(Type.getType("[L${insn.desc};")) // new array
-						}
-						CHECKCAST -> {
+					}
+					is MethodInsnNode -> {
+						for (arg in Type.getArgumentTypes(insn.desc)) {
 							stack.pop()
-							stack.push(Type.getType("[L${insn.desc};"))
+						}
+						
+						if (insn.opcode == INVOKEVIRTUAL || insn.opcode == INVOKESPECIAL || insn.opcode == INVOKEINTERFACE) {
+							stack.pop()
+						}
+						
+						val retType = Type.getReturnType(insn.desc)
+						if (retType != Type.VOID_TYPE) {
+							stack.push(retType)
 						}
 					}
-				}
-				is InsnNode -> {
-					when (insn.opcode) {
-						IALOAD, LALOAD, FALOAD, DALOAD, AALOAD, BALOAD, CALOAD, SALOAD -> {
-							stack.pop() // index
-							if (insn.opcode == AALOAD) {
-								stack.push(Type.getType(stack.pop().descriptor.removePrefix("[")))
-							} else {
+					is InvokeDynamicInsnNode -> {
+						for (arg in Type.getArgumentTypes(insn.desc)) {
+							stack.pop()
+						}
+						
+						val retType = Type.getReturnType(insn.desc)
+						if (retType != Type.VOID_TYPE) {
+							stack.push(retType)
+						}
+					}
+					is MultiANewArrayInsnNode -> {
+						for (i in 0..insn.dims) {
+							stack.pop()
+						}
+					}
+					is IntInsnNode -> {
+						when (insn.opcode) {
+							BIPUSH -> {
+								stack.push(Type.BYTE_TYPE)
+							}
+							SIPUSH -> {
+								stack.push(Type.SHORT_TYPE)
+							}
+							NEWARRAY -> {
+								stack.pop() // array size
+								stack.push(Type.getType("[${primitiveTypeFromSort(insn.operand)}"))
+							}
+						}
+					}
+					is TypeInsnNode -> {
+						when (insn.opcode) {
+							NEW -> {
+								stack.push(Type.getType("L${insn.desc};"))
+							}
+							ANEWARRAY -> {
+								stack.pop() // array size
+								stack.push(Type.getType("[L${insn.desc};")) // new array
+							}
+							CHECKCAST -> {
+								stack.pop()
+								stack.push(Type.getType("[L${insn.desc};"))
+							}
+						}
+					}
+					is InsnNode -> {
+						when (insn.opcode) {
+							IALOAD, LALOAD, FALOAD, DALOAD, AALOAD, BALOAD, CALOAD, SALOAD -> {
+								stack.pop() // index
+								if (insn.opcode == AALOAD) {
+									stack.push(Type.getType(stack.pop().descriptor.removePrefix("[")))
+								} else {
+									stack.pop() // arrayref
+									stack.push(aloadTypeMap[insn.opcode]) // val
+								}
+							}
+							IASTORE, LASTORE, FASTORE, DASTORE, AASTORE, BASTORE, CASTORE, SASTORE -> {
+								stack.pop() // val
+								stack.pop() // index
 								stack.pop() // arrayref
-								stack.push(aloadTypeMap[insn.opcode]) // val
 							}
-						}
-						IASTORE, LASTORE, FASTORE, DASTORE, AASTORE, BASTORE, CASTORE, SASTORE -> {
-							stack.pop() // val
-							stack.pop() // index
-							stack.pop() // arrayref
-						}
-						ACONST_NULL, ICONST_M1, ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4, ICONST_5,
-						LCONST_0, LCONST_1, FCONST_0, FCONST_1, FCONST_2, DCONST_0, DCONST_1 -> {
-							stack.push(constTypeMap[insn.opcode]) // value
-						}
-						POP -> {
-							stack.pop()
-						}
-						POP2 -> {
-							stack.pop()
-							stack.pop()
-						}
-						DUP -> {
-							val value1 = stack.pop()
-							stack.push(value1)
-							stack.push(value1)
-						}
-						DUP_X1 -> {
-							val value1 = stack.pop()
-							val value2 = stack.pop()
-							stack.push(value1)
-							stack.push(value2)
-							stack.push(value1)
-						}
-						DUP_X2 -> {
-							val value1 = stack.pop()
-							val value2 = stack.pop()
-							val value3 = stack.pop()
-							if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
-								stack.push(value1)
-								stack.push(value3)
-								stack.push(value2)
-								stack.push(value1)
-							} else if (!value1.doubleSize && value2.doubleSize) {
-								stack.push(value3)
-								stack.push(value1)
-								stack.push(value2)
-								stack.push(value1)
-							} else {
-								error("Unexpected computational types when calculating DUP_X2")
+							ACONST_NULL, ICONST_M1, ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4, ICONST_5,
+							LCONST_0, LCONST_1, FCONST_0, FCONST_1, FCONST_2, DCONST_0, DCONST_1 -> {
+								stack.push(constTypeMap[insn.opcode]) // value
 							}
-						}
-						DUP2 -> {
-							val value1 = stack.pop()
-							val value2 = stack.pop()
-							if (!value1.doubleSize && !value2.doubleSize) {
-								stack.push(value2)
-								stack.push(value1)
-								stack.push(value2)
-								stack.push(value1)
-							} else if (value1.doubleSize) {
-								stack.push(value2)
-								stack.push(value1)
-								stack.push(value1)
-							} else {
-								error("Unexpected computational types when calculating DUP2")
+							POP -> {
+								stack.pop()
 							}
-						}
-						DUP2_X1 -> {
-							val value1 = stack.pop()
-							val value2 = stack.pop()
-							val value3 = stack.pop()
-							if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
-								stack.push(value2)
-								stack.push(value1)
-								stack.push(value3)
-								stack.push(value2)
-								stack.push(value1)
-							} else if (value1.doubleSize && !value2.doubleSize) {
-								stack.push(value3)
-								stack.push(value1)
-								stack.push(value2)
-								stack.push(value1)
-							} else {
-								error("Unexpected computational types when calculating DUP2_X1")
+							POP2 -> {
+								val value1 = stack.pop()
+								if (!value1.doubleSize) {
+									stack.pop()
+								}
 							}
-						}
-						DUP2_X2 -> {
-							val value1 = stack.pop()
-							val value2 = stack.pop()
-							val value3 = stack.pop()
-							val value4 = stack.pop()
-							if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize && !value4.doubleSize) {
-								stack.push(value2)
+							DUP -> {
+								val value1 = stack.pop()
 								stack.push(value1)
-								stack.push(value4)
-								stack.push(value3)
-								stack.push(value2)
 								stack.push(value1)
-							} else if (value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
-								stack.push(value4)
-								stack.push(value1)
-								stack.push(value3)
-								stack.push(value2)
-								stack.push(value1)
-							} else if (!value1.doubleSize && !value2.doubleSize && value3.doubleSize) {
-								stack.push(value4)
-								stack.push(value2)
-								stack.push(value1)
-								stack.push(value3)
-								stack.push(value2)
-								stack.push(value1)
-							} else if (value1.doubleSize && value2.doubleSize) {
-								stack.push(value4)
-								stack.push(value3)
+							}
+							DUP_X1 -> {
+								val value1 = stack.pop()
+								val value2 = stack.pop()
 								stack.push(value1)
 								stack.push(value2)
 								stack.push(value1)
 							}
-						}
-						IADD, LADD, FADD, DADD,
-						ISUB, LSUB, FSUB, DSUB,
-						IMUL, LMUL, FMUL, DMUL,
-						IDIV, LDIV, FDIV, DDIV,
-						IREM, LREM, FREM, DREM,
-						ISHL, LSHL, ISHR, LSHR,
-						IUSHR, LUSHR,
-						IAND, LAND, IOR, LOR,
-						IXOR, LXOR -> {
-							stack.pop()
-							stack.pop()
-							stack.push(arithmeticTypeMap[insn.opcode])
-						}
-						LCMP, FCMPL, FCMPG, DCMPL, DCMPG -> {
-							stack.pop()
-							stack.pop()
-							stack.push(Type.INT_TYPE)
-						}
-						IRETURN, LRETURN, FRETURN, DRETURN, ARETURN, RETURN, ATHROW -> {
-							stack.clear()
-							next = null
-						}
-						MONITORENTER, MONITOREXIT -> {
-							stack.pop()
+							DUP_X2 -> {
+								val value1 = stack.pop()
+								val value2 = stack.pop()
+								val value3 = stack.pop()
+								if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
+									stack.push(value1)
+									stack.push(value3)
+									stack.push(value2)
+									stack.push(value1)
+								} else if (!value1.doubleSize && value2.doubleSize) {
+									stack.push(value3)
+									stack.push(value1)
+									stack.push(value2)
+									stack.push(value1)
+								} else {
+									error("Unexpected computational types when calculating DUP_X2")
+								}
+							}
+							DUP2 -> {
+								val value1 = stack.pop()
+								val value2 = stack.pop()
+								if (!value1.doubleSize && !value2.doubleSize) {
+									stack.push(value2)
+									stack.push(value1)
+									stack.push(value2)
+									stack.push(value1)
+								} else if (value1.doubleSize) {
+									stack.push(value2)
+									stack.push(value1)
+									stack.push(value1)
+								} else {
+									error("Unexpected computational types when calculating DUP2")
+								}
+							}
+							DUP2_X1 -> {
+								val value1 = stack.pop()
+								val value2 = stack.pop()
+								val value3 = stack.pop()
+								if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
+									stack.push(value2)
+									stack.push(value1)
+									stack.push(value3)
+									stack.push(value2)
+									stack.push(value1)
+								} else if (value1.doubleSize && !value2.doubleSize) {
+									stack.push(value3)
+									stack.push(value1)
+									stack.push(value2)
+									stack.push(value1)
+								} else {
+									error("Unexpected computational types when calculating DUP2_X1")
+								}
+							}
+							DUP2_X2 -> {
+								val value1 = stack.pop()
+								val value2 = stack.pop()
+								val value3 = stack.pop()
+								val value4 = stack.pop()
+								if (!value1.doubleSize && !value2.doubleSize && !value3.doubleSize && !value4.doubleSize) {
+									stack.push(value2)
+									stack.push(value1)
+									stack.push(value4)
+									stack.push(value3)
+									stack.push(value2)
+									stack.push(value1)
+								} else if (value1.doubleSize && !value2.doubleSize && !value3.doubleSize) {
+									stack.push(value4)
+									stack.push(value1)
+									stack.push(value3)
+									stack.push(value2)
+									stack.push(value1)
+								} else if (!value1.doubleSize && !value2.doubleSize && value3.doubleSize) {
+									stack.push(value4)
+									stack.push(value2)
+									stack.push(value1)
+									stack.push(value3)
+									stack.push(value2)
+									stack.push(value1)
+								} else if (value1.doubleSize && value2.doubleSize) {
+									stack.push(value4)
+									stack.push(value3)
+									stack.push(value1)
+									stack.push(value2)
+									stack.push(value1)
+								}
+							}
+							IADD, LADD, FADD, DADD,
+							ISUB, LSUB, FSUB, DSUB,
+							IMUL, LMUL, FMUL, DMUL,
+							IDIV, LDIV, FDIV, DDIV,
+							IREM, LREM, FREM, DREM,
+							ISHL, LSHL, ISHR, LSHR,
+							IUSHR, LUSHR,
+							IAND, LAND, IOR, LOR,
+							IXOR, LXOR -> {
+								stack.pop()
+								stack.pop()
+								stack.push(arithmeticTypeMap[insn.opcode])
+							}
+							LCMP, FCMPL, FCMPG, DCMPL, DCMPG -> {
+								stack.pop()
+								stack.pop()
+								stack.push(Type.INT_TYPE)
+							}
+							IRETURN, LRETURN, FRETURN, DRETURN, ARETURN, RETURN, ATHROW -> {
+								stack.clear()
+								next = null
+							}
+							MONITORENTER, MONITOREXIT -> {
+								stack.pop()
+							}
 						}
 					}
-				}
-				is LookupSwitchInsnNode -> {
-					stack.pop() // key
-					
-					for (label in insn.labels) {
+					is LookupSwitchInsnNode -> {
+						stack.pop() // key
+						
+						for (label in insn.labels) {
+							safeCalculateHeightFromInsn(
+								stack.cloneStack(),
+								label,
+								registers,
+								tryCatchBlockNodes,
+								out
+							)
+						}
 						safeCalculateHeightFromInsn(
 							stack.cloneStack(),
-							label,
+							insn.dflt,
 							registers,
 							tryCatchBlockNodes,
 							out
 						)
+						
+						next = null
+						stack.clear()
 					}
-					safeCalculateHeightFromInsn(
-						stack.cloneStack(),
-						insn.dflt,
-						registers,
-						tryCatchBlockNodes,
-						out
-					)
-					
-					next = null
-					stack.clear()
-				}
-				is TableSwitchInsnNode -> {
-					stack.pop() // key
-					
-					for (label in insn.labels) {
+					is TableSwitchInsnNode -> {
+						stack.pop() // key
+						
+						for (label in insn.labels) {
+							safeCalculateHeightFromInsn(
+								stack.cloneStack(),
+								label,
+								registers,
+								tryCatchBlockNodes,
+								out
+							)
+						}
 						safeCalculateHeightFromInsn(
 							stack.cloneStack(),
-							label,
+							insn.dflt,
 							registers,
 							tryCatchBlockNodes,
 							out
 						)
+						
+						next = null
+						stack.clear()
 					}
-					safeCalculateHeightFromInsn(
-						stack.cloneStack(),
-						insn.dflt,
-						registers,
-						tryCatchBlockNodes,
-						out
-					)
-					
-					next = null
-					stack.clear()
+				}
+				
+				
+				insn = next
+			} catch (t: Throwable) {
+				if (t is StackHeightCalculationException) {
+					throw t
+				} else {
+					throw StackHeightCalculationException(insn, t)
 				}
 			}
-			
-			
-			insn = next
 		}
 	}
 }
@@ -508,3 +529,6 @@ private val arithmeticTypeMap = hashMapOf(
 	IXOR to Type.INT_TYPE,
 	LXOR to Type.LONG_TYPE
 )
+
+class StackHeightCalculationException(val insn: AbstractInsnNode, parent: Throwable?):
+	RuntimeException(parent?.message ?: "Exception calculating stack height", parent ?: IllegalStateException())

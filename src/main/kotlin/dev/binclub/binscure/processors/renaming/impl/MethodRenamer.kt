@@ -19,14 +19,13 @@ import org.objectweb.asm.tree.MethodNode
 object MethodRenamer: AbstractRenamer() {
 	override fun isEnabled(): Boolean = rootConfig.remap.areMethodsEnabled()
 	
-	override fun getTaskName(): String = "Remapping Methods"
-	
 	override fun remap(
 		remapper: CustomRemapper,
 		classes: Collection<ClassNode>,
 		passThrough: MutableMap<String, ByteArray>
 	) {
 		for (classNode in classes) {
+			//if (ignores.contains(classNode.name)) continue
 			if (isExcluded(classNode))
 				continue
 			
@@ -34,7 +33,7 @@ object MethodRenamer: AbstractRenamer() {
 			val names = mutableMapOf<String, NameGenerator>()
 			
 			for (method in classNode.methods) {
-				if (classNode.name.contains("entrypoint", true) && method.name.contains("start", true)) continue
+				//if (classNode.name.contains("entrypoint", true) && method.name.contains("start", true)) continue
 				if (method.name == "main" && method.desc == "([Ljava/lang/String;)V")
 					continue
 				
