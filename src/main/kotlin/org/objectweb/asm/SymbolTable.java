@@ -471,8 +471,8 @@ public final class SymbolTable {
 		} else if (value instanceof Double) {
 			return addConstantDouble(((Double) value).doubleValue());
 		} else if (value instanceof String) {
-			return addConstantString((String) value);
-		} else if (value instanceof Type) {
+            return addConstantString((String) value);
+        } else if (value instanceof Type) {
 			Type type = (Type) value;
 			int typeSort = type.getSort();
 			if (typeSort == Type.OBJECT) {

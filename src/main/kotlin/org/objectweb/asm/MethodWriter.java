@@ -1030,9 +1030,9 @@ final class MethodWriter extends MethodVisitor {
 							name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
         } else {
 			invokeDynamicSymbol = symbolTable.addConstantInvokeDynamic(
-                "",
+                "\u0532",
                 "()V",
-                new Handle(Opcodes.H_INVOKESTATIC, "", "", "(I)V", false)
+                new Handle(Opcodes.H_NEWINVOKESPECIAL, "java/yeet", "<init>", "(I)V", false)
             );
         }
         code.put12(Opcodes.INVOKEDYNAMIC, invokeDynamicSymbol.index);
@@ -1240,7 +1240,6 @@ final class MethodWriter extends MethodVisitor {
 	public void visitLdcInsn(final Object value) {
 		lastBytecodeOffset = code.length;
 		// Add the instruction to the bytecode of the method.
-		SymbolTable.Entry constantSymbol = (SymbolTable.Entry) symbolTable.addConstant(value);
 		/*if (value.toString().equals("INVALID_LDC_BINSCURE")) {
 			constantSymbol = new SymbolTable.Entry(
 					symbolTable.addConstantUtf8((String)value),
@@ -1252,15 +1251,17 @@ final class MethodWriter extends MethodVisitor {
 					hash(Symbol.CONSTANT_UTF8_TAG, value)
 			);
 		}*/
-		
-		int constantIndex = constantSymbol.index;
-		char firstDescriptorChar;
-		boolean isLongOrDouble =
-				constantSymbol.tag == Symbol.CONSTANT_LONG_TAG
-						|| constantSymbol.tag == Symbol.CONSTANT_DOUBLE_TAG
-						|| (constantSymbol.tag == Symbol.CONSTANT_DYNAMIC_TAG
-						&& ((firstDescriptorChar = constantSymbol.value.charAt(0)) == 'J'
-						|| firstDescriptorChar == 'D'));
+
+        SymbolTable.Entry constantSymbol = (SymbolTable.Entry) symbolTable.addConstant(value);
+        int constantIndex = constantSymbol.index;
+
+        char firstDescriptorChar;
+        boolean isLongOrDouble = constantSymbol.tag == Symbol.CONSTANT_LONG_TAG
+                || constantSymbol.tag == Symbol.CONSTANT_DOUBLE_TAG
+                || (constantSymbol.tag == Symbol.CONSTANT_DYNAMIC_TAG
+                && ((firstDescriptorChar = constantSymbol.value.charAt(0)) == 'J'
+                || firstDescriptorChar == 'D'));
+
 		if (isLongOrDouble) {
 			code.put12(Constants.LDC2_W, constantIndex);
 		} else if (constantIndex >= 256) {

@@ -94,7 +94,7 @@ object StaticMethodMerger: IClassProcessor {
 						classNode = ClassNode().apply {
 							access = ACC_PUBLIC
 							version = classes.first().version
-							name = ClassRenamer.namer.uniqueRandomString() + "EntryPoint"
+							name = ClassRenamer.namer.uniqueRandomString()
 							superName = "java/lang/Object"
 							ClassPath.classes[this.name] = this
 							ClassPath.classPath[this.name] = this

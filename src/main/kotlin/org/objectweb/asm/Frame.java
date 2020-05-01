@@ -1462,7 +1462,7 @@ class Frame {
 						typeDescriptor.append('D');
 						break;
 					default:
-						throw new AssertionError();
+						throw new AssertionError("Unexpected frame item: " + (abstractType & VALUE_MASK));
 				}
 			}
 			output

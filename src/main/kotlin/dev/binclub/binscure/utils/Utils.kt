@@ -320,17 +320,16 @@ fun insnListOf(vararg insns: AbstractInsnNode) = InsnList().apply {
 	for (insn in insns) add(insn)
 }
 
-fun primitiveTypeFromSort(sort: Int): Type {
+fun primitiveTypeFromArraySort(sort: Int): Type {
 	return when (sort) {
-		Type.VOID -> Type.VOID_TYPE
-		Type.BOOLEAN -> Type.BOOLEAN_TYPE
-		Type.CHAR -> Type.CHAR_TYPE
-		Type.BYTE -> Type.BYTE_TYPE
-		Type.SHORT -> Type.SHORT_TYPE
-		Type.INT -> Type.INT_TYPE
-		Type.FLOAT -> Type.FLOAT_TYPE
-		Type.LONG -> Type.LONG_TYPE
-		Type.DOUBLE -> Type.DOUBLE_TYPE
+		T_BOOLEAN -> Type.BOOLEAN_TYPE
+		T_CHAR -> Type.CHAR_TYPE
+		T_BYTE -> Type.BYTE_TYPE
+		T_SHORT -> Type.SHORT_TYPE
+		T_INT -> Type.INT_TYPE
+		T_FLOAT -> Type.FLOAT_TYPE
+		T_LONG -> Type.LONG_TYPE
+		T_DOUBLE -> Type.DOUBLE_TYPE
 		else -> error("Unexpected Type $sort")
 	}
 }

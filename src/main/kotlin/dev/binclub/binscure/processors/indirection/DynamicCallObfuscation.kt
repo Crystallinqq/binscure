@@ -151,7 +151,6 @@ object DynamicCallObfuscation: IClassProcessor {
 		}
 		
 		if (isInit) {
-			classes.add(decryptNode)
 			ClassPath.classes[decryptNode.name] = decryptNode
 			ClassPath.classPath[decryptNode.name] = decryptNode
 		}

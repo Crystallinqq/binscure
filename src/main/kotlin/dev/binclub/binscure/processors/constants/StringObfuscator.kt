@@ -4,26 +4,36 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.configuration.ConfigurationManager
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
+import dev.binclub.binscure.processors.exploit.BadAttributeExploit
+import dev.binclub.binscure.processors.exploit.BadClinitExploit
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager
 import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Handle
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * @author cookiedragon234 20/Jan/2020
  */
 object StringObfuscator: IClassProcessor {
 	val key = random.nextInt(Int.MAX_VALUE)
+	val keys = Array(random.nextInt(400).coerceAtLeast(20)) {
+		random.nextInt(Int.MAX_VALUE)
+	}
 	
-	var decryptNode: ClassNode? = null
-	var decryptMethod: MethodNode? = null
+	var decryptNode: ClassNode by Delegates.notNull()
+	var decryptMethod: MethodNode by Delegates.notNull()
+	var keysField: FieldNode by Delegates.notNull()
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!ConfigurationManager.rootConfig.stringObfuscation.enabled) {
+		if (!rootConfig.stringObfuscation.enabled) {
 			return
 		}
 		
@@ -58,15 +68,18 @@ object StringObfuscator: IClassProcessor {
 				.apply {
 					this.access = ACC_PUBLIC + ACC_FINAL
 					this.version = V1_8
-					this.name = ClassRenamer.namer.uniqueRandomString() + "EntryPoint"
+					this.name = ClassRenamer.namer.uniqueRandomString()
 					this.signature = null
 					this.superName = OpaqueRuntimeManager.classNode.name
 					this.sourceFile = "a"
 					this.sourceDebug = "hello"
-					classes.add(this)
 					ClassPath.classes[this.name] = this
 					ClassPath.classPath[this.name] = this
 					this@StringObfuscator.decryptNode = this
+					if (rootConfig.crasher.enabled && rootConfig.crasher.antiAsm) {
+						BadAttributeExploit.process(Collections.singleton(this), Collections.emptyMap())
+					}
+					BadClinitExploit.process(Collections.singleton(this), Collections.emptyMap())
 				}
 			val storageField = FieldNode(
 				ACC_STATIC,
@@ -76,6 +89,23 @@ object StringObfuscator: IClassProcessor {
 				null
 			)
 			decryptNode.fields.add(storageField)
+			
+			keysField = FieldNode(
+				ACC_STATIC,
+				"\u2312",
+				"[I",
+				null,
+				null
+			)
+			decryptNode.fields.add(keysField)
+			
+			decryptNode.fields.add(FieldNode(
+				ACC_PRIVATE,
+				"1",
+				"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[I",
+				null,
+				null
+			))
 			
 			generateStaticBlock(decryptNode, storageField)
 			generateInitFunc(decryptNode, storageField)
@@ -98,6 +128,10 @@ object StringObfuscator: IClassProcessor {
 				
 				string.insn.cst = string.encrypted
 				val list = InsnList().apply {
+					/*add(FieldInsnNode(GETSTATIC, "net/minecraft/launchwrapper/Launch", "classLoader", "Lnet/minecraft/launchwrapper/LaunchClassLoader;"))
+					add(LdcInsnNode(decryptNode.name.replace('/', '.')))
+					add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/launchwrapper/LaunchClassLoader", "findClass", "(Ljava/lang/String;)Ljava/lang/Class;"))
+					add(InsnNode(POP))*/
 					add(MethodInsnNode(
 						INVOKESTATIC,
 						decryptNode.name,
@@ -146,6 +180,7 @@ object StringObfuscator: IClassProcessor {
 		val xors = newLabel()
 		val switchExceptionReceiver = newLabel()
 		val classNotFoundHandler = newLabel()
+		val initialStartJumpBack = newLabel()
 		
 		// XOR SWITCH LABELS
 		val loopStart = newLabel()
@@ -190,6 +225,12 @@ object StringObfuscator: IClassProcessor {
 		
 		// First check if the value is cached
 		val insnList = InsnList().apply {
+			add(ICONST_1)
+			add(FieldInsnNode(GETSTATIC, classNode.name, keysField.name, keysField.desc))
+			add(VarInsnNode(ASTORE, 16))
+			add(VarInsnNode(ISTORE, 13))
+			add(JumpInsnNode(GOTO, veryveryStart))
+			add(initialStartJumpBack)
 			add(VarInsnNode(ALOAD, 0)) // string param
 			add(JumpInsnNode(IFNONNULL, veryveryStart))
 			add(TypeInsnNode(NEW, NullPointerException::class.internalName))
@@ -207,8 +248,6 @@ object StringObfuscator: IClassProcessor {
 			add(ACONST_NULL)
 			add(VarInsnNode(ASTORE, 5))
 			add(ICONST_M1)
-			add(ICONST_M1)
-			add(VarInsnNode(ISTORE, 13))
 			add(VarInsnNode(ILOAD, 1))
 			add(VarInsnNode(ISTORE, 11))
 			add(ldcInt(key))
@@ -221,9 +260,27 @@ object StringObfuscator: IClassProcessor {
 			add(ldcInt(0))
 			add(VarInsnNode(ISTORE, 15))
 			add(VarInsnNode(ISTORE, 6))
+			newLabel().also {
+				add(randomOpaqueJump(it))
+				add(InvokeDynamicInsnNode(
+					null, null, null
+				))
+				add(InvokeDynamicInsnNode(
+					"fuck", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")
+				))
+				add(InvokeDynamicInsnNode(
+					"yayeet", "()Ljava/lang/YaYeet;", Handle(H_GETSTATIC, "a", "a", "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[I")
+				))
+				add(POP)
+				add(it)
+			}
 			add(ICONST_M1)
 			add(VarInsnNode(ISTORE, 7))
 			add(VarInsnNode(ASTORE, 14))
+			add(VarInsnNode(ILOAD, 13))
+			add(JumpInsnNode(IFEQ, initialStartJumpBack))
+			add(ICONST_0)
+			add(VarInsnNode(ISTORE, 13))
 			add(JumpInsnNode(GOTO, start))
 			add(switchDefault)
 			add(InsnNode(ACONST_NULL))
@@ -296,6 +353,14 @@ object StringObfuscator: IClassProcessor {
 			add(POP)
 			add(VarInsnNode(ILOAD, 15))
 			add(InsnNode(I2C))
+			add(VarInsnNode(ALOAD, 16))
+			
+			add(VarInsnNode(ILOAD, 10)) // Index
+			add(ldcInt(keys.size))
+			add(IREM)
+			add(IALOAD)
+			add(IXOR)
+			
 			add(VarInsnNode(ALOAD, 9)) // Decrypted Char Array
 			add(InsnNode(SWAP))
 			add(VarInsnNode(ILOAD, 10)) // Index
@@ -444,7 +509,7 @@ object StringObfuscator: IClassProcessor {
 			val popBeforeRealStart = newLabel()
 			add(JumpInsnNode(IFNULL, popBeforeRealStart))
 			add(MONITOREXIT) // GOTO getMethodName
-			add(InvokeDynamicInsnNode("_", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")))
+			add(InvokeDynamicInsnNode("fuck", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")))
 			add(ACONST_NULL)
 			add(ATHROW)
 			
@@ -522,8 +587,8 @@ object StringObfuscator: IClassProcessor {
 				l0, l1, l2, l3, l4, l5
 			))
 		}
-		insnList.populateWithLineNumbers()
 		decryptorMethod.instructions.add(insnList)
+		//decryptorMethod.instructions = insnListOf(InsnNode(ACONST_NULL), InsnNode(ARETURN))
 		classNode.methods.add(decryptorMethod)
 		return decryptorMethod
 	}
@@ -543,9 +608,111 @@ object StringObfuscator: IClassProcessor {
 	private fun generateStaticBlock(classNode: ClassNode, storageField: FieldNode): MethodNode {
 		val staticInit =
 			classNode.methods.firstOrNull { it.name == "<clinit>" && it.desc == "()V" }
-			?: MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).apply {
-				instructions.add(InsnNode(RETURN))
-				classNode.methods.add(this)
+			?: MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also { mn ->
+				mn.instructions.apply {
+					val tc1S = newLabel()
+					val tc1E = newLabel()
+					val tc1H = newLabel()
+					val tc2S = newLabel()
+					val tc2E = newLabel()
+					val tc2H = newLabel()
+					
+					mn.tryCatchBlocks.add(TryCatchBlockNode(tc2S, tc2E, tc2H, "java/lang/IllegalMonitorStateException"))
+					mn.tryCatchBlocks.add(TryCatchBlockNode(tc1S, tc1E, tc1H, "java/lang/RuntimeException"))
+					
+					val loopStart = newLabel()
+					val loopEnd = newLabel()
+					val setArr = newLabel()
+					val inc = newLabel()
+					
+					add(ACONST_NULL) // [a]
+					add(DUP)
+					add(VarInsnNode(ASTORE, 2)) // [a]
+					add(DUP) // [a a]
+					add(ICONST_M1)  // [a a i]
+					add(VarInsnNode(ISTORE, 4)) // [a a]
+					add(VarInsnNode(ASTORE, 3)) // [a]
+					add(TypeInsnNode(NEW, "java/util/Random")) // [a u]
+					add(DUP) // [a u u]
+					add(ldcInt(keys.size xor key)) // [a u u i]
+					add(ldcInt(key)) // [a u u i i]
+					add(IXOR) // [a u u i]
+					add(DUP) // [a u u i i]
+					add(IntInsnNode(NEWARRAY, T_INT)) // [a u u i a]
+					add(DUP) // [a u u i a a]
+					add(VarInsnNode(ASTORE, 1)) // [a u u i a]
+					add(FieldInsnNode(PUTSTATIC, classNode.name, keysField.name, keysField.desc)) // [a u u i]
+					add(VarInsnNode(ISTORE, 0)) // [a u u]
+					add(tc1S)
+					add(MethodInsnNode(INVOKESPECIAL, "java/util/Random", "<init>", "()V")) // [a a]
+					add(VarInsnNode(ASTORE, 2)) // [a]
+					add(DUP) // [a a]
+					add(VarInsnNode(ASTORE, 3)) // [a]
+					add(MONITOREXIT) // []
+					add(RETURN)
+					
+					add(tc1H) // [a]
+					add(POP) // []
+					
+					add(loopStart)
+					add(VarInsnNode(ILOAD, 0)) // [i]
+					add(DUP) // [i i]
+					add(JumpInsnNode(IFLT, loopEnd)) // [i]
+					add(tc2S)
+					
+					val labels = Array(keys.size) {
+						newLabel()
+					}
+					val default = newLabel()
+					add(TableSwitchInsnNode(
+						0,
+						keys.size - 1,
+						default,
+						*labels
+					)) // []
+					
+					for ((i, label) in labels.withIndex().shuffled(random)) {
+						add(label) // []
+						add(ldcInt(keys[i] xor key)) // [i]
+						add(VarInsnNode(ISTORE, 4)) // []
+						add(VarInsnNode(ALOAD, 2)) // [a]
+						add(MONITOREXIT) // []
+						//add(RETURN)
+						//add(JumpInsnNode(GOTO, setArr))
+					}
+					add(RETURN)
+					
+					add(tc2H) // [a]
+					add(POP) // []
+					add(setArr)
+					add(VarInsnNode(ILOAD, 4)) // [i]
+					add(VarInsnNode(ALOAD, 1)) // [a]
+					add(DUP_X1)
+					add(POP)
+					add(ldcInt(key))
+					add(IXOR)
+					add(VarInsnNode(ILOAD, 0))
+					add(SWAP)
+					add(IASTORE)
+					
+					add(inc)
+					add(VarInsnNode(ILOAD, 0))
+					add(ldcInt(-1))
+					add(IADD)
+					add(VarInsnNode(ISTORE, 0))
+					add(VarInsnNode(ALOAD, 3))
+					add(MONITOREXIT)
+					add(JumpInsnNode(GOTO, labels.random(random)))
+					add(tc1E)
+					
+					add(loopEnd)
+					add(InsnNode(RETURN))
+					add(default)
+					//add(POP)
+					add(JumpInsnNode(GOTO, inc))
+					add(tc2E)
+				}
+				classNode.methods.add(mn)
 			}
 		
 		staticInit.instructions.insert(InsnList().apply {
@@ -575,13 +742,13 @@ object StringObfuscator: IClassProcessor {
 		for ((index, char) in old.withIndex()) {
 			new[index] = when (index % 5) {
 				0 -> char xor (4 + classHash)
-				1 -> char xor key
-				2 -> char xor classHash
-				3 -> char xor methodHash
+				1 -> char xor (key)
+				2 -> char xor (classHash)
+				3 -> char xor (methodHash)
 				4 -> char xor (methodHash + classHash)
 				5 -> char xor (index + methodHash)
 				else -> throw IllegalStateException("Impossible Value ($index % 6 = ${index % 6})")
-			}
+			} xor keys[index % keys.size]
 		}
 		
 		val asString = String(new)
@@ -598,14 +765,15 @@ object StringObfuscator: IClassProcessor {
 		val new = CharArray(first.length)
 		
 		for (i in 0 until (old.size)) {
-			when (i % 5) {
-				0 -> new[i] = old[i] xor (4 + classHash)
-				1 -> new[i] = old[i] xor key
-				2 -> new[i] = old[i] xor classHash
-				3 -> new[i] = old[i] xor methodHash
-				4 -> new[i] = old[i] xor (methodHash + classHash)
-				5 -> new[i] = old[i] xor (i + methodHash)
-			}
+			new[i] = when (i % 5) {
+				0 -> old[i] xor (4 + classHash)
+				1 -> old[i] xor key
+				2 -> old[i] xor classHash
+				3 -> old[i] xor methodHash
+				4 -> old[i] xor (methodHash + classHash)
+				5 -> old[i] xor (i + methodHash)
+				else -> error("Invalid index $i")
+			} xor keys[i % keys.size]
 		}
 		return String(new)
 	}

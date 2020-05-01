@@ -31,7 +31,7 @@ remap:
 
 # Strip source file information
 sourceStrip:
-    enabled: true
+    enabled: false
     # Default is REMOVE, options [KEEP/REMOVE]
     lineNumbers: REMOVE
 
@@ -42,7 +42,9 @@ kotlinMetadata:
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
-    enabled: false
+    enabled: true
+    antiAsm: false
+    checksums: false
 
 # Attempts to conceal method invocations
 indirection:

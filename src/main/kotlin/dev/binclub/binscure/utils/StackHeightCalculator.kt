@@ -216,7 +216,7 @@ object StackHeightCalculator {
 							}
 							NEWARRAY -> {
 								stack.pop() // array size
-								stack.push(Type.getType("[${primitiveTypeFromSort(insn.operand)}"))
+								stack.push(Type.getType("[${primitiveTypeFromArraySort(insn.operand)}"))
 							}
 						}
 					}

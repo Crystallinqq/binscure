@@ -75,7 +75,7 @@ object CObfuscator {
 		//	StackHeightCalculator.test(it, it.methods.random())
 		//}
 		val processors = arrayOf(
-			//VariableInitializer,
+			VariableInitializer,
 			FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
@@ -89,9 +89,9 @@ object CObfuscator {
 			ClassRenamer,
 			
 			StringObfuscator,
-			DynamicCallObfuscation,
+			//DynamicCallObfuscation,
 			
-			//JumpRearranger,
+			JumpRearranger,
 			CfgFucker,
 			BadClinitExploit,
 			ClassInitMonitor,

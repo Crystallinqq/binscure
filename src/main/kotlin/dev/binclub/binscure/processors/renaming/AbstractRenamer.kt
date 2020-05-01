@@ -6,6 +6,7 @@ import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.utils.originalName
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import dev.binclub.binscure.utils.AnnotationFieldRemapper
+import org.objectweb.asm.Type
 import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.tree.ClassNode
 
@@ -13,12 +14,19 @@ import org.objectweb.asm.tree.ClassNode
  * @author cookiedragon234 24/Jan/2020
  */
 abstract class AbstractRenamer: IClassProcessor {
-	val ignores = arrayOf<String>()
+	val ignores = arrayOf<String>(
+		"io.github.giantnuker.pyro.PyroClassTransformer",
+		"io.github.giantnuker.pyro.launcher.LauncherImpl",
+		"io.github.giantnuker.pyro.d",
+		"io.github.giantnuker.pyro.Pyro",
+		"io.github.giantnuker.pyro.PyroLoaderConstants",
+		"io.github.giantnuker.pyro.launcher.PyroMixinPlugin",
+		"io.github.giantnuker.pyro.mixin.StopAsapMixin"
+	)
 	
 	final override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!isEnabled())
 			return
-		
 		
 		val remapper = CustomRemapper()
 		remap(remapper, classes, passThrough)

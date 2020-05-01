@@ -32,7 +32,8 @@ kotlinMetadata:
 
 # Employs various tactics to limit or remove functionality from reverse engineering libraries
 crasher:
-    enabled: false
+    enabled: true
+    antiAsm: true
     checksums: true
 
 # Attempts to conceal method invocations
