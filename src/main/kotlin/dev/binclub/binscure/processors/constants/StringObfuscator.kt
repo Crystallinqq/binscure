@@ -28,7 +28,7 @@ object StringObfuscator: IClassProcessor {
 		random.nextInt(Int.MAX_VALUE)
 	}
 	
-	var decryptNode: ClassNode by Delegates.notNull()
+	var decryptNode: ClassNode? = null
 	var decryptMethod: MethodNode by Delegates.notNull()
 	var keysField: FieldNode by Delegates.notNull()
 	

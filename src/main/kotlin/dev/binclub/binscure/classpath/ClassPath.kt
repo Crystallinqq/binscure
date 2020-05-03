@@ -3,6 +3,7 @@ package dev.binclub.binscure.classpath
 import dev.binclub.binscure.classpath.tree.ClassNodeTreeEntry
 import dev.binclub.binscure.classpath.tree.ClassPathTreeEntry
 import dev.binclub.binscure.classpath.tree.ClassTreeEntry
+import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.utils.block
 import org.objectweb.asm.tree.ClassNode
 
@@ -16,6 +17,18 @@ object ClassPath {
 	private val treeEntries = hashMapOf<String, ClassTreeEntry>()
 	val hierachy = hashMapOf<String, ClassTree>()
 	val originalNames = hashMapOf<ClassNode, String>()
+	
+	
+	private val warnings = mutableSetOf<String>()
+	
+	private fun warn(type: String) = warn(type, Unit)
+	
+	private fun <T> warn(type: String, out: T): T {
+		if (!ConfigurationManager.rootConfig.ignoreClassPathNotFound && type != "give up" && type != "java/lang/YourMum" && warnings.add(type)) {
+			System.err.println("WARNING: $type was not found in the classpath, may cause sideaffects")
+		}
+		return out
+	}
 	
 	fun getHierarchy(name: String): ClassTree? {
 		if (hierachy.containsKey(name))
@@ -37,7 +50,9 @@ object ClassPath {
 					treeEntries[name] = tree
 					constructTreeSuperClasses(tree)
 					constructTreeHiearchy(name, tree)
-				} catch (ignored: Throwable){return null}
+				} catch (ignored: Throwable){
+					return warn(name, null)
+				}
 			}
 		}
 		

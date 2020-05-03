@@ -11,18 +11,10 @@ import java.util.*
  * @author cookiedragon234 23/Jan/2020
  */
 class CustomClassWriter(flags: Int): ClassWriter(flags) {
-	private val warnings = mutableSetOf<String>()
-	
 	init {
 		this.newUTF8("Protected by Binscure")
 	}
 	
-	private fun <T> warn(type: String, out: T): T {
-		if (!rootConfig.ignoreClassPathNotFound && type != "give up" && type != "java/lang/YourMum" && warnings.add(type)) {
-			System.err.println("WARNING: $type was not found in the classpath, may cause sideaffects")
-		}
-		return out
-	}
 	
 	override fun getCommonSuperClass(type1: String, type2: String): String {
 		try {
@@ -44,15 +36,15 @@ class CustomClassWriter(flags: Int): ClassWriter(flags) {
 		if (b != "java/lang/Object") {
 			return b
 		}
-		val first = ClassPath.getHierarchy(type1)?.thisClass ?: return warn(type1, "java/lang/Object")
-		val second = ClassPath.getHierarchy(type2)?.thisClass ?: return warn(type2, "java/lang/Object")
+		val first = ClassPath.getHierarchy(type1)?.thisClass ?: return "java/lang/Object"
+		val second = ClassPath.getHierarchy(type2)?.thisClass ?: return "java/lang/Object"
 		return getCommonSuperClass(first.getDirectSuper() ?: return "java/lang/Object", second.getDirectSuper() ?: return "java/lang/Object")
 	}
 	
 	private fun getCommonSuperClass0(type1_: String, type2: String): String {
 		var type1 = type1_
-		var first = ClassPath.getHierarchy(type1)?.thisClass ?: return warn(type1, "java/lang/Object")
-		val second = ClassPath.getHierarchy(type2)?.thisClass ?: return warn(type2, "java/lang/Object")
+		var first = ClassPath.getHierarchy(type1)?.thisClass ?: return "java/lang/Object"
+		val second = ClassPath.getHierarchy(type2)?.thisClass ?: return "java/lang/Object"
 		if (isAssignableFrom(type1, type2)) {
 			return type1
 		} else if (isAssignableFrom(type2, type1)) {
@@ -62,7 +54,7 @@ class CustomClassWriter(flags: Int): ClassWriter(flags) {
 		} else {
 			do {
 				type1 = first.getDirectSuper() ?: return "java/lang/Object"
-				first = ClassPath.getHierarchy(type1)?.thisClass ?: return warn(type1, "java/lang/Object")
+				first = ClassPath.getHierarchy(type1)?.thisClass ?: return "java/lang/Object"
 			} while (!isAssignableFrom(type1, type2))
 			return type1
 		}
@@ -74,7 +66,7 @@ class CustomClassWriter(flags: Int): ClassWriter(flags) {
 		if (type1 == type2)
 			return true
 		
-		val firstTree = ClassPath.getHierarchy(type1) ?: return warn(type1, false)
+		val firstTree = ClassPath.getHierarchy(type1) ?: return false
 		val allChildren = mutableSetOf<String>()
 		val toProcess = Stack<ClassTreeEntry>()
 		toProcess.addAll(firstTree.children)
@@ -82,9 +74,7 @@ class CustomClassWriter(flags: Int): ClassWriter(flags) {
 			val child = toProcess.pop()
 			if (allChildren.add(child.getName())) {
 				val tempTree = ClassPath.hierachy[child.getName()]
-				if (tempTree == null) {
-					warn(child.getName(), false)
-				} else {
+				if (tempTree != null) {
 					toProcess.addAll(tempTree.children)
 				}
 			}

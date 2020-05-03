@@ -1,5 +1,6 @@
 package dev.binclub.binscure.processors.classmerge
 
+import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.isExcluded
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.transformers.MergeMethods.NONE
@@ -21,9 +22,24 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 21/Feb/2020
  */
 object StaticMethodMerger: IClassProcessor {
-	private fun containsSpecial(insnList: InsnList): Boolean {
+	private fun containsSpecial(classNode: ClassNode, insnList: InsnList): Boolean {
+		val hierarchy = ClassPath.getHierarchy(classNode.name)?.allParents
+		if (classNode.superName.contains("EntityPlayerSP", true)) {
+			println(hierarchy)
+		}
 		for (insn in insnList) {
 			if (insn.opcode == INVOKESPECIAL) return true
+			
+			if (insn is FieldInsnNode) {
+				if (hierarchy?.contains(insn.owner) == true) {
+					return true
+				}
+			}
+			if (insn is MethodInsnNode) {
+				if (hierarchy?.contains(insn.owner) == true) {
+					return true
+				}
+			}
 		}
 		
 		return false
@@ -67,7 +83,7 @@ object StaticMethodMerger: IClassProcessor {
 					&&
 					!method.access.hasAccess(ACC_NATIVE)
 					&&
-					!containsSpecial(method.instructions)
+					!containsSpecial(classNode, method.instructions)
 				) {
 					staticMethods.getOrPutLazy(method.desc, { hashSetOf() }).add(Pair(classNode, method))
 				}
