@@ -8,11 +8,14 @@ import org.objectweb.asm.tree.ClassNode
  * @author cookiedragon234 26/Jan/2020
  */
 object ManifestResourceProcessor: IClassProcessor {
+	override val progressDescription: String
+		get() = "Processing manifests"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for ((name, bytes) in passThrough) {
 			if (name.endsWith(".json") || name.endsWith(".MF")) {
 				var contents = String(bytes)
-				for (mapping in CObfuscator.mappings.entries.sortedBy { it.key.length }.reversed()) {
+				for (mapping in CObfuscator.mappings.entries.sortedByDescending { it.key.length }) {
 					if (!mapping.key.contains('.')) {
 						contents = contents.replace(mapping.key.replace('/', '.'), mapping.value.replace('/', '.'))
 					}
