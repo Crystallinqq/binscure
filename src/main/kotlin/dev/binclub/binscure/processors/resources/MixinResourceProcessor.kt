@@ -1,5 +1,5 @@
 package dev.binclub.binscure.processors.resources
-
+/*
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.JsonNode
@@ -60,3 +60,4 @@ object MixinResourceProcessor: IClassProcessor {
 		}
 	}
 }
+*/

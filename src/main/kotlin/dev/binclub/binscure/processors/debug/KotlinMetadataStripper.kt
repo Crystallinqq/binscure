@@ -5,8 +5,6 @@ import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.transformers.KotlinMetadataType
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.InstructionModifier
-import kotlinx.metadata.jvm.KotlinClassHeader
-import kotlinx.metadata.jvm.KotlinClassMetadata
 import org.objectweb.asm.Opcodes.ACONST_NULL
 import org.objectweb.asm.Opcodes.POP
 import org.objectweb.asm.Type
@@ -74,7 +72,7 @@ object KotlinMetadataStripper: IClassProcessor {
 		}
 	}
 	
-	private fun createHeader(node: AnnotationNode): KotlinClassHeader {
+	/*private fun createHeader(node: AnnotationNode): KotlinClassHeader {
 		var kind: Int? = null
 		var metadataVersion: IntArray? = null
 		var bytecodeVersion: IntArray? = null
@@ -104,7 +102,7 @@ object KotlinMetadataStripper: IClassProcessor {
 		return KotlinClassHeader(
 			kind, metadataVersion, bytecodeVersion, data1, data2, extraString, packageName, extraInt
 		)
-	}
+	}*/
 	@Suppress("UNCHECKED_CAST")
 	private fun listToIntArray(list: Any): IntArray {
 		return (list as List<Int>).stream().mapToInt { it }.toArray()
