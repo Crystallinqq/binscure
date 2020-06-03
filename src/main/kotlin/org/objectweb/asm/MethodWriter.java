@@ -1030,9 +1030,9 @@ final class MethodWriter extends MethodVisitor {
 							name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
         } else {
 			invokeDynamicSymbol = symbolTable.addConstantInvokeDynamic(
-                "\u0532",
+                "while",
                 "()V",
-                new Handle(Opcodes.H_NEWINVOKESPECIAL, "java/yeet", "<init>", "(I)V", false)
+                new Handle(Opcodes.H_INVOKESTATIC, "java/yeet", "\u0020\u0305\u030d\u036d\u0308\u030b\u0369\u0344\u034a\u030f\u036c\u036c\u0306\u0300\u030b\u030d\u0350\u035b\u0363\u0338\u0338\u0337\u0358\u0354\u033b\u0320\u0316\u033c\u0316\u007c\u0314\u033d\u0314\u0365\u0306\u0311\u0300\u0368\u0308\u0312\u033f\u0489\u0340\u032a\u0359\u032d\u0320\u033b\u0339\u0317\u034d\u0347\u031e\u031f\u0359\u032b\u031d\u031f\u0020\u0308\u0308\u033e\u031a\u036e\u0303\u033e\u033e\u035b\u0300\u030d\u0350\u0366\u033e\u0368\u030d\u0309\u0313\u0308\u035d\u0338\u035d\u0325\u0354\u032d\u0348\u0073\u0368\u0302\u0307\u0368\u0343\u0301\u030b\u0357\u0308\u0312\u0311\u0369\u0306\u034a\u0337\u034f\u0329\u032f\u0329\u0319\u031d\u032f\u0323\u032a\u0349\u0333\u0318\u0065\u034b\u030b\u0304\u0304\u0367\u0303\u036a\u0368\u0321\u0360\u0361\u0489\u035c\u032a\u0331\u0325\u0324\u0347\u0339\u0354\u034e\u032b\u0354\u032f", "(I)V", false)
             );
         }
         code.put12(Opcodes.INVOKEDYNAMIC, invokeDynamicSymbol.index);

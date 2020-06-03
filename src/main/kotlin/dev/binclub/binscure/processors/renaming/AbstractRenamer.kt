@@ -21,7 +21,8 @@ abstract class AbstractRenamer: IClassProcessor {
 		"io.github.giantnuker.pyro.Pyro",
 		"io.github.giantnuker.pyro.PyroLoaderConstants",
 		"io.github.giantnuker.pyro.launcher.PyroMixinPlugin",
-		"io.github.giantnuker.pyro.mixin.StopAsapMixin"
+		"io.github.giantnuker.pyro.mixin.StopAsapMixin",
+		"io.github.giantnuker.pyro.LaunchDownloader"
 	)
 	
 	final override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {

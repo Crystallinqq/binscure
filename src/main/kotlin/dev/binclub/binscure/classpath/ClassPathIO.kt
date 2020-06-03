@@ -34,8 +34,15 @@ object ClassPathIO {
 					val bytes = it.getInputStream(entry).readBytes()
 					if (!entry.isDirectory && entry.name.endsWith(".class") && !entry.name.endsWith("module-info.class")) {
 						val classNode = ClassNode()
-						ClassReader(bytes)
-							.accept(classNode, ClassReader.EXPAND_FRAMES)
+						
+						try {
+							ClassReader(bytes)
+								.accept(classNode, ClassReader.EXPAND_FRAMES)
+						} catch (t: Throwable) {
+							System.err.println("Error reading class file, skipping")
+							t.printStackTrace(System.err)
+							continue
+						}
 						
 						if (!CObfuscator.isExcluded(classNode)) {
 							classNode.fields?.shuffle(random)

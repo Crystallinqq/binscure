@@ -2,6 +2,8 @@ build/
 .gradle/
 .idea/
 
+testing/
+
 *.jar
 
 mappings.csv

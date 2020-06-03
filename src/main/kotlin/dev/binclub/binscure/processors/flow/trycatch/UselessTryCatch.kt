@@ -24,7 +24,7 @@ object UselessTryCatch: IClassProcessor {
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
+				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method) || method.name.startsWith('<'))
 					continue
 				
 				method.tryCatchBlocks = method.tryCatchBlocks ?: arrayListOf()

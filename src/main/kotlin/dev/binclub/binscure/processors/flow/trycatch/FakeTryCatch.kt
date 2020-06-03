@@ -22,7 +22,7 @@ object FakeTryCatch: IClassProcessor {
 		for (classNode in classes) {
 			if (!CObfuscator.isExcluded(classNode)) {
 				for (method in classNode.methods) {
-					if (CObfuscator.noMethodInsns(method))// || !CObfuscator.randomWeight(5))
+					if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method) || method.name.startsWith('<'))
 						continue
 					
 					addFakeTryCatches(method)

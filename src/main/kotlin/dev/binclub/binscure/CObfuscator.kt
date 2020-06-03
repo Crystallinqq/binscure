@@ -110,7 +110,7 @@ object CObfuscator {
 		val classes = mutableListOf<ClassNode>()
 		classes.addAll(ClassPath.classes.values)
 		if (classes.isNotEmpty()) {
-			var progress = 0
+			var progress = 0f
 			for (processor in processors) {
 				try {
 					processor.process(classes, passThrough)

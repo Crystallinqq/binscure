@@ -1,5 +1,6 @@
 package dev.binclub.binscure.processors.debug
 
+import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.transformers.KotlinMetadataType
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
@@ -25,6 +26,8 @@ object KotlinMetadataStripper: IClassProcessor {
 		val remove = rootConfig.kotlinMetadata.type == KotlinMetadataType.REMOVE
 		
 		for (classNode in classes) {
+			if (CObfuscator.isExcluded(classNode)) continue
+			
 			classNode.visibleAnnotations = classNode.visibleAnnotations?.filter {it.desc != "Lkotlin/Metadata;" && it.desc != "Lkotlin/coroutines/jvm/internal/DebugMetadata;"}
 			
 			for (method in classNode.methods) {
