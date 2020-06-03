@@ -14,6 +14,9 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 27/Feb/2020
  */
 object CfgFucker: IClassProcessor {
+	override val progressDescription: String
+		get() = "Obfuscating method flow"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!rootConfig.flowObfuscation.enabled) {
 			return

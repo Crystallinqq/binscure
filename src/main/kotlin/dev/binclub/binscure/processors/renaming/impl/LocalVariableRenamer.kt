@@ -11,6 +11,9 @@ import org.objectweb.asm.tree.MethodInsnNode
  * @author cookiedragon234 22/Jan/2020
  */
 object LocalVariableRenamer: IClassProcessor {
+	override val progressDescription: String
+		get() = "Renaming local variables"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!ConfigurationManager.rootConfig.remap.areLocalsEnabled())
 			return

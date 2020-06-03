@@ -15,6 +15,8 @@ import java.lang.RuntimeException
  */
 object FieldRenamer: AbstractRenamer() {
 	override fun isEnabled(): Boolean = rootConfig.remap.areFieldsEnabled()
+	override val progressDescription: String
+		get() = "Renaming fields"
 	
 	override fun remap(
 		remapper: CustomRemapper,

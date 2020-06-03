@@ -12,6 +12,9 @@ import java.util.*
  * @author cookiedragon234 14/Apr/2020
  */
 object JumpRearranger: IClassProcessor {
+	override val progressDescription: String
+		get() = "Rearranging jumps"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))

@@ -5,6 +5,7 @@ import dev.binclub.binscure.CObfuscator.random
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.replaceLast
 import dev.binclub.binscure.utils.DummyHashSet
+import dev.binclub.binscure.utils.versionAtLeast
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
@@ -44,13 +45,20 @@ object ClassPathIO {
 							continue
 						}
 						
-						if (!CObfuscator.isExcluded(classNode)) {
+						val excluded = CObfuscator.isExcluded(classNode)
+						val hardExcluded = rootConfig.hardExclusions.any { entry.name.startsWith(it.trim()) }
+						
+						if (!classNode.versionAtLeast(Opcodes.V1_7) && !excluded && !hardExcluded) {
+							println("Unsupported <J8 class file ${entry.name}, will not be obfuscated as severely")
+						}
+						
+						if (!excluded && !hardExcluded) {
 							classNode.fields?.shuffle(random)
 							classNode.methods?.shuffle(random)
 							classNode.innerClasses?.shuffle(random)
 						}
 						
-						if (!rootConfig.hardExclusions.any { entry.name.startsWith(it.trim()) }) {
+						if (!hardExcluded) {
 							ClassPath.classes[classNode.name] = classNode
 						} else {
 							ClassPath.passThrough[entry.name] = bytes

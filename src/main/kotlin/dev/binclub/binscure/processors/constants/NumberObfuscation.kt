@@ -15,6 +15,9 @@ import org.objectweb.asm.tree.MethodInsnNode
  * @author cookiedragon234 30/Jan/2020
  */
 object NumberObfuscation: IClassProcessor {
+	override val progressDescription: String
+		get() = "Obfuscating number constants"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))

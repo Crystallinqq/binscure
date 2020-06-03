@@ -13,6 +13,9 @@ import org.objectweb.asm.tree.MethodNode
  * @author cookiedragon234 28/Mar/2020
  */
 object StringCompressor: IClassProcessor {
+	override val progressDescription: String
+		get() = "Compressing string constants"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		val strings: MutableMap<String, MutableCollection<StringInfo>> = hashMapOf()
 		

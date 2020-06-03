@@ -14,6 +14,8 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 05/Feb/2020
  */
 object TableSwitchJump: IClassProcessor {
+	override val progressDescription: String
+		get() = "Adding table switches"
 	//val eqJumps = arrayOf(IF_ACMPEQ, IF_ACMPNE, IF_ICMPEQ, IF_ICMPNE)
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {

@@ -10,6 +10,9 @@ import org.objectweb.asm.tree.ClassNode
  * @author cookiedragon234 27/Jan/2020
  */
 object GenericJsonResourceProcessor: IClassProcessor {
+	override val progressDescription: String
+		get() = "Processing json resources"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		val mapper = ObjectMapper()
 		

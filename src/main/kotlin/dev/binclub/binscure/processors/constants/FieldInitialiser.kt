@@ -31,6 +31,9 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 07/Mar/2020
  */
 object FieldInitialiser: IClassProcessor {
+	override val progressDescription: String
+		get() = "Moving field constants to the static initializer"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))

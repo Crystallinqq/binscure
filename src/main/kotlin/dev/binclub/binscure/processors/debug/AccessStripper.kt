@@ -14,6 +14,9 @@ import org.objectweb.asm.tree.ClassNode
  * @author cookiedragon234 21/Feb/2020
  */
 object AccessStripper: IClassProcessor {
+	override val progressDescription: String
+		get() = "Stripping access flags"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))

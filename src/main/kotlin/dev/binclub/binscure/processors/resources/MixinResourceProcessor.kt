@@ -18,6 +18,9 @@ import java.util.*
  * @author cookiedragon234 26/Jan/2020
  */
 object MixinResourceProcessor: IClassProcessor {
+	override val progressDescription: String
+		get() = "Processing mixin resources"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		val mapper = ObjectMapper()
 		

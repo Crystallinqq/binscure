@@ -13,6 +13,9 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 10/Feb/2020
  */
 object ClassInitMonitor: IClassProcessor {
+	override val progressDescription: String
+		get() = "Obfuscating class instance creation"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!rootConfig.flowObfuscation.enabled) {
 			return

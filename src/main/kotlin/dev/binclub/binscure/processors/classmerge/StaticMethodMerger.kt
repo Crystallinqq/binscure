@@ -56,6 +56,9 @@ object StaticMethodMerger: IClassProcessor {
 		return false
 	}
 	
+	override val progressDescription: String
+		get() = "Merging methods"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!rootConfig.flowObfuscation.enabled || rootConfig.flowObfuscation.mergeMethods == NONE) {
 			return

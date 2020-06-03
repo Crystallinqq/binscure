@@ -14,6 +14,9 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 31/Jan/2020
  */
 object UselessTryCatch: IClassProcessor {
+	override val progressDescription: String
+		get() = "Adding fake try catches"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!ConfigurationManager.rootConfig.flowObfuscation.enabled) {
 			return

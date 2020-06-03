@@ -16,6 +16,9 @@ import org.objectweb.asm.tree.MethodInsnNode
  * @author cookiedragon234 24/Mar/2020
  */
 object EnumValuesOptimiser: IClassProcessor {
+	override val progressDescription: String
+		get() = "Optimising enum values"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
 			if (classNode.access.hasAccess(ACC_ENUM)) {

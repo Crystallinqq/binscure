@@ -113,9 +113,10 @@ object CObfuscator {
 			var progress = 0f
 			for (processor in processors) {
 				try {
-					processor.process(classes, passThrough)
 					debug(processor::class.java.simpleName)
-					print("\r${(progress / processors.size) * 100}%")
+					print("\r${((progress / processors.size) * 100).toInt().toString().padStart(3, ' ')}% - ${processor.progressDescription}")
+					print(" ".repeat(100))
+					processor.process(classes, passThrough)
 				} catch (t: Throwable) {
 					println("Exception while processing ${processor::class.java.simpleName}")
 					t.printStackTrace()

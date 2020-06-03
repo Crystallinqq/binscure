@@ -18,6 +18,8 @@ import org.objectweb.asm.tree.MethodNode
  */
 object MethodRenamer: AbstractRenamer() {
 	override fun isEnabled(): Boolean = rootConfig.remap.areMethodsEnabled()
+	override val progressDescription: String
+		get() = "Renaming methods"
 	
 	override fun remap(
 		remapper: CustomRemapper,

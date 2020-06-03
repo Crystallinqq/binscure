@@ -13,6 +13,9 @@ import org.objectweb.asm.tree.LineNumberNode
  * @author cookiedragon234 22/Jan/2020
  */
 object SourceStripper: IClassProcessor {
+	override val progressDescription: String
+		get() = "Stripping source debug data"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!rootConfig.sourceStrip.enabled)
 			return

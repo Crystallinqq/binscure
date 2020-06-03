@@ -12,6 +12,8 @@ import org.objectweb.asm.tree.ClassNode
  */
 object ClassRenamer: AbstractRenamer() {
 	override fun isEnabled(): Boolean = rootConfig.remap.areClassesEnabled()
+	override val progressDescription: String
+		get() = "Renaming classes"
 	val namer = NameGenerator(rootConfig.remap.classPrefix)
 	val keepPackages = false
 	

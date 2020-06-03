@@ -19,6 +19,9 @@ import kotlin.jvm.internal.Intrinsics
  * @author cookiedragon234 22/Jan/2020
  */
 object KotlinMetadataStripper: IClassProcessor {
+	override val progressDescription: String
+		get() = "Stripping kotlin metadata"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!rootConfig.kotlinMetadata.enabled)
 			return

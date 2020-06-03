@@ -31,6 +31,8 @@ object StringObfuscator: IClassProcessor {
 	var decryptNode: ClassNode? = null
 	var decryptMethod: MethodNode by Delegates.notNull()
 	var keysField: FieldNode by Delegates.notNull()
+	override val progressDescription: String
+		get() = "Obfuscating string constants"
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!rootConfig.stringObfuscation.enabled) {
@@ -40,6 +42,8 @@ object StringObfuscator: IClassProcessor {
 		val stringInsns = arrayListOf<EncryptedString>()
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))
+				continue
+			if (!classNode.versionAtLeast(Opcodes.V1_7))
 				continue
 			
 			for (method in classNode.methods) {

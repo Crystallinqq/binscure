@@ -10,6 +10,9 @@ import org.objectweb.asm.tree.InsnList
  * @author cookiedragon234 10/Feb/2020
  */
 object RemoveCheckCast: IClassProcessor {
+	override val progressDescription: String
+		get() = "Removing checkcasts"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
 			for (method in classNode.methods) {

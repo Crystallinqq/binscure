@@ -11,5 +11,6 @@ interface IClassProcessor {
 	val random: SecureRandom
 		get() = CObfuscator.random
 	
+	val progressDescription: String
 	fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>)
 }

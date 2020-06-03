@@ -13,6 +13,9 @@ import kotlin.collections.getOrPut
  * @author cookiedragon234 14/Apr/2020
  */
 object VariableInitializer: IClassProcessor {
+	override val progressDescription: String
+		get() = "Initialising variables"
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
 			if (CObfuscator.isExcluded(classNode))

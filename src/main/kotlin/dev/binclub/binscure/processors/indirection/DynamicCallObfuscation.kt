@@ -7,6 +7,7 @@ import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Handle
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
@@ -58,6 +59,8 @@ object DynamicCallObfuscation: IClassProcessor {
 	private val handler: Handle by lazy {
 		Handle(H_INVOKESTATIC, decryptNode.name, bootStrapMethod.name, bootStrapMethod.desc, false)
 	}
+	override val progressDescription: String
+		get() = "Transforming method calls to dynamic invokes"
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!ConfigurationManager.rootConfig.indirection.enabled) {
@@ -66,6 +69,8 @@ object DynamicCallObfuscation: IClassProcessor {
 		
 		for (classNode in ArrayList(classes)) {
 			if (CObfuscator.isExcluded(classNode))
+				continue
+			if (!classNode.versionAtLeast(Opcodes.V1_7))
 				continue
 			
 			for (method in classNode.methods) {
