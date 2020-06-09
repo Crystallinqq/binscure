@@ -114,16 +114,21 @@ object CObfuscator {
 			for (processor in processors) {
 				try {
 					debug(processor::class.java.simpleName)
-					print("\r${((progress / processors.size) * 100).toInt().toString().padStart(3, ' ')}% - ${processor.progressDescription}")
-					print(" ".repeat(100))
+					if (rootConfig.printProgress) {
+						print(rootConfig.getLineChar())
+						val percentStr = ((progress / processors.size) * 100).toInt().toString().padStart(3, ' ')
+						print("$percentStr% - ${processor.progressDescription}".padEnd(100, ' '))
+					}
 					processor.process(classes, passThrough)
 				} catch (t: Throwable) {
-					println("Exception while processing ${processor::class.java.simpleName}")
+					println("Exception while processing ${processor.progressDescription}")
 					t.printStackTrace()
 				}
 				progress += 1
 			}
-			print("\r")
+			if (rootConfig.printProgress) {
+				print(rootConfig.getLineChar())
+			}
 		}
 		ClassPath.classes[OpaqueRuntimeManager.classNode.name] = OpaqueRuntimeManager.classNode
 		ClassPath.classPath[OpaqueRuntimeManager.classNode.name] = OpaqueRuntimeManager.classNode

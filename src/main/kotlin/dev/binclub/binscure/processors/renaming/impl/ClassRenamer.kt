@@ -24,7 +24,7 @@ object ClassRenamer: AbstractRenamer() {
 	) {
 		for (classNode in classes) {
 			//if (ignores.contains(classNode.name)) continue
-			if (classNode.name.contains("entrypoint", true)) continue
+			//if (classNode.name.contains("entrypoint", true)) continue
 			if (!CObfuscator.isExcluded(classNode)) {
 				val name = if (keepPackages) {
 					"${classNode.name.substringBeforeLast('/')}/${namer.uniqueRandomString()}"

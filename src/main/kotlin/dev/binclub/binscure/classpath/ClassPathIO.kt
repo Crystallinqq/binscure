@@ -2,6 +2,8 @@ package dev.binclub.binscure.classpath
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
+import dev.binclub.binscure.classpath.ClassPath.classes
+import dev.binclub.binscure.classpath.ClassPath.passThrough
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.replaceLast
 import dev.binclub.binscure.utils.DummyHashSet
@@ -65,14 +67,14 @@ object ClassPathIO {
 						}
 						
 						if (!hardExcluded) {
-							ClassPath.classes[classNode.name] = classNode
+							classes[classNode.name] = classNode
 						} else {
-							ClassPath.passThrough[entry.name] = bytes
+							passThrough[entry.name] = bytes
 						}
 						ClassPath.classPath[classNode.name] = classNode
 						ClassPath.originalNames[classNode] = classNode.name
 					} else if (!entry.isDirectory) {
-						ClassPath.passThrough[entry.name] = bytes
+						passThrough[entry.name] = bytes
 					}
 				}
 			}
@@ -121,14 +123,28 @@ object ClassPathIO {
 				it.putNextEntry(ZipEntry("â\u3B25\u00d4\ud400®©¯\u00EB\u00A9\u00AE\u008D\u00AA\u002E"))
 			}
 			
-			for ((name, bytes) in ClassPath.passThrough) {
+			for ((i, entry) in passThrough.entries.withIndex()) {
+				if (rootConfig.printProgress) {
+					print(rootConfig.getLineChar())
+					val percentStr = ((i.toFloat() / passThrough.size) * 100).toInt().toString().padStart(3, ' ')
+					print("Writing resources ($percentStr% - $i/${passThrough.size})".padEnd(100, ' '))
+				}
 				crc.overwrite = false
-				it.putNextEntry(ZipEntry(name))
-				it.write(bytes)
+				it.putNextEntry(ZipEntry(entry.key))
+				it.write(entry.value)
 				it.closeEntry()
 			}
 			
-			for (classNode in ClassPath.classes.values) {
+			if (rootConfig.printProgress) {
+				print(rootConfig.getLineChar())
+			}
+			
+			for ((i, classNode) in classes.values.withIndex()) {
+				if (rootConfig.printProgress) {
+					print(rootConfig.getLineChar())
+					val percentStr = ((i.toFloat() / classes.size) * 100).toInt().toString().padStart(3, ' ')
+					print("Writing classes ($percentStr% - $i/${classes.size})".padEnd(100, ' '))
+				}
 				try {
 					if (!CObfuscator.isExcluded(classNode)) {
 						crc.overwrite = true
@@ -181,6 +197,10 @@ object ClassPathIO {
 				} catch (e: Throwable) {
 					e.printStackTrace()
 				}
+			}
+			
+			if (rootConfig.printProgress) {
+				print(rootConfig.getLineChar())
 			}
 		}
 	}

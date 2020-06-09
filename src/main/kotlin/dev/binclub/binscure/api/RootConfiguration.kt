@@ -26,8 +26,12 @@ data class RootConfiguration(
 	val useJavaClassloader: Boolean = false,
 	val shuffleClasses: Boolean = true,
 	val shuffleMethods: Boolean = true,
-	val shuffleFields: Boolean = true
+	val shuffleFields: Boolean = true,
+	val resetLineProgress: Boolean = true,
+	val printProgress: Boolean = true
 ) {
+	fun getLineChar(): Char = if (resetLineProgress) '\r' else '\n'
+	
 	override fun toString(): String  = """
 		|RootConfig
 		|   Input: $input
