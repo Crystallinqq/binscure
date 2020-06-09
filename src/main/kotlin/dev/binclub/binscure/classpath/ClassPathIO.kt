@@ -53,9 +53,15 @@ object ClassPathIO {
 						}
 						
 						if (!excluded && !hardExcluded) {
-							classNode.fields?.shuffle(random)
-							classNode.methods?.shuffle(random)
-							classNode.innerClasses?.shuffle(random)
+							if (rootConfig.shuffleFields) {
+								classNode.fields?.shuffle(random)
+							}
+							if (rootConfig.shuffleMethods) {
+								classNode.methods?.shuffle(random)
+							}
+							if (rootConfig.shuffleClasses) {
+								classNode.innerClasses?.shuffle(random)
+							}
 						}
 						
 						if (!hardExcluded) {
@@ -126,9 +132,15 @@ object ClassPathIO {
 				try {
 					if (!CObfuscator.isExcluded(classNode)) {
 						crc.overwrite = true
-						classNode.fields?.shuffle(random)
-						classNode.methods?.shuffle(random)
-						classNode.innerClasses?.shuffle(random)
+						if (rootConfig.shuffleFields) {
+							classNode.fields?.shuffle(random)
+						}
+						if (rootConfig.shuffleMethods) {
+							classNode.methods?.shuffle(random)
+						}
+						if (rootConfig.shuffleClasses) {
+							classNode.innerClasses?.shuffle(random)
+						}
 					}
 					
 					val name = "${classNode.name}.class"

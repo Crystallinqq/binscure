@@ -23,7 +23,10 @@ data class RootConfiguration(
 	val flowObfuscation: FlowObfuscationConfiguration,
 	val optimisation: OptimisationConfiguration,
 	val ignoreClassPathNotFound: Boolean = false,
-	val useJavaClassloader: Boolean = false
+	val useJavaClassloader: Boolean = false,
+	val shuffleClasses: Boolean = true,
+	val shuffleMethods: Boolean = true,
+	val shuffleFields: Boolean = true
 ) {
 	override fun toString(): String  = """
 		|RootConfig

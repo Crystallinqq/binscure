@@ -96,7 +96,7 @@ object StringObfuscator: IClassProcessor {
 			
 			keysField = FieldNode(
 				ACC_STATIC,
-				"\u2312",
+				"aiooi1iojionlknzjsdnfdas",
 				"[I",
 				null,
 				null
@@ -105,7 +105,7 @@ object StringObfuscator: IClassProcessor {
 			
 			decryptNode.fields.add(FieldNode(
 				ACC_PRIVATE,
-				"1",
+				"ojasidfjoasdifjoqioqhweioqhlaksdf",
 				"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[I",
 				null,
 				null

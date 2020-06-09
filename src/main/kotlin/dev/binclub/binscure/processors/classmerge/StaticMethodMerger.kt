@@ -28,7 +28,7 @@ object StaticMethodMerger: IClassProcessor {
 			println(hierarchy)
 		}
 		for (insn in insnList) {
-			if (insn.opcode == INVOKESPECIAL) return true
+			if (insn.opcode == INVOKESPECIAL || insn.opcode == INVOKEDYNAMIC) return true
 			
 			if (insn is FieldInsnNode) {
 				if (hierarchy?.contains(insn.owner) == true) {

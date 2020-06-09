@@ -1,6 +1,8 @@
 package dev.binclub.binscure.processors.optimisers
 
+import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.utils.hasAccess
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.ClassNode
@@ -20,6 +22,10 @@ object EnumValuesOptimiser: IClassProcessor {
 		get() = "Optimising enum values"
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		if (!ConfigurationManager.rootConfig.optimisation.enabled || !ConfigurationManager.rootConfig.optimisation.mutableEnumValues) {
+			return
+		}
+		
 		for (classNode in classes) {
 			if (classNode.access.hasAccess(ACC_ENUM)) {
 				val desc = "[L${classNode.name};"
