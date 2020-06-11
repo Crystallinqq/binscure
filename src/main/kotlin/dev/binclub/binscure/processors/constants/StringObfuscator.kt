@@ -53,7 +53,7 @@ object StringObfuscator: IClassProcessor {
 				for (insn in method.instructions) {
 					if (insn is LdcInsnNode && insn.cst is String) {
 						val cst = insn.cst as String
-						if (cst.isNotEmpty()) {
+						if (cst.length > 1) {
 							val encryptedString = encryptString(
 								cst,
 								key,
