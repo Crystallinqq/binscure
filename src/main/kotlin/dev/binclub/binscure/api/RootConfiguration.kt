@@ -28,7 +28,8 @@ data class RootConfiguration(
 	val shuffleMethods: Boolean = true,
 	val shuffleFields: Boolean = true,
 	val resetLineProgress: Boolean = true,
-	val printProgress: Boolean = true
+	val printProgress: Boolean = true,
+	val watermark: Boolean = true
 ) {
 	fun getLineChar(): Char = if (resetLineProgress) '\r' else '\n'
 	

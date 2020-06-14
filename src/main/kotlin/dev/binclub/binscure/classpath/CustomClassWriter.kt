@@ -12,7 +12,9 @@ import java.util.*
  */
 class CustomClassWriter(flags: Int): ClassWriter(flags) {
 	init {
-		this.newUTF8("Protected by binclub.dev/binscure")
+		if (rootConfig.watermark) {
+			this.newUTF8("Protected by binclub.dev/binscure")
+		}
 	}
 	
 	
