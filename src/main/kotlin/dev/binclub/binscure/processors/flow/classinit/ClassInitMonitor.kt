@@ -2,6 +2,7 @@ package dev.binclub.binscure.processors.flow.classinit
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.InstructionModifier
@@ -15,19 +16,20 @@ import org.objectweb.asm.tree.*
 object ClassInitMonitor: IClassProcessor {
 	override val progressDescription: String
 		get() = "Obfuscating class instance creation"
+	override val config = rootConfig.flowObfuscation
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!rootConfig.flowObfuscation.enabled) {
+		if (!config.enabled) {
 			return
 		}
-		val aggresiveness = rootConfig.flowObfuscation.severity
+		val aggresiveness = config.severity
 		
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (isExcluded(classNode, method))
 					continue
 				
 				val modifier = InstructionModifier()

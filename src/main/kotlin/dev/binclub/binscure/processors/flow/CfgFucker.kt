@@ -2,6 +2,7 @@ package dev.binclub.binscure.processors.flow
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.add
 import dev.binclub.binscure.utils.hasAccess
@@ -16,19 +17,20 @@ import org.objectweb.asm.tree.*
 object CfgFucker: IClassProcessor {
 	override val progressDescription: String
 		get() = "Obfuscating method flow"
+	override val config = rootConfig.flowObfuscation
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!rootConfig.flowObfuscation.enabled) {
+		if (!config.enabled) {
 			return
 		}
-		val aggresiveness = rootConfig.flowObfuscation.severity
+		val aggresiveness = config.severity
 		
 		for (classNode in classes.toTypedArray()) {
-			if (CObfuscator.isExcluded(classNode) || classNode.access.hasAccess(ACC_INTERFACE))
+			if (isExcluded(classNode) || classNode.access.hasAccess(ACC_INTERFACE))
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method) || method.instructions.size() < 5)
+				if (method.instructions.size() < 5 || isExcluded(classNode, method))
 					continue
 				
 				val modifier = InstructionModifier()

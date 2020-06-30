@@ -11,10 +11,10 @@ import org.objectweb.asm.tree.ClassNode
  * @author cookiedragon234 24/Jan/2020
  */
 object ClassRenamer: AbstractRenamer() {
-	override fun isEnabled(): Boolean = rootConfig.remap.areClassesEnabled()
+	override fun isEnabled(): Boolean = config.areClassesEnabled()
 	override val progressDescription: String
 		get() = "Renaming classes"
-	val namer = NameGenerator(rootConfig.remap.classPrefix)
+	val namer = NameGenerator(config.classPrefix)
 	val keepPackages = false
 	
 	override fun remap(
@@ -25,7 +25,7 @@ object ClassRenamer: AbstractRenamer() {
 		for (classNode in classes) {
 			//if (ignores.contains(classNode.name)) continue
 			//if (classNode.name.contains("entrypoint", true)) continue
-			if (!CObfuscator.isExcluded(classNode)) {
+			if (!isExcluded(classNode)) {
 				val name = if (keepPackages) {
 					"${classNode.name.substringBeforeLast('/')}/${namer.uniqueRandomString()}"
 				} else {

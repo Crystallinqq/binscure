@@ -7,8 +7,9 @@ import dev.binclub.binscure.api.TransformerConfiguration
  */
 data class IndirectionConfiguration(
 	override val enabled: Boolean = false,
-	val type: IndirectionType = IndirectionType.INVOKEDYNAMIC
-): TransformerConfiguration(enabled)
+	val type: IndirectionType = IndirectionType.INVOKEDYNAMIC,
+	private val exclusionsStr: List<String> = arrayListOf()
+): TransformerConfiguration(enabled, exclusionsStr)
 
 enum class IndirectionType {
 	PROXY,

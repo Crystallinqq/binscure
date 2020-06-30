@@ -28,7 +28,7 @@ import kotlin.math.min
 object OpaqueRuntimeManager {
 	private val namer = NameGenerator()
 	
-	val classNode = ClassNode().apply {
+	val classNodeDelegate = lazy { ClassNode().apply {
 		this.access = ACC_PUBLIC
 		this.version = V1_8
 		this.name = ClassRenamer.namer.uniqueRandomString()
@@ -45,7 +45,11 @@ object OpaqueRuntimeManager {
 			
 			methods.add(this)
 		}
-	}
+	} }
+	val classNode by classNodeDelegate
+	// Returns the classnode only if its been generated
+	fun getClassNodeSafe(): ClassNode? =
+		if (classNodeDelegate.isInitialized()) classNode else null
 	
 	private val clinit =
 		MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also {

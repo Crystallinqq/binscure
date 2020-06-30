@@ -2,7 +2,9 @@ package dev.binclub.binscure.processors.renaming
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.classpath.ClassPath
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.originalName
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import dev.binclub.binscure.utils.AnnotationFieldRemapper
@@ -14,16 +16,7 @@ import org.objectweb.asm.tree.ClassNode
  * @author cookiedragon234 24/Jan/2020
  */
 abstract class AbstractRenamer: IClassProcessor {
-	val ignores = arrayOf<String>(
-		"io.github.giantnuker.pyro.PyroClassTransformer",
-		"io.github.giantnuker.pyro.launcher.LauncherImpl",
-		"io.github.giantnuker.pyro.d",
-		"io.github.giantnuker.pyro.Pyro",
-		"io.github.giantnuker.pyro.PyroLoaderConstants",
-		"io.github.giantnuker.pyro.launcher.PyroMixinPlugin",
-		"io.github.giantnuker.pyro.mixin.StopAsapMixin",
-		"io.github.giantnuker.pyro.LaunchDownloader"
-	)
+	override val config = rootConfig.remap
 	
 	final override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!isEnabled())

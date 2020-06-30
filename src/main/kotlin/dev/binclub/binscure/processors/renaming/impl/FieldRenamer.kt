@@ -14,7 +14,7 @@ import java.lang.RuntimeException
  * @author cookiedragon234 25/Jan/2020
  */
 object FieldRenamer: AbstractRenamer() {
-	override fun isEnabled(): Boolean = rootConfig.remap.areFieldsEnabled()
+	override fun isEnabled(): Boolean = config.areFieldsEnabled()
 	override val progressDescription: String
 		get() = "Renaming fields"
 	
@@ -25,7 +25,7 @@ object FieldRenamer: AbstractRenamer() {
 	) {
 		for (classNode in classes) {
 			//if (ignores.contains(classNode.name)) continue
-			if (!CObfuscator.isExcluded(classNode)) {
+			if (!isExcluded(classNode)) {
 				val names = mutableMapOf<String, NameGenerator>()
 				val classTree = ClassPath.hierachy[classNode.name] ?: throw RuntimeException("$classNode not in classpath")
 				

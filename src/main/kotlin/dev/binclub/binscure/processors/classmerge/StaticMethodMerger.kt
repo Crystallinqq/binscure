@@ -1,15 +1,15 @@
 package dev.binclub.binscure.processors.classmerge
 
-import dev.binclub.binscure.CObfuscator
-import dev.binclub.binscure.CObfuscator.isExcluded
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
+import dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration
 import dev.binclub.binscure.api.transformers.MergeMethods.NONE
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.add
 import dev.binclub.binscure.utils.hasAccess
-import dev.binclub.binscure.processors.constants.StringObfuscator
+import dev.binclub.binscure.processors.constants.string.StringObfuscator
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.utils.*
@@ -58,18 +58,16 @@ object StaticMethodMerger: IClassProcessor {
 	
 	override val progressDescription: String
 		get() = "Merging methods"
+	override val config: FlowObfuscationConfiguration = rootConfig.flowObfuscation
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!rootConfig.flowObfuscation.enabled || rootConfig.flowObfuscation.mergeMethods == NONE) {
+		if (!config.enabled || config.mergeMethods == NONE) {
 			return
 		}
 		
 		val staticMethods: MutableMap<String, MutableSet<Pair<ClassNode, MethodNode>>> = hashMapOf()
 		
 		for (classNode in classes) {
-			if (classNode.name == StringObfuscator.decryptNode?.name)
-				continue
-			
 			if (isExcluded(classNode))
 				continue
 			
@@ -268,4 +266,11 @@ object StaticMethodMerger: IClassProcessor {
 			}
 		}
 	}
+	
+	//fun shuffleArguments(static: Boolean, args: Array<out Type>): Array<Int> {
+	//	args.asList().shuffled()
+	//	return Array(args.size) {
+	//
+	//	}
+	//}
 }

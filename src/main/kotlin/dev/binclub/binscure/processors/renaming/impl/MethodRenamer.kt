@@ -1,6 +1,5 @@
 package dev.binclub.binscure.processors.renaming.impl
 
-import dev.binclub.binscure.CObfuscator.isExcluded
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig

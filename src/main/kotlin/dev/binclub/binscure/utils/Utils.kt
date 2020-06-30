@@ -333,3 +333,11 @@ fun primitiveTypeFromArraySort(sort: Int): Type {
 		else -> error("Unexpected Type $sort")
 	}
 }
+
+fun <T> List<T>.asMutableList(): MutableList<T> {
+	return if (this is MutableList) {
+		this
+	} else {
+		this.toMutableList()
+	}
+}

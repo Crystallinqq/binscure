@@ -2,6 +2,8 @@ package dev.binclub.binscure.processors.flow.jump
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.isStatic
 import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.InstructionModifier
@@ -16,15 +18,19 @@ import org.objectweb.asm.tree.*
 object TableSwitchJump: IClassProcessor {
 	override val progressDescription: String
 		get() = "Adding table switches"
+	override val config = rootConfig.flowObfuscation
 	//val eqJumps = arrayOf(IF_ACMPEQ, IF_ACMPNE, IF_ICMPEQ, IF_ICMPNE)
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		if (!JumpRearranger.config.enabled)
+			return
+		
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
+				if (isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
 				val modifier = InstructionModifier()

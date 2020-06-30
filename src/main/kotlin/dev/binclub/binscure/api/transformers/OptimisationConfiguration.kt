@@ -7,5 +7,6 @@ import dev.binclub.binscure.api.TransformerConfiguration
  */
 data class OptimisationConfiguration(
 	override val enabled: Boolean = false,
-	val mutableEnumValues: Boolean = false
-): TransformerConfiguration(enabled)
+	val mutableEnumValues: Boolean = false,
+	private val exclusionsStr: List<String> = arrayListOf()
+): TransformerConfiguration(enabled, exclusionsStr)

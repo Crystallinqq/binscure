@@ -7,6 +7,7 @@ import dev.binclub.binscure.classpath.ClassPath.passThrough
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.replaceLast
 import dev.binclub.binscure.utils.DummyHashSet
+import dev.binclub.binscure.utils.isExcluded
 import dev.binclub.binscure.utils.versionAtLeast
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -47,7 +48,7 @@ object ClassPathIO {
 							continue
 						}
 						
-						val excluded = CObfuscator.isExcluded(classNode)
+						val excluded = rootConfig.exclusions.isExcluded(classNode)
 						val hardExcluded = rootConfig.hardExclusions.any { entry.name.startsWith(it.trim()) }
 						
 						if (!classNode.versionAtLeast(Opcodes.V1_7) && !excluded && !hardExcluded) {
@@ -140,13 +141,14 @@ object ClassPathIO {
 			}
 			
 			for ((i, classNode) in classes.values.withIndex()) {
+				val excluded = rootConfig.exclusions.isExcluded(classNode)
 				if (rootConfig.printProgress) {
 					print(rootConfig.getLineChar())
 					val percentStr = ((i.toFloat() / classes.size) * 100).toInt().toString().padStart(3, ' ')
 					print("Writing classes ($percentStr% - $i/${classes.size})".padEnd(100, ' '))
 				}
 				try {
-					if (!CObfuscator.isExcluded(classNode)) {
+					if (!excluded) {
 						crc.overwrite = true
 						if (rootConfig.shuffleFields) {
 							classNode.fields?.shuffle(random)
@@ -160,7 +162,7 @@ object ClassPathIO {
 					}
 					
 					val name = "${classNode.name}.class"
-					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled && rootConfig.crasher.checksums) {
+					if (!excluded && rootConfig.crasher.enabled && rootConfig.crasher.checksums) {
 						crc.overwrite = true
 						
 						it.putNextEntry(ZipEntry(name.replaceLast('/', "/\u0000")))
@@ -172,7 +174,7 @@ object ClassPathIO {
 					
 					val entry = ZipEntry(name)
 					
-					if (!CObfuscator.isExcluded(classNode) && rootConfig.crasher.enabled && rootConfig.crasher.checksums) {
+					if (!excluded && rootConfig.crasher.enabled && rootConfig.crasher.checksums) {
 						it.putNextEntry(ZipEntry(entry.name))
 					}
 					

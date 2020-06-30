@@ -2,7 +2,9 @@ package dev.binclub.binscure.processors.renaming.impl
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.LdcInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
@@ -13,18 +15,19 @@ import org.objectweb.asm.tree.MethodInsnNode
 object LocalVariableRenamer: IClassProcessor {
 	override val progressDescription: String
 		get() = "Renaming local variables"
+	override val config = rootConfig.remap
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!ConfigurationManager.rootConfig.remap.areLocalsEnabled())
+		if (!config.areLocalsEnabled())
 			return
 		
-		val name = ConfigurationManager.rootConfig.remap.localVariableName
+		val name = config.localVariableName
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (isExcluded(classNode, method))
 					continue
 				
 				val nameMap = mutableMapOf<String, String>()

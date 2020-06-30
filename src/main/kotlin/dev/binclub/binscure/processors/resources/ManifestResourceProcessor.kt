@@ -2,6 +2,8 @@ package dev.binclub.binscure.processors.resources
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import org.objectweb.asm.tree.ClassNode
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -14,6 +16,7 @@ import java.util.jar.Manifest
 object ManifestResourceProcessor: IClassProcessor {
 	override val progressDescription: String
 		get() = "Processing manifests"
+	override val config = rootConfig
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		val sorted = CObfuscator.mappings.entries.sortedByDescending { it.key.length }

@@ -2,8 +2,10 @@ package dev.binclub.binscure.processors.indirection
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.configuration.ConfigurationManager
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Handle
@@ -61,20 +63,21 @@ object DynamicCallObfuscation: IClassProcessor {
 	}
 	override val progressDescription: String
 		get() = "Transforming method calls to dynamic invokes"
+	override val config = rootConfig.indirection
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!ConfigurationManager.rootConfig.indirection.enabled) {
+		if (!config.enabled) {
 			return
 		}
 		
 		for (classNode in ArrayList(classes)) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			if (!classNode.versionAtLeast(Opcodes.V1_7))
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
+				if (isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
 				val outInsns = InsnList().apply {

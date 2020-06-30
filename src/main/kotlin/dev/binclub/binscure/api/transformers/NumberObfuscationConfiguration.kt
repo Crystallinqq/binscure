@@ -3,16 +3,9 @@ package dev.binclub.binscure.api.transformers
 import dev.binclub.binscure.api.TransformerConfiguration
 
 /**
- * @author cookiedragon234 26/Jan/2020
+ * @author cookiedragon234 30/Jun/2020
  */
-data class SourceStripConfiguration(
+data class NumberObfuscationConfiguration(
 	override val enabled: Boolean = false,
-	val lineNumbers: LineNumberAction = LineNumberAction.REMOVE,
 	private val exclusionsStr: List<String> = arrayListOf()
 ): TransformerConfiguration(enabled, exclusionsStr)
-
-enum class LineNumberAction {
-	KEEP,
-	//SCRAMBLE,
-	REMOVE
-}

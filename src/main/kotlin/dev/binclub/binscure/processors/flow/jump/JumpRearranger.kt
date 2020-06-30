@@ -2,6 +2,8 @@ package dev.binclub.binscure.processors.flow.jump
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -14,14 +16,18 @@ import java.util.*
 object JumpRearranger: IClassProcessor {
 	override val progressDescription: String
 		get() = "Rearranging jumps"
+	override val config = rootConfig.flowObfuscation
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		if (!config.enabled)
+			return
+		
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			methodLoop@for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method))
+				if (isExcluded(classNode, method))
 					continue
 				
 				val stacks = StackHeightCalculator.calculateStackHeight(classNode, method)

@@ -7,8 +7,9 @@ import dev.binclub.binscure.api.TransformerConfiguration
  */
 data class KotlinMetadataConfiguration(
 	override val enabled: Boolean = false,
-	val type: KotlinMetadataType = KotlinMetadataType.CENSOR
-): TransformerConfiguration(enabled)
+	val type: KotlinMetadataType = KotlinMetadataType.CENSOR,
+	private val exclusionsStr: List<String> = arrayListOf()
+): TransformerConfiguration(enabled, exclusionsStr)
 
 enum class KotlinMetadataType {
 	/**

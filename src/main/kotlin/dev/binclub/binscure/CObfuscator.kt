@@ -7,11 +7,10 @@ import dev.binclub.binscure.classpath.ClassPathIO
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
-import dev.binclub.binscure.processors.VariableInitializer
 import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
 import dev.binclub.binscure.processors.constants.FieldInitialiser
 import dev.binclub.binscure.processors.constants.NumberObfuscation
-import dev.binclub.binscure.processors.constants.StringObfuscator
+import dev.binclub.binscure.processors.constants.string.StringObfuscator
 import dev.binclub.binscure.processors.debug.AccessStripper
 import dev.binclub.binscure.processors.debug.KotlinMetadataStripper
 import dev.binclub.binscure.processors.debug.SourceStripper
@@ -22,10 +21,8 @@ import dev.binclub.binscure.processors.flow.CfgFucker
 import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
 import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.whenNotNull
-import dev.binclub.binscure.processors.flow.jump.JumpRearranger
 import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
 import dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch
-import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
 import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.processors.renaming.impl.FieldRenamer
@@ -33,7 +30,6 @@ import dev.binclub.binscure.processors.renaming.impl.LocalVariableRenamer
 import dev.binclub.binscure.processors.renaming.impl.MethodRenamer
 import dev.binclub.binscure.processors.resources.ManifestResourceProcessor
 import dev.binclub.binscure.processors.runtime.*
-import dev.binclub.binscure.utils.StackHeightCalculator
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
@@ -50,11 +46,6 @@ import java.time.Instant
  */
 object CObfuscator {
 	val random = SecureRandom()
-	var exclusions = arrayListOf<ExclusionConfiguration>().also { arr ->
-		rootConfig.exclusions.forEach{
-			arr.add(PackageBlacklistExcluder(it.trim()))
-		}
-	}
 	val mappings = mutableMapOf<String, String>()
 	
 	operator fun invoke() {
@@ -71,9 +62,6 @@ object CObfuscator {
 		
 		ClassPath.constructHierarchy()
 		
-		//ClassPath.classes.values.filter { it.methods.isNotEmpty() }.random().also {
-		//	StackHeightCalculator.test(it, it.methods.random())
-		//}
 		val processors = arrayOf(
 			//VariableInitializer,
 			FieldInitialiser,
@@ -133,8 +121,6 @@ object CObfuscator {
 		ClassPath.classes[OpaqueRuntimeManager.classNode.name] = OpaqueRuntimeManager.classNode
 		ClassPath.classPath[OpaqueRuntimeManager.classNode.name] = OpaqueRuntimeManager.classNode
 		
-		//checkLicense()
-		
 		ClassPathIO.writeOutput(rootConfig.output)
 		
 		val duration = Duration.between(start, Instant.now())
@@ -149,39 +135,6 @@ object CObfuscator {
 				}
 			}
 		}
-	}
-	
-	fun isExcluded(name: String): Boolean {
-		for (exclusion in exclusions) {
-			if (exclusion.isExcluded(name))
-				return true
-		}
-		return false
-	}
-	fun isExcluded(classNode: ClassNode): Boolean {
-		if (classNode == OpaqueRuntimeManager.classNode) return true
-		if (classNode.visibleAnnotations?.any { it.desc == ExcludeAll::class.internalName } == true) return true
-		for (exclusion in exclusions) {
-			if (exclusion.isExcluded(classNode))
-				return true
-		}
-		return false
-	}
-	fun isExcluded(parentClass: ClassNode, methodNode: MethodNode): Boolean {
-		if (methodNode.visibleAnnotations?.any { it.desc == ExcludeAll::class.internalName } == true) return true
-		for (exclusion in exclusions) {
-			if (exclusion.isExcluded(parentClass, methodNode))
-				return true
-		}
-		return false
-	}
-	fun isExcluded(parentClass: ClassNode, fieldNode: FieldNode): Boolean {
-		if (fieldNode.visibleAnnotations?.any { it.desc == ExcludeAll::class.internalName } == true) return true
-		for (exclusion in exclusions) {
-			if (exclusion.isExcluded(parentClass, fieldNode))
-				return true
-		}
-		return false
 	}
 	
 	fun noMethodInsns(methodNode: MethodNode) =

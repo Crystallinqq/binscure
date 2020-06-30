@@ -2,6 +2,8 @@ package dev.binclub.binscure.processors.debug
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.addAccess
 import dev.binclub.binscure.utils.hasAccess
 import dev.binclub.binscure.utils.removeAccess
@@ -16,23 +18,25 @@ import org.objectweb.asm.tree.ClassNode
 object AccessStripper: IClassProcessor {
 	override val progressDescription: String
 		get() = "Stripping access flags"
+	override val config: TransformerConfiguration
+		get() = rootConfig
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			classNode.access = makePublic(classNode.access)
 			
 			for (method in classNode.methods) {
 				// Dont run on static init
-				if (method.name != "<clinit>" && !CObfuscator.isExcluded(classNode, method)) {
+				if (method.name != "<clinit>" && !isExcluded(classNode, method)) {
 					method.access = makePublic(method.access)
 				}
 			}
 			
 			for (field in classNode.fields) {
-				if (CObfuscator.isExcluded(classNode, field))
+				if (isExcluded(classNode, field))
 					continue
 				
 				field.access = makePublic(field.access, classNode.access.hasAccess(ACC_INTERFACE))

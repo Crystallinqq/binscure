@@ -2,6 +2,8 @@ package dev.binclub.binscure.processors.constants
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.hasAccess
 import dev.binclub.binscure.utils.getClinit
 import dev.binclub.binscure.utils.ldcDouble
@@ -33,16 +35,18 @@ import org.objectweb.asm.tree.*
 object FieldInitialiser: IClassProcessor {
 	override val progressDescription: String
 		get() = "Moving field constants to the static initializer"
+	override val config: TransformerConfiguration
+		get() = rootConfig
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			val staticFields = arrayListOf<FieldNode>()
 			val instanceFields = arrayListOf<FieldNode>()
 			for (field in classNode.fields) {
-				if (CObfuscator.isExcluded(classNode, field) || field.value == null)
+				if (isExcluded(classNode, field) || field.value == null)
 					continue
 				
 				if (field.access.hasAccess(ACC_STATIC)) {

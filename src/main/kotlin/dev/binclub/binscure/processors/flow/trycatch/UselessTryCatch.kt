@@ -2,7 +2,9 @@ package dev.binclub.binscure.processors.flow.trycatch
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.random
 import dev.binclub.binscure.utils.InstructionModifier
 import dev.binclub.binscure.utils.newLabel
@@ -16,18 +18,19 @@ import org.objectweb.asm.tree.*
 object UselessTryCatch: IClassProcessor {
 	override val progressDescription: String
 		get() = "Adding fake try catches"
+	override val config = rootConfig.flowObfuscation
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!ConfigurationManager.rootConfig.flowObfuscation.enabled) {
+		if (!config.enabled) {
 			return
 		}
 		
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method) || method.name.startsWith('<'))
+				if (isExcluded(classNode, method) || CObfuscator.noMethodInsns(method) || method.name.startsWith('<'))
 					continue
 				
 				method.tryCatchBlocks = method.tryCatchBlocks ?: arrayListOf()

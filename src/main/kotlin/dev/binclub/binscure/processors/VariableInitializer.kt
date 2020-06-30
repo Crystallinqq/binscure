@@ -2,6 +2,8 @@ package dev.binclub.binscure.processors
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
@@ -15,14 +17,15 @@ import kotlin.collections.getOrPut
 object VariableInitializer: IClassProcessor {
 	override val progressDescription: String
 		get() = "Initialising variables"
+	override val config = rootConfig
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method) || method.instructions.first == null)
+				if (isExcluded(classNode, method) || CObfuscator.noMethodInsns(method) || method.instructions.first == null)
 					continue
 				
 				// First pass, seperate variable types into different slots

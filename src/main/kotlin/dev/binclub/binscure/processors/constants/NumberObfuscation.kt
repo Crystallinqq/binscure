@@ -2,6 +2,8 @@ package dev.binclub.binscure.processors.constants
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.add
 import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.*
@@ -17,14 +19,19 @@ import org.objectweb.asm.tree.MethodInsnNode
 object NumberObfuscation: IClassProcessor {
 	override val progressDescription: String
 		get() = "Obfuscating number constants"
+	override val config: TransformerConfiguration
+		get() = rootConfig.numberObfuscation
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
+		if (!config.enabled)
+			return
+		
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode))
+			if (isExcluded(classNode))
 				continue
 			
 			for (method in classNode.methods) {
-				if (CObfuscator.isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
+				if (isExcluded(classNode, method) || method.instructions == null)
 					continue
 				
 				val modifier = InstructionModifier()

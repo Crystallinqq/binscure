@@ -1,6 +1,7 @@
 package dev.binclub.binscure.processors.debug
 
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.api.transformers.LineNumberAction.*
 import dev.binclub.binscure.utils.InstructionModifier
@@ -15,12 +16,13 @@ import org.objectweb.asm.tree.LineNumberNode
 object SourceStripper: IClassProcessor {
 	override val progressDescription: String
 		get() = "Stripping source debug data"
+	override val config = rootConfig.sourceStrip
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!rootConfig.sourceStrip.enabled)
+		if (!config.enabled)
 			return
 		
-		val action = rootConfig.sourceStrip.lineNumbers
+		val action = config.lineNumbers
 		
 		for (classNode in classes) {
 			classNode.sourceDebug = null

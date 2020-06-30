@@ -2,6 +2,7 @@ package dev.binclub.binscure.processors.debug
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.api.transformers.KotlinMetadataType
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.InstructionModifier
@@ -19,15 +20,17 @@ import kotlin.jvm.internal.Intrinsics
 object KotlinMetadataStripper: IClassProcessor {
 	override val progressDescription: String
 		get() = "Stripping kotlin metadata"
+	override val config: TransformerConfiguration
+		get() = rootConfig.kotlinMetadata
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!rootConfig.kotlinMetadata.enabled)
+		if (!config.enabled)
 			return
 		
 		val remove = rootConfig.kotlinMetadata.type == KotlinMetadataType.REMOVE
 		
 		for (classNode in classes) {
-			if (CObfuscator.isExcluded(classNode)) continue
+			if (isExcluded(classNode)) continue
 			
 			classNode.visibleAnnotations = classNode.visibleAnnotations?.filter {it.desc != "Lkotlin/Metadata;" && it.desc != "Lkotlin/coroutines/jvm/internal/DebugMetadata;"}
 			
