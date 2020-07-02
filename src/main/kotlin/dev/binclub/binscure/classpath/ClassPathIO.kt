@@ -1,6 +1,5 @@
 package dev.binclub.binscure.classpath
 
-import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
 import dev.binclub.binscure.classpath.ClassPath.classes
 import dev.binclub.binscure.classpath.ClassPath.passThrough
@@ -48,7 +47,7 @@ object ClassPathIO {
 							continue
 						}
 						
-						val excluded = rootConfig.exclusions.isExcluded(classNode)
+						val excluded = rootConfig.tExclusions.isExcluded(classNode)
 						val hardExcluded = rootConfig.hardExclusions.any { entry.name.startsWith(it.trim()) }
 						
 						if (!classNode.versionAtLeast(Opcodes.V1_7) && !excluded && !hardExcluded) {
@@ -141,7 +140,7 @@ object ClassPathIO {
 			}
 			
 			for ((i, classNode) in classes.values.withIndex()) {
-				val excluded = rootConfig.exclusions.isExcluded(classNode)
+				val excluded = rootConfig.tExclusions.isExcluded(classNode)
 				if (rootConfig.printProgress) {
 					print(rootConfig.getLineChar())
 					val percentStr = ((i.toFloat() / classes.size) * 100).toInt().toString().padStart(3, ' ')

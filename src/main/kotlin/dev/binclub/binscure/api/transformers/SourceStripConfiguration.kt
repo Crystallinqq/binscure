@@ -8,8 +8,8 @@ import dev.binclub.binscure.api.TransformerConfiguration
 data class SourceStripConfiguration(
 	override val enabled: Boolean = false,
 	val lineNumbers: LineNumberAction = LineNumberAction.REMOVE,
-	private val exclusionsStr: List<String> = arrayListOf()
-): TransformerConfiguration(enabled, exclusionsStr)
+	private val exclusions: List<String> = arrayListOf()
+): TransformerConfiguration(enabled, exclusions)
 
 enum class LineNumberAction {
 	KEEP,

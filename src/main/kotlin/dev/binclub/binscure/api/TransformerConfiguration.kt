@@ -8,7 +8,7 @@ import dev.binclub.binscure.utils.asMutableList
  * @author cookiedragon234 08/Mar/2020
  */
 open class TransformerConfiguration(open val enabled: Boolean = false, exclusionsStr: List<String> = arrayListOf()) {
-	val exclusions= exclusionsStr.map {
+	val tExclusions= exclusionsStr.filter { it.isNotBlank() }.map {
 		PackageBlacklistExcluder(it.trim())
 	}
 }

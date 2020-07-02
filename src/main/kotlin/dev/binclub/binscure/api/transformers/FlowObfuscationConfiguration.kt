@@ -9,8 +9,8 @@ data class FlowObfuscationConfiguration(
 	override val enabled: Boolean = false,
 	val severity: Int = 5,
 	val mergeMethods: MergeMethods = MergeMethods.BLOAT_CLASSES,
-	private val exclusionsStr: List<String> = arrayListOf()
-): TransformerConfiguration(enabled, exclusionsStr)
+	private val exclusions: List<String> = arrayListOf()
+): TransformerConfiguration(enabled, exclusions)
 
 enum class MergeMethods {
 	EXISTING_CLASSES,

@@ -1,7 +1,6 @@
 package dev.binclub.binscure.api
 
 import dev.binclub.binscure.api.transformers.*
-import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
 import dev.binclub.binscure.utils.replaceLast
 import java.io.File
 
@@ -13,7 +12,7 @@ data class RootConfiguration(
 	val output: File = File(input.absolutePath.replaceLast('.', "-obf.")),
 	val mappingFile: File?,
 	val libraries: List<File> = arrayListOf(),
-	private val exclusionsStr: List<String> = arrayListOf(),
+	private val exclusions: List<String> = arrayListOf(),
 	val hardExclusions: List<String> = arrayListOf(),
 	val remap: RemapConfiguration,
 	val sourceStrip: SourceStripConfiguration,
@@ -32,7 +31,7 @@ data class RootConfiguration(
 	val resetLineProgress: Boolean = true,
 	val printProgress: Boolean = true,
 	val watermark: Boolean = true
-): TransformerConfiguration(true, exclusionsStr) {
+): TransformerConfiguration(true, exclusions) {
 	fun getLineChar(): Char = if (resetLineProgress) '\r' else '\n'
 	
 	override fun toString(): String  = """
@@ -41,7 +40,7 @@ data class RootConfiguration(
 		|   Output: $output
 		|   Libraries: $libraries
 		|   MappingFile: $mappingFile
-		|   Exclusions: $exclusions
+		|   Exclusions: $tExclusions
 		|   Remap: $remap
 		|   SourceStrip: $sourceStrip
 		|   Kotlin Metadata: $kotlinMetadata

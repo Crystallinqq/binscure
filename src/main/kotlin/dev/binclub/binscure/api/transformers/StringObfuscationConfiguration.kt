@@ -7,5 +7,5 @@ import dev.binclub.binscure.api.TransformerConfiguration
  */
 data class StringObfuscationConfiguration(
 	override val enabled: Boolean = false,
-	private val exclusionsStr: List<String> = arrayListOf()
-): TransformerConfiguration(enabled, exclusionsStr)
+	private val exclusions: List<String> = arrayListOf()
+): TransformerConfiguration(enabled, exclusions)

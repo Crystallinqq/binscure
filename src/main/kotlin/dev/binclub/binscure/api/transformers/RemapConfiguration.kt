@@ -17,8 +17,8 @@ data class RemapConfiguration(
 	val localVariables: Boolean = true,
 	val aggressiveOverloading: Boolean = false,
 	val obfuscateEnums: Boolean = true,
-	private val exclusionsStr: List<String> = arrayListOf()
-): TransformerConfiguration(enabled, exclusionsStr) {
+	private val exclusions: List<String> = arrayListOf()
+): TransformerConfiguration(enabled, exclusions) {
 	fun areClassesEnabled() = classes && enabled
 	fun areMethodsEnabled() = methods && enabled
 	fun areFieldsEnabled() = fields && enabled
