@@ -1,11 +1,13 @@
 package dev.binclub.binscure.processors.renaming.generation
 
+import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
+
 /**
  * @author cookiedragon234 22/Jan/2020
  */
 open class NameGenerator(val prefix: String = "") {
 	companion object {
-		val CHARSET = "c0123456789abdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()
+		val CHARSET = rootConfig.remap.dictionary.toCharArray()
 		
 		/**
 		 * @param index A unique positive integer

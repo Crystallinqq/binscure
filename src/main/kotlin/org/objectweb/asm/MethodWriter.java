@@ -677,7 +677,7 @@ final class MethodWriter extends MethodVisitor {
 			firstCodeAttribute = attribute;
 		} else {
 			attribute.nextAttribute = firstAttribute;
-			firstAttribute = attribute;
+            firstAttribute = attribute;
 		}
 	}
 	

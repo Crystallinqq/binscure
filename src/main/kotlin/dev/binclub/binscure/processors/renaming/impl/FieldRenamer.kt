@@ -27,7 +27,11 @@ object FieldRenamer: AbstractRenamer() {
 			//if (ignores.contains(classNode.name)) continue
 			if (!isExcluded(classNode)) {
 				val names = mutableMapOf<String, NameGenerator>()
-				val classTree = ClassPath.hierachy[classNode.name] ?: throw RuntimeException("$classNode not in classpath")
+				val classTree = ClassPath.getHierarchy(classNode.name)
+				if (classTree == null) {
+					ClassPath.warn(classNode.name)
+					continue
+				}
 				
 				for (field in classNode.fields) {
 					//if (classNode.access.hasAccess(Opcodes.ACC_ENUM) && field.name == "\$VALUES")

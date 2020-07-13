@@ -23,6 +23,7 @@ import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.whenNotNull
 import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
 import dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch
+import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
 import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.processors.renaming.impl.FieldRenamer
@@ -77,7 +78,7 @@ object CObfuscator {
 			ClassRenamer,
 			
 			StringObfuscator,
-			//DynamicCallObfuscation,
+			DynamicCallObfuscation,
 			
 			//JumpRearranger,
 			CfgFucker,
@@ -109,7 +110,7 @@ object CObfuscator {
 					}
 					processor.process(classes, passThrough)
 				} catch (t: Throwable) {
-					println("Exception while processing ${processor.progressDescription}")
+					println("\rException while processing [${processor.progressDescription}]:")
 					t.printStackTrace()
 				}
 				progress += 1

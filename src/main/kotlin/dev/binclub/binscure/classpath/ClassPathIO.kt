@@ -40,7 +40,7 @@ object ClassPathIO {
 						
 						try {
 							ClassReader(bytes)
-								.accept(classNode, ClassReader.EXPAND_FRAMES)
+								.accept(classNode, 0)
 						} catch (t: Throwable) {
 							System.err.println("Error reading class file, skipping")
 							t.printStackTrace(System.err)
@@ -81,28 +81,7 @@ object ClassPathIO {
 		}
 	}
 	
-	fun loadClassPath(files: Collection<File>) {
-		if (files.isEmpty())
-			return
-		
-		for (file in files) {
-			if (file.isDirectory) {
-				loadClassPath(file.listFiles()!!.asList())
-			} else if (file.extension == "jar" || file.extension == "zip") {
-				JarFile(file).use {
-					for (entry in it.entries()) {
-						if (!entry.isDirectory && entry.name.endsWith(".class")) {
-							val classNode = ClassNode()
-							ClassReader(it.getInputStream(entry).readBytes())
-								.accept(classNode, ClassReader.EXPAND_FRAMES)
-							ClassPath.classPath[classNode.name] = classNode
-							ClassPath.originalNames[classNode] = classNode.name
-						}
-					}
-				}
-			}
-		}
-	}
+	fun loadClassPath(files: Collection<File>) = ClassPath.loadClassPath(files.toTypedArray())
 	
 	val emptyClass: ByteArray by lazy {
 		ClassWriter(0).also {

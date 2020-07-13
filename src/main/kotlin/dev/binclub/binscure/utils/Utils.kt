@@ -168,6 +168,14 @@ fun printlnAsm(): InsnList {
 	}
 }
 
+fun printAsm(text: String): InsnList {
+	return InsnList().also {
+		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
+		it.add(LdcInsnNode(text))
+		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "print", "(Ljava/lang/String;)V"))
+	}
+}
+
 fun printlnAsm(text: String): InsnList {
 	return InsnList().also {
 		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
@@ -300,7 +308,7 @@ infix fun Float.xor(b: Float) =
 infix fun Double.xor(b: Double) =
 	java.lang.Double.longBitsToDouble(java.lang.Double.doubleToLongBits(this) xor java.lang.Double.doubleToLongBits(b))
 
-fun genericType(type: Type): Type {
+fun downCastType(type: Type): Type {
 	return when (type.sort) {
 		Type.OBJECT -> Type.getType(Any::class.java)
 		else -> type

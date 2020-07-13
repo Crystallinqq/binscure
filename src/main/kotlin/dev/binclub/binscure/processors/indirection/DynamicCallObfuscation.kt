@@ -2,17 +2,16 @@ package dev.binclub.binscure.processors.indirection
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.classpath.ClassPath
-import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Handle
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author cookiedragon234 22/Jan/2020
@@ -73,14 +72,14 @@ object DynamicCallObfuscation: IClassProcessor {
 		for (classNode in ArrayList(classes)) {
 			if (isExcluded(classNode))
 				continue
-			if (!classNode.versionAtLeast(Opcodes.V1_7))
+			if (!classNode.versionAtLeast(V1_7))
 				continue
 			
 			for (method in classNode.methods) {
 				if (isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
 				
-				val outInsns = InsnList().apply {
+				method.instructions = InsnList().apply {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode) {
 							if (targetOps.contains(insn.opcode)) {
@@ -94,26 +93,19 @@ object DynamicCallObfuscation: IClassProcessor {
 								}
 								val returnType = Type.getReturnType(newDesc)
 								
+								val args = Type.getArgumentTypes(newDesc)
+								
 								// Downcast types to java/lang/Object
-								val args: Array<Type>
-								try {
-									args = Type.getArgumentTypes(newDesc)
-								} catch (e: Exception) {
-									println(insn.desc)
-									println(insn.owner)
-									println(newDesc)
-									println("${classNode.name}.${method.name}${method.desc}")
-									throw e
-								}
+								//for (i in args.indices) {
+								//	args[i] = downCastType(args[i])
+								//}
 								
-								for (i in args.indices) {
-									args[i] = genericType(args[i])
-								}
-								
-								newDesc = Type.getMethodDescriptor(genericType(returnType), *args)
+								//newDesc = Type.getMethodDescriptor(downCastType(returnType), *args)
+								newDesc = Type.getMethodDescriptor(returnType, *args)
+								println("\rNewDesc: [    $newDesc".padEnd(100, ' ') + "]")
 								
 								val indyNode = InvokeDynamicInsnNode(
-									"bob",
+									"i",
 									newDesc,
 									handler,
 									insn.opcode,
@@ -123,27 +115,47 @@ object DynamicCallObfuscation: IClassProcessor {
 								)
 								add(indyNode)
 								
+								if (returnType.sort == Type.ARRAY || returnType.sort == Type.OBJECT) {
+									add(printAsm("Returned: "))
+									add(DUP)
+									add(printlnAsm())
+								}
+								
+								// Cast return type to expected type (since we downcasted to Object earlier)
 								var checkCast: TypeInsnNode? = null
 								if (returnType.sort == Type.ARRAY) {
-									checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName.removePrefix("L").removeSuffix(";")))
+									checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
 								} else if (returnType.sort == Type.OBJECT) {
 									if (insn.next is MethodInsnNode) {
 										val next = insn.next as MethodInsnNode
 										val params = Type.getArgumentTypes(next.desc)
 										if (params.isEmpty()) {
 											if (insn.next.opcode == INVOKEVIRTUAL) {
-												checkCast = (TypeInsnNode(CHECKCAST, next.owner))
+												checkCast = TypeInsnNode(CHECKCAST, next.owner)
 											}
 										} else {
-											checkCast = (TypeInsnNode(CHECKCAST, params.last().internalName))
+											checkCast = TypeInsnNode(CHECKCAST, params.last().internalName)
 										}
 									} else if (arrayOf(POP, POP2, RETURN, IFNONNULL, IFNULL).contains(insn.next?.opcode)) {
-										//
+										// Ignore
 									} else {
 										checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
 									}
 								}
 								if (checkCast != null) {
+									val desc = checkCast.desc
+									
+									if ((desc.startsWith("[") || desc.startsWith("(")) && !desc.endsWith(";")) {
+										println("\r-----")
+										
+										println("Transforming: ${insn.owner}.${insn.name}.${insn.desc}")
+										println("Into: $newDesc")
+										
+										println("Checkcasting to ${checkCast.desc}")
+										
+										error("!!!!! wtf")
+									}
+									
 									if (checkCast.desc != Any::class.internalName) {
 										add(checkCast)
 									}
@@ -153,7 +165,6 @@ object DynamicCallObfuscation: IClassProcessor {
 						}
 						add(insn)
 					}
-					method.instructions = this
 				}
 			}
 		}

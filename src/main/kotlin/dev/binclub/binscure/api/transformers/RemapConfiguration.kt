@@ -7,6 +7,7 @@ import dev.binclub.binscure.api.TransformerConfiguration
  */
 data class RemapConfiguration(
 	override val enabled: Boolean = false,
+	val dictionary: String = "c0123456789abdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
 	val classes: Boolean = true,
 	val methods: Boolean = true,
 	val fields: Boolean = true,

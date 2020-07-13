@@ -24,9 +24,6 @@ import org.objectweb.asm.tree.*
 object StaticMethodMerger: IClassProcessor {
 	private fun containsSpecial(classNode: ClassNode, insnList: InsnList): Boolean {
 		val hierarchy = ClassPath.getHierarchy(classNode.name)?.allParents
-		if (classNode.superName.contains("EntityPlayerSP", true)) {
-			println(hierarchy)
-		}
 		for (insn in insnList) {
 			if (insn.opcode == INVOKESPECIAL || insn.opcode == INVOKEDYNAMIC) return true
 			

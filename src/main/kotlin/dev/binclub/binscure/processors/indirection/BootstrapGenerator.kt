@@ -337,6 +337,7 @@ fun generateBootstrapMethod(className: String, strDecryptNode: MethodNode, metho
 				add(DUP)
 				add(VarInsnNode(ALOAD, 10))
 				add(MethodInsnNode(INVOKESPECIAL, ConstantCallSite::class.internalName, "<init>", "(Ljava/lang/invoke/MethodHandle;)V"))
+				
 				add(InsnNode(ARETURN))
 			},
 			InsnList().apply {
