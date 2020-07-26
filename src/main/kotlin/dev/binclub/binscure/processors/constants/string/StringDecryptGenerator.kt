@@ -305,7 +305,7 @@ object StringDecryptGenerator {
 			add(JumpInsnNode(GOTO, xors))
 			
 			add(finalReturn)
-			add(InvokeDynamicInsnNode("________", "()V", Handle(H_INVOKESTATIC, "________", "a", "()V")))
+			add(InvokeDynamicInsnNode("yayeet", "()V", Handle(H_INVOKESTATIC, "a", "a", "()V")))
 			add(JumpInsnNode(GOTO, veryveryStart))
 			
 			add(classNotFoundHandler)

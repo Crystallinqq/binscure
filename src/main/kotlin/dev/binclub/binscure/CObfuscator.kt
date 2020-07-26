@@ -7,6 +7,7 @@ import dev.binclub.binscure.classpath.ClassPathIO
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
+import dev.binclub.binscure.processors.AbstractMethodImplementor
 import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
 import dev.binclub.binscure.processors.constants.FieldInitialiser
 import dev.binclub.binscure.processors.constants.NumberObfuscation
@@ -92,6 +93,8 @@ object CObfuscator {
 			
 			BadAttributeExploit,
 			BadIndyConstant,
+			
+			AbstractMethodImplementor,
 			
 			ManifestResourceProcessor
 		)

@@ -47,4 +47,21 @@ interface IClassProcessor {
 			config.tExclusions.isExcluded(classNode, fieldNode)
 		}
 	}
+	
+}
+
+inline fun IClassProcessor.forClass(classes: MutableCollection<ClassNode>, op: (ClassNode) -> Unit) {
+	classes.forEach { cn ->
+		if (!isExcluded(cn)) {
+			op(cn)
+		}
+	}
+}
+
+inline fun IClassProcessor.forMethod(cn: ClassNode, op: (MethodNode) -> Unit) {
+	cn.methods.forEach { mn ->
+		if (!isExcluded(cn, mn)) {
+			op(mn)
+		}
+	}
 }

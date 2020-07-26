@@ -51,7 +51,7 @@ class EntryPoint : ClassLoader(this::class.java.classLoader) {
 		
 		@JvmStatic
 		fun main(args: Array<String>) {
-			Main.main(args)
+			//Main.main(args)
 			return
 			
 			val scanner = Scanner(System.`in`)
@@ -96,7 +96,7 @@ class EntryPoint2 {
 	companion object {
 		@JvmStatic
 		fun start(args: Array<String>) {
-			Main.main(args)
+			//Main.main(args)
 		}
 	}
 }

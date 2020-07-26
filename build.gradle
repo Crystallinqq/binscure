@@ -11,7 +11,7 @@ version 'alpha'
 jar {
     manifest {
         attributes (
-                "Main-Class": "dev.binclub.binscure.EntryPoint"
+                "Main-Class": "dev.binclub.binscure.api.Binscure"
         )
     }
 }
@@ -24,11 +24,18 @@ shadowJar() {
     classifier = "release"
 
     manifest {
-        attributes 'Main-Class': "dev.binclub.binscure.EntryPoint"
+        attributes 'Main-Class': "dev.binclub.binscure.api.Binscure"
     }
 }
 
-build.dependsOn.add("shadowJar")
+task apiJar(type: Jar, dependsOn: shadowJar) {
+    from (zipTree(shadowJar.archivePath)) {
+        include "dev/binclub/binscure/api/**"
+    }
+    classifier = "api"
+}
+
+build.dependsOn.add("apiJar")
 
 sourceSets {
     main {

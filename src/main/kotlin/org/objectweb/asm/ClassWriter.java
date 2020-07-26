@@ -271,6 +271,7 @@ public class ClassWriter extends ClassVisitor {
 			this.interfaces = new int[interfaceCount];
 			for (int i = 0; i < interfaceCount; ++i) {
 				this.interfaces[i] = symbolTable.addConstantClass(interfaces[i]).index;
+                //this.interfaces[i] = symbolTable.addConstantUtf8(interfaces[i]);
 			}
 		}
 		if (compute == MethodWriter.COMPUTE_MAX_STACK_AND_LOCAL && (version & 0xFFFF) >= Opcodes.V1_7) {

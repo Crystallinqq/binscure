@@ -9,7 +9,8 @@ import java.io.File
  */
 object ConfigurationManager {
 	lateinit var rootConfig: RootConfiguration
-	fun init(configFile: File) {
+	fun parse(configFile: File): RootConfiguration {
 		rootConfig = ConfigLoader().loadConfigOrThrow(configFile.toPath())
+		return rootConfig
 	}
 }

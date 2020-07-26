@@ -29,7 +29,7 @@ object ClassPath {
 	
 	fun <T> warn(type: String, out: T): T {
 		if (!rootConfig.ignoreClassPathNotFound && type != "give up" && type != "java/lang/YourMum" && warnings.add(type)) {
-			System.err.println("WARNING: $type was not found in the classpath, may cause sideaffects")
+			System.err.println("\rWARNING: $type was not found in the classpath, may cause sideaffects")
 		}
 		return out
 	}
