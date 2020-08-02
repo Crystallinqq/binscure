@@ -32,53 +32,74 @@ object ClassPathIO {
 		if (rootConfig.useJavaClassloader) {
 			addFileToClassPath(file)
 		} else {
-			JarFile(file).use {
-				for (entry in it.entries()) {
-					val bytes = it.getInputStream(entry).readBytes()
-					if (!entry.isDirectory && entry.name.endsWith(".class") && !entry.name.endsWith("module-info.class")) {
-						val classNode = ClassNode()
-						
-						try {
-							ClassReader(bytes)
-								.accept(classNode, 0)
-						} catch (t: Throwable) {
-							System.err.println("Error reading class file, skipping")
-							t.printStackTrace(System.err)
-							continue
-						}
-						
-						val excluded = rootConfig.tExclusions.isExcluded(classNode)
-						val hardExcluded = rootConfig.hardExclusions.any { entry.name.startsWith(it.trim()) }
-						
-						if (!classNode.versionAtLeast(Opcodes.V1_7) && !excluded && !hardExcluded) {
-							println("Unsupported <J8 class file ${entry.name}, will not be obfuscated as severely")
-						}
-						
-						if (!excluded && !hardExcluded) {
-							if (rootConfig.shuffleFields) {
-								classNode.fields?.shuffle(random)
+			if (file.extension == "class") {
+				val bytes = file.readBytes()
+				val classNode = ClassNode()
+				try {
+					ClassReader(bytes)
+						.accept(classNode, 0)
+				} catch (t: Throwable) {
+					println("\rError reading class file [${file.name}], skipping")
+					t.printStackTrace()
+					return
+				}
+				
+				loadInputClassNode(file.name, bytes, classNode)
+			} else if (file.extension == "jar" || file.extension == "zip") {
+				JarFile(file).use {
+					for (entry in it.entries()) {
+						val bytes = it.getInputStream(entry).readBytes()
+						if (!entry.isDirectory && entry.name.endsWith(".class") && !entry.name.endsWith("module-info.class")) {
+							val classNode = ClassNode()
+							
+							try {
+								ClassReader(bytes)
+									.accept(classNode, 0)
+							} catch (t: Throwable) {
+								println("\rError reading class file [${entry.name}], skipping")
+								t.printStackTrace()
+								continue
 							}
-							if (rootConfig.shuffleMethods) {
-								classNode.methods?.shuffle(random)
-							}
-							if (rootConfig.shuffleClasses) {
-								classNode.innerClasses?.shuffle(random)
-							}
-						}
-						
-						if (!hardExcluded) {
-							classes[classNode.name] = classNode
-						} else {
+							
+							loadInputClassNode(entry.name, bytes, classNode)
+						} else if (!entry.isDirectory) {
 							passThrough[entry.name] = bytes
 						}
-						ClassPath.classPath[classNode.name] = classNode
-						ClassPath.originalNames[classNode] = classNode.name
-					} else if (!entry.isDirectory) {
-						passThrough[entry.name] = bytes
 					}
 				}
+			} else {
+				error("Unknown input file extension ${file.extension}")
 			}
 		}
+	}
+	
+	fun loadInputClassNode(name: String, bytes: ByteArray, classNode: ClassNode) {
+		val excluded = rootConfig.tExclusions.isExcluded(classNode)
+		val hardExcluded = rootConfig.hardExclusions.any { name.startsWith(it.trim()) }
+		
+		if (!classNode.versionAtLeast(Opcodes.V1_7) && !excluded && !hardExcluded) {
+			println("\rUnsupported <J8 class file ${name}, will not be obfuscated as severely")
+		}
+		
+		if (!excluded && !hardExcluded) {
+			if (rootConfig.shuffleFields) {
+				classNode.fields?.shuffle(random)
+			}
+			if (rootConfig.shuffleMethods) {
+				classNode.methods?.shuffle(random)
+			}
+			if (rootConfig.shuffleClasses) {
+				classNode.innerClasses?.shuffle(random)
+			}
+		}
+		
+		if (!hardExcluded) {
+			classes[classNode.name] = classNode
+		} else {
+			passThrough[name] = bytes
+		}
+		ClassPath.classPath[classNode.name] = classNode
+		ClassPath.originalNames[classNode] = classNode.name
 	}
 	
 	fun loadClassPath(files: Collection<File>) = ClassPath.loadClassPath(files.toTypedArray())
@@ -163,7 +184,7 @@ object ClassPathIO {
 						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
 						classNode.accept(writer)
 					} catch (e: Throwable) {
-						println("Error while writing class ${classNode.name}")
+						println("\rError while writing class ${classNode.name}")
 						e.printStackTrace()
 						
 						writer = CustomClassWriter(0)

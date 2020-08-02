@@ -9,6 +9,7 @@ data class FlowObfuscationConfiguration(
 	override val enabled: Boolean = false,
 	val severity: Int = 5,
 	val mergeMethods: MergeMethods = MergeMethods.BLOAT_CLASSES,
+	val arithmetic: Boolean = true,
 	private val exclusions: List<String> = arrayListOf()
 ): TransformerConfiguration(enabled, exclusions)
 

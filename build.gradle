@@ -21,7 +21,7 @@ shadowJar() {
         exclude(dependency('com.sksamuel.hoplite:hoplite-core:1.1.4'))
         exclude(dependency('com.sksamuel.hoplite:hoplite-yaml:1.1.4'))
     }
-    classifier = "release"
+    classifier = "shadow"
 
     manifest {
         attributes 'Main-Class': "dev.binclub.binscure.api.Binscure"
@@ -35,7 +35,53 @@ task apiJar(type: Jar, dependsOn: shadowJar) {
     classifier = "api"
 }
 
-build.dependsOn.add("apiJar")
+task releaseJar(type: Jar, dependsOn: shadowJar) {
+    from (zipTree(shadowJar.archivePath)) {
+        include "dev/binclub/binscure/**"
+        include "arrow/core/*.class"
+        include "arrow/*.class"
+        include "arrow/core/extensions/nonemptylist/semigroup/**"
+        include "arrow/core/extensions/NonEmptyListSemigroup.class"
+        include "arrow/core/extensions/ValidatedApplicative.class"
+        include "arrow/core/extensions/ValidatedFunctor.class"
+        include "arrow/core/extensions/list/traverse/**"
+        include "arrow/core/extensions/ListKTraverse*.class"
+        include "arrow/core/extensions/ValidatedApplicative*.class"
+        include "arrow/typeclasses/Semigroup*"
+        include "arrow/typeclasses/Applicative*"
+        include "arrow/typeclasses/Apply*"
+        include "arrow/typeclasses/Functor.class"
+        include "arrow/typeclasses/Invariant.class"
+        include "arrow/typeclasses/ListKTraverse.class"
+        include "arrow/typeclasses/Traverse*"
+        include "arrow/typeclasses/Foldable.class"
+        include "org/intellij/**"
+        include "org/jetbrains/**"
+        include "org/objectweb/**"
+        include "org/yaml/**"
+        include "META-INF/**"
+        include "com/sksamuel/**"
+        include "kotlin/jvm/**"
+        include "kotlin/*"
+        include "kotlin/collections/**"
+        include "kotlin/text/**"
+        include "kotlin/reflect/**"
+        include "kotlin/ranges/**"
+        include "kotlin/io/**"
+        include "kotlin/internal/**"
+        include "kotlin/properties/**"
+        include "kotlin/sequences/**"
+        include "kotlin/comparisons/**"
+    }
+    classifier = "release"
+
+    manifest {
+        attributes 'Main-Class': "dev.binclub.binscure.api.Binscure"
+    }
+}
+
+//build.dependsOn.add("apiJar")
+build.finalizedBy (apiJar, releaseJar)
 
 sourceSets {
     main {
@@ -70,7 +116,7 @@ dependencies {
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.noJdk = false
+    kotlinOptions.noReflect = true
+    kotlinOptions.noStdlib = true
 }

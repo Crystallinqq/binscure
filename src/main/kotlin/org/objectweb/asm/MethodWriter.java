@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import java.io.IOException;
+import java.util.Objects;
+
 import static java.util.Objects.hash;
 
 /**
@@ -1520,9 +1523,17 @@ final class MethodWriter extends MethodVisitor {
 	@Override
 	public void visitMaxs(final int maxStack, final int maxLocals) {
 		if (compute == COMPUTE_ALL_FRAMES) {
-			computeAllFrames();
+			try {
+				computeAllFrames();
+			} catch (Throwable t) {
+				throw new RuntimeException("Error while computing frames for method [" + name + descriptor + "]", t);
+			}
 		} else if (compute == COMPUTE_MAX_STACK_AND_LOCAL) {
-			computeMaxStackAndLocal();
+			try {
+				computeMaxStackAndLocal();
+			} catch (Throwable t) {
+				throw new RuntimeException("Error while computing maxs for method [" + name + descriptor + "]", t);
+			}
 		} else if (compute == COMPUTE_MAX_STACK_AND_LOCAL_FROM_FRAMES) {
 			this.maxStack = maxRelativeStackSize;
 		} else {
@@ -1534,6 +1545,7 @@ final class MethodWriter extends MethodVisitor {
 	/** Computes all the stack map frames of the method, from scratch. */
 	private void computeAllFrames() {
 		// Complete the control flow graph with exception handler blocks.
+		int handlerNum = 0;
 		Handler handler = firstHandler;
 		while (handler != null) {
 			String catchTypeDescriptor =
@@ -1541,15 +1553,23 @@ final class MethodWriter extends MethodVisitor {
 			int catchType = Frame.getAbstractTypeFromInternalName(symbolTable, catchTypeDescriptor);
 			// Mark handlerBlock as an exception handler.
 			Label handlerBlock = handler.handlerPc.getCanonicalInstance();
+			Objects.requireNonNull(handlerBlock, "TryCatch " + handlerNum + " Handler");
 			handlerBlock.flags |= Label.FLAG_JUMP_TARGET;
 			// Add handlerBlock as a successor of all the basic blocks in the exception handler range.
 			Label handlerRangeBlock = handler.startPc.getCanonicalInstance();
+			Objects.requireNonNull(handlerRangeBlock, "TryCatch " + handlerNum + " Start");
 			Label handlerRangeEnd = handler.endPc.getCanonicalInstance();
+			Objects.requireNonNull(handlerRangeEnd, "TryCatch " + handlerNum + " End");
 			while (handlerRangeBlock != handlerRangeEnd) {
 				handlerRangeBlock.outgoingEdges =
 						new Edge(catchType, handlerBlock, handlerRangeBlock.outgoingEdges);
+				Objects.requireNonNull(
+						handlerRangeBlock.nextBasicBlock,
+						"TryCatch " + handlerNum + " next block (Preceded by instruction 0x" + Integer.toString(handlerRangeBlock.bytecodeOffset, 16) + ")"
+				);
 				handlerRangeBlock = handlerRangeBlock.nextBasicBlock;
 			}
+			handlerNum += 1;
 			handler = handler.nextHandler;
 		}
 		

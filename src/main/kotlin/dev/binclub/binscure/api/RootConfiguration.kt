@@ -9,7 +9,7 @@ import java.io.File
  */
 data class RootConfiguration(
 	val input: File,
-	val output: File = File(input.absolutePath.replaceLast('.', "-obf.")),
+	val output: File = File(input.absolutePath.substringBeforeLast('.') + "-obf.jar"),
 	val mappingFile: File?,
 	val libraries: List<File> = arrayListOf(),
 	private val exclusions: List<String> = arrayListOf(),

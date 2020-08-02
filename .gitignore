@@ -13,3 +13,8 @@ testing/obftest/out
 native/cmake-build-debug
 
 .csv
+
+rustinter/Cargo.lock
+rustinter/target/
+rustinter/debug/
+**/*.rs.bk

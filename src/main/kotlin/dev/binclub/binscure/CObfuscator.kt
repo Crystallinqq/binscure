@@ -8,6 +8,7 @@ import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
 import dev.binclub.binscure.processors.AbstractMethodImplementor
+import dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer
 import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
 import dev.binclub.binscure.processors.constants.FieldInitialiser
 import dev.binclub.binscure.processors.constants.NumberObfuscation
@@ -66,7 +67,7 @@ object CObfuscator {
 		
 		val processors = arrayOf(
 			//VariableInitializer,
-			FieldInitialiser,
+			/*FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
 			
@@ -79,10 +80,11 @@ object CObfuscator {
 			ClassRenamer,
 			
 			StringObfuscator,
-			DynamicCallObfuscation,
+			DynamicCallObfuscation,*/
 			
 			//JumpRearranger,
-			CfgFucker,
+			ArithmeticSubstitutionTransformer,
+			/*CfgFucker,
 			BadClinitExploit,
 			ClassInitMonitor,
 			FakeTryCatch,
@@ -94,7 +96,7 @@ object CObfuscator {
 			BadAttributeExploit,
 			BadIndyConstant,
 			
-			AbstractMethodImplementor,
+			AbstractMethodImplementor,*/
 			
 			ManifestResourceProcessor
 		)

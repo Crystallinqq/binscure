@@ -142,18 +142,64 @@ fun getNumFromLdc(insn: AbstractInsnNode): Number {
 	}
 }
 
-fun <T> randomBranch(random: SecureRandom, vararg blocks: (Int) -> T): T {
-	val choice = random.nextInt(blocks.size)
-	return blocks.elementAt(choice).invoke(choice)
+inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T): T {
+	return block0.invoke(0)
 }
-
-fun randomBranchExcluding(random: SecureRandom, exclusion: MutableInteger, vararg blocks: Int.() -> Unit) {
-	var choice: Int
-	do {
-		choice = random.nextInt(blocks.size)
-	} while (exclusion.equals(choice))
-	exclusion.value = choice
-	blocks.elementAt(choice).invoke(choice)
+inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T): T {
+	return when (random.nextBoolean()) {
+		false -> block0(0)
+		true -> block1(1)
+	}
+}
+inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T): T {
+	return when (random.nextInt(3)) {
+		0 -> block0(0)
+		1 -> block1(1)
+		2 -> block2(2)
+		else -> error("Out of bounds")
+	}
+}
+inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T, block3: (Int) -> T): T {
+	return when (random.nextInt(4)) {
+		0 -> block0(0)
+		1 -> block1(1)
+		2 -> block2(2)
+		3 -> block3(3)
+		else -> error("Out of bounds")
+	}
+}
+inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T, block3: (Int) -> T, block4: (Int) -> T): T {
+	return when (random.nextInt(5)) {
+		0 -> block0(0)
+		1 -> block1(1)
+		2 -> block2(2)
+		3 -> block3(3)
+		4 -> block4(4)
+		else -> error("Out of bounds")
+	}
+}
+inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T, block3: (Int) -> T, block4: (Int) -> T, block5: (Int) -> T): T {
+	return when (random.nextInt(6)) {
+		0 -> block0(0)
+		1 -> block1(1)
+		2 -> block2(2)
+		3 -> block3(3)
+		4 -> block4(4)
+		5 -> block5(5)
+		else -> error("Out of bounds")
+	}
+}
+inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T, block3: (Int) -> T, block4: (Int) -> T, block5: (Int) -> T, block6: (Int) -> T): T {
+	return when (random.nextInt(7)) {
+		0 -> block0(0)
+		1 -> block1(1)
+		2 -> block2(2)
+		3 -> block3(3)
+		4 -> block4(4)
+		5 -> block5(5)
+		6 -> block6(6)
+		else -> error("Out of bounds")
+	}
 }
 
 data class MutableInteger(var value: Int) {

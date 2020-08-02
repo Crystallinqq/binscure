@@ -33,6 +33,7 @@ object AbstractMethodImplementor: IClassProcessor {
 						method.access = method.access.removeAccess(ACC_ABSTRACT)
 						
 						if (method.instructions == null || method.instructions.size() <= 0) {
+							method.tryCatchBlocks = null
 							method.instructions = insnBuilder {
 								+TypeInsnNode(NEW, "java/lang/UnsupportedOperationException")
 								+InsnNode(DUP)

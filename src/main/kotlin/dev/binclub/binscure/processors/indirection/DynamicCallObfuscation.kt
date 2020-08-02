@@ -116,9 +116,9 @@ object DynamicCallObfuscation: IClassProcessor {
 								add(indyNode)
 								
 								if (returnType.sort == Type.ARRAY || returnType.sort == Type.OBJECT) {
-									add(printAsm("Returned: "))
-									add(DUP)
-									add(printlnAsm())
+									//add(printAsm("Returned: "))
+									//add(DUP)
+									//add(printlnAsm())
 								}
 								
 								// Cast return type to expected type (since we downcasted to Object earlier)
