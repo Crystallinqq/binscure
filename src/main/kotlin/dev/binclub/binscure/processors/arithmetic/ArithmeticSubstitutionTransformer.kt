@@ -98,19 +98,17 @@ object ArithmeticSubstitutionTransformer: IClassProcessor {
 								})
 							}, {
 								modifier.replace(insn, insnBuilder {
-									// (a - b) = (-a | b) + (-b & a)
-									// x = -a | b
-									// y = -b & a
-									// out = x + y
-									dup2() // [a, b, a, b]
-									ineg() // [-a, b, a, b]
-									ior() // [x, a, b]
-									dup_x2() // [x, a, b, x]
-									pop() // [a, b, x]
-									swap() // [b, a, x]
-									ineg() // [-b, a, x]
-									iand() // [y, x]
-									iadd() // [out]
+									// (a - b) = (b + (a ^ -1)) ^ -1
+									// x = a ^ -1
+									// y = b + x
+									// out = y ^ -1
+									// [b, a]
+									swap() // [a, b]
+									iconst_m1() // [-1, a, b]
+									ixor() // [x, b]
+									iadd() // [y]
+									iconst_m1()
+									ixor()
 								})
 							})
 						}
