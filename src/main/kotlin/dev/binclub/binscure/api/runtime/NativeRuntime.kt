@@ -38,5 +38,5 @@ object NativeRuntime {
 	 * Load class
 	 * @param a byte array
 	 */
-	external fun a(a: Any)
+	external fun a(a: Any): Any
 }
