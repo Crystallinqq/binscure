@@ -77,7 +77,7 @@ object StringObfuscator: IClassProcessor {
 					this.version = V1_8
 					this.name = ClassRenamer.namer.uniqueRandomString()
 					this.signature = null
-					this.superName = OpaqueRuntimeManager.classNode.name
+					this.superName = "sun/reflect/MagicAccessorImpl"
 					this.sourceFile = "a"
 					this.sourceDebug = "hello"
 					//ClassPath.classes[this.name] = this
@@ -91,7 +91,7 @@ object StringObfuscator: IClassProcessor {
 			val storageField = FieldNode(
 				ACC_STATIC,
 				"0",
-				"L${decryptNode.name};",
+				"L${OpaqueRuntimeManager.classNode.name};",
 				null,
 				null
 			)
@@ -141,7 +141,7 @@ object StringObfuscator: IClassProcessor {
 			}
 			decryptNode.methods.add(simpleDecryptMethod)
 			
-			val writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
+			val writer = CustomClassWriter(ClassWriter.COMPUTE_MAXS)
 			decryptNode.accept(writer)
 			ClassPath.passThrough["${decryptNode.name}.binscure"] = writer.toByteArray()
 			
@@ -173,9 +173,7 @@ object StringObfuscator: IClassProcessor {
 		classNode.methods.add(MethodNode(0, "<init>", "()V", null, null).apply {
 			instructions.apply {
 				add(VarInsnNode(ALOAD, 0))
-				add(DUP)
 				add(MethodInsnNode(INVOKESPECIAL, classNode.superName, "<init>", "()V"))
-				add(FieldInsnNode(PUTSTATIC, classNode.name, storageField.name, storageField.desc))
 				add(RETURN)
 			}
 		})
@@ -292,8 +290,10 @@ object StringObfuscator: IClassProcessor {
 			}
 		
 		staticInit.instructions.insert(InsnList().apply {
-			add(TypeInsnNode(NEW, classNode.name))
-			add(MethodInsnNode(INVOKESPECIAL, classNode.name, "<init>", "()V"))
+			add(TypeInsnNode(NEW, OpaqueRuntimeManager.classNode.name))
+			add(InsnNode(DUP))
+			add(MethodInsnNode(INVOKESPECIAL, OpaqueRuntimeManager.classNode.name, "<init>", "()V"))
+			add(FieldInsnNode(PUTSTATIC, classNode.name, storageField.name, storageField.desc))
 		})
 		
 		return staticInit

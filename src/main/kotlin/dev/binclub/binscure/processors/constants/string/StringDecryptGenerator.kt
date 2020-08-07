@@ -5,6 +5,7 @@ import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import java.util.ArrayList
 
@@ -321,7 +322,7 @@ object StringDecryptGenerator {
 			add(MethodInsnNode(INVOKESPECIAL, "java/lang/String", "<init>", "([C)V"))
 			add(InsnNode(DUP_X2)) // Duplicate two values down
 			
-			add(MethodInsnNode(INVOKEVIRTUAL, classNode.name, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
+			add(MethodInsnNode(INVOKEVIRTUAL, Type.getType(storageField.desc).internalName, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
 			add(SWAP)
 			add(InsnNode(ARETURN)) // Return string
 			
@@ -354,7 +355,7 @@ object StringDecryptGenerator {
 			add(checkCache)
 			add(FieldInsnNode(GETSTATIC, classNode.name, storageField.name, storageField.desc))
 			add(VarInsnNode(ALOAD, 0))
-			add(MethodInsnNode(INVOKEVIRTUAL, classNode.name, "get", "(Ljava/lang/Object;)Ljava/lang/Object;"))
+			add(MethodInsnNode(INVOKEVIRTUAL, Type.getType(storageField.desc).internalName, "get", "(Ljava/lang/Object;)Ljava/lang/Object;"))
 			add(DUP)
 			// Return if not null
 			val b4afterRet = newLabel()
