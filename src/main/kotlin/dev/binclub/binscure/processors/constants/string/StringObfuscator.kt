@@ -4,6 +4,7 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.transformers.StringObfuscationConfiguration
 import dev.binclub.binscure.classpath.ClassPath
+import dev.binclub.binscure.classpath.CustomClassWriter
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.processors.exploit.BadAttributeExploit
 import dev.binclub.binscure.processors.exploit.BadClinitExploit
@@ -11,6 +12,7 @@ import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager
 import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
+import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
@@ -28,6 +30,7 @@ object StringObfuscator: IClassProcessor {
 	}
 	
 	var decryptNode: ClassNode? = null
+	var proxyNode: ClassNode? = null
 	var decryptMethod: MethodNode by Delegates.notNull()
 	var keysField: FieldNode by Delegates.notNull()
 	override val progressDescription: String
@@ -42,7 +45,7 @@ object StringObfuscator: IClassProcessor {
 		for (classNode in classes) {
 			if (isExcluded(classNode))
 				continue
-			if (!classNode.versionAtLeast(Opcodes.V1_7))
+			if (!classNode.versionAtLeast(V1_7))
 				continue
 			
 			for (method in classNode.methods) {
@@ -77,14 +80,14 @@ object StringObfuscator: IClassProcessor {
 					this.superName = OpaqueRuntimeManager.classNode.name
 					this.sourceFile = "a"
 					this.sourceDebug = "hello"
-					ClassPath.classes[this.name] = this
+					//ClassPath.classes[this.name] = this
 					ClassPath.classPath[this.name] = this
-					decryptNode = this
 					if (rootConfig.crasher.enabled && rootConfig.crasher.antiAsm) {
 						BadAttributeExploit.process(Collections.singleton(this), Collections.emptyMap())
 					}
 					BadClinitExploit.process(Collections.singleton(this), Collections.emptyMap())
 				}
+			this.decryptNode = decryptNode
 			val storageField = FieldNode(
 				ACC_STATIC,
 				"0",
@@ -126,16 +129,24 @@ object StringObfuscator: IClassProcessor {
 					storageField,
 					stringInsns
 				)
-			decryptMethod = decryptorMethod
+			this.decryptMethod = decryptorMethod
 			
-			decryptNode.methods.add(MethodNode(ACC_PUBLIC + ACC_STATIC, "0", "(Ljava/lang/String;)Ljava/lang/String;", null, null).apply {
+			val simpleDecryptMethod = MethodNode(ACC_PUBLIC + ACC_STATIC, "0", "(Ljava/lang/String;)Ljava/lang/String;", null, null).apply {
 				instructions.apply {
 					add(VarInsnNode(ALOAD, 0))
 					add(ldcInt(3))
 					add(MethodInsnNode(INVOKESTATIC, decryptNode.name, decryptorMethod.name, decryptorMethod.desc))
 					add(ARETURN)
 				}
-			})
+			}
+			decryptNode.methods.add(simpleDecryptMethod)
+			
+			val writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
+			decryptNode.accept(writer)
+			ClassPath.passThrough["${decryptNode.name}.binscure"] = writer.toByteArray()
+			
+			val proxyNode = StringProxyGenerator.generateStringProxy(decryptNode, decryptorMethod, simpleDecryptMethod)
+			this.proxyNode = proxyNode
 			
 			for ((index, string) in stringInsns.withIndex()) {
 				
@@ -145,7 +156,7 @@ object StringObfuscator: IClassProcessor {
 				val list = InsnList().apply {
 					add(MethodInsnNode(
 						INVOKESTATIC,
-						decryptNode.name,
+						proxyNode.name,
 						decryptorMethod.name,
 						"(Ljava/lang/String;)Ljava/lang/String;",
 						false

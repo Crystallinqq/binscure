@@ -355,8 +355,13 @@ infix fun Double.xor(b: Double) =
 	java.lang.Double.longBitsToDouble(java.lang.Double.doubleToLongBits(this) xor java.lang.Double.doubleToLongBits(b))
 
 fun downCastType(type: Type): Type {
-	return when (type.sort) {
-		Type.OBJECT -> Type.getType(Any::class.java)
+	return when {
+		type.sort == Type.OBJECT -> Type.getType(Any::class.java)
+		type.sort == Type.ARRAY && type.elementType.sort == Type.OBJECT -> {
+			//println(type.internalName)
+			//Type.getType(Array<Any>::class.java)
+			type
+		}
 		else -> type
 	}
 }

@@ -7,7 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-jni = "0.17.0"
+jni = { git = "https://github.com/cookiedragon234/jni-rs" }
+#jni = "0.17.0"
 obfstr = "0.1.1"
 
 [lib]

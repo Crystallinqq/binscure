@@ -17,6 +17,8 @@ import java.io.FileOutputStream
 import java.lang.reflect.Field
 import java.net.URL
 import java.net.URLClassLoader
+import java.time.Duration
+import java.time.Instant
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.zip.CRC32
@@ -123,11 +125,22 @@ object ClassPathIO {
 				it.putNextEntry(ZipEntry("â\u3B25\u00d4\ud400®©¯\u00EB\u00A9\u00AE\u008D\u00AA\u002E"))
 			}
 			
+			var lastPrint = 0L
+			
+			fun shouldPrint(): Boolean {
+				val now = System.currentTimeMillis()
+				return if (now - lastPrint >= 100L) {
+					lastPrint = now
+					true
+				} else false
+			}
+			
+			val lineChar = rootConfig.getLineChar()
+			
 			for ((i, entry) in passThrough.entries.withIndex()) {
-				if (rootConfig.printProgress) {
-					print(rootConfig.getLineChar())
+				if (shouldPrint() && rootConfig.printProgress) {
 					val percentStr = ((i.toFloat() / passThrough.size) * 100).toInt().toString().padStart(3, ' ')
-					print("Writing resources ($percentStr% - $i/${passThrough.size})".padEnd(100, ' '))
+					print("${lineChar}Writing resources ($percentStr% - $i/${passThrough.size})".padEnd(100, ' '))
 				}
 				crc.overwrite = false
 				it.putNextEntry(ZipEntry(entry.key))
@@ -141,10 +154,9 @@ object ClassPathIO {
 			
 			for ((i, classNode) in classes.values.withIndex()) {
 				val excluded = rootConfig.tExclusions.isExcluded(classNode)
-				if (rootConfig.printProgress) {
-					print(rootConfig.getLineChar())
+				if (shouldPrint() && rootConfig.printProgress) {
 					val percentStr = ((i.toFloat() / classes.size) * 100).toInt().toString().padStart(3, ' ')
-					print("Writing classes ($percentStr% - $i/${classes.size})".padEnd(100, ' '))
+					print("${lineChar}Writing classes ($percentStr% - $i/${classes.size})".padEnd(100, ' '))
 				}
 				try {
 					if (!excluded) {
@@ -184,7 +196,7 @@ object ClassPathIO {
 						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
 						classNode.accept(writer)
 					} catch (e: Throwable) {
-						println("\rError while writing class ${classNode.name}")
+						println("${lineChar}Error while writing class ${classNode.name}")
 						e.printStackTrace()
 						
 						writer = CustomClassWriter(0)

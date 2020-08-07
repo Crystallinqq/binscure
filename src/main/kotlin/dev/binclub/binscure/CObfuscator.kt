@@ -67,7 +67,7 @@ object CObfuscator {
 		
 		val processors = arrayOf(
 			//VariableInitializer,
-			/*FieldInitialiser,
+			FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
 			
@@ -80,11 +80,11 @@ object CObfuscator {
 			ClassRenamer,
 			
 			StringObfuscator,
-			DynamicCallObfuscation,*/
+			DynamicCallObfuscation,
 			
 			//JumpRearranger,
 			ArithmeticSubstitutionTransformer,
-			/*CfgFucker,
+			CfgFucker,
 			BadClinitExploit,
 			ClassInitMonitor,
 			FakeTryCatch,
@@ -96,7 +96,7 @@ object CObfuscator {
 			BadAttributeExploit,
 			BadIndyConstant,
 			
-			AbstractMethodImplementor,*/
+			AbstractMethodImplementor,
 			
 			ManifestResourceProcessor
 		)
