@@ -83,43 +83,42 @@ object DynamicCallObfuscation: IClassProcessor {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode) {
 							if (targetOps.contains(insn.opcode)) {
+								//if (insn.owner.startsWith('[')) continue
+								
 								var newDesc = insn.desc
 								if (insn.opcode != INVOKESTATIC) {
-									newDesc = if ((insn.owner.startsWith('L') || insn.owner.startsWith("[L")) && insn.owner.endsWith(';')) {
+									newDesc = if ((insn.owner.startsWith('L') || insn.owner.startsWith("["))) {
 										newDesc.replaceFirst("(", "(${insn.owner}")
 									} else {
 										newDesc.replaceFirst("(", "(L${insn.owner};")
 									}
 								}
 								val returnType = Type.getReturnType(newDesc)
+								val newReturnType = downCastType(returnType)
 								
 								val args = Type.getArgumentTypes(newDesc)
 								
 								// Downcast types to java/lang/Object
-								//for (i in args.indices) {
-								//	args[i] = downCastType(args[i])
-								//}
+								for (i in args.indices) {
+									if (insn.opcode != INVOKESTATIC && i == 0) continue
+									args[i] = downCastType(args[i])
+								}
 								
 								//newDesc = Type.getMethodDescriptor(downCastType(returnType), *args)
-								newDesc = Type.getMethodDescriptor(returnType, *args)
-								println("\rNewDesc: [    $newDesc".padEnd(100, ' ') + "]")
+								newDesc = Type.getMethodDescriptor(newReturnType, *args)
+								
+								val paramOwner = insn.owner.replace('/', '.')
 								
 								val indyNode = InvokeDynamicInsnNode(
 									"i",
 									newDesc,
 									handler,
 									insn.opcode,
-									encryptName(classNode, method, insn.owner.replace('/', '.')),
+									encryptName(classNode, method, paramOwner),
 									encryptName(classNode, method, insn.name),
 									encryptName(classNode, method, insn.desc)
 								)
 								add(indyNode)
-								
-								if (returnType.sort == Type.ARRAY || returnType.sort == Type.OBJECT) {
-									//add(printAsm("Returned: "))
-									//add(DUP)
-									//add(printlnAsm())
-								}
 								
 								// Cast return type to expected type (since we downcasted to Object earlier)
 								var checkCast: TypeInsnNode? = null
@@ -142,21 +141,23 @@ object DynamicCallObfuscation: IClassProcessor {
 										checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
 									}
 								}
-								if (checkCast != null) {
-									val desc = checkCast.desc
+								
+								val debug = false//insn.owner.contains("TestEnum")
+								
+								if (debug) {
+									println("\r-----")
 									
-									if ((desc.startsWith("[") || desc.startsWith("(")) && !desc.endsWith(";")) {
-										println("\r-----")
-										
-										println("Transforming: ${insn.owner}.${insn.name}.${insn.desc}")
-										println("Into: $newDesc")
-										
-										println("Checkcasting to ${checkCast.desc}")
-										
-										error("!!!!! wtf")
-									}
-									
+									println("Transforming: ${insn.owner}.${insn.name}.${insn.desc}")
+									println("Into: $newDesc")
+								}
+								
+								if (checkCast != null && insn.next?.opcode != CHECKCAST) {
 									if (checkCast.desc != Any::class.internalName) {
+										
+										if (debug) {
+											println("Checkcasting to ${checkCast.desc}")
+										}
+										
 										add(checkCast)
 									}
 								}
