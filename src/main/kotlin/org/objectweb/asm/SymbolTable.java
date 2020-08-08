@@ -77,13 +77,13 @@ public final class SymbolTable {
 	 * The number of constant pool items in {@link #constantPool}, plus 1. The first constant pool
 	 * item has index 1, and long and double items count for two items.
 	 */
-	private int constantPoolCount;
+	public int constantPoolCount;
 	
 	/**
 	 * The content of the ClassFile's constant_pool JVMS structure corresponding to this SymbolTable.
 	 * The ClassFile's constant_pool_count field is <i>not</i> included.
 	 */
-	private ByteVector constantPool;
+	public ByteVector constantPool;
 	
 	/**
 	 * The number of bootstrap methods in {@link #bootstrapMethods}. Corresponds to the

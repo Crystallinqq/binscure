@@ -31,6 +31,7 @@ class InsnBuilder {
 	inline fun aconst_null() = insn(ACONST_NULL)
 	
 	inline fun pop() = insn(POP)
+	inline fun athrow() = insn(ATHROW)
 	
 	inline fun ineg() = insn(INEG)
 	inline fun isub() = insn(ISUB)

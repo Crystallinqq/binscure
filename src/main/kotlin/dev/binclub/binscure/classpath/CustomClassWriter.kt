@@ -4,13 +4,14 @@ import dev.binclub.binscure.classpath.tree.ClassTreeEntry
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import org.objectweb.asm.ByteVector
 import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Symbol
 import java.lang.reflect.Modifier
 import java.util.*
 
 /**
  * @author cookiedragon234 23/Jan/2020
  */
-class CustomClassWriter(flags: Int): ClassWriter(flags) {
+class CustomClassWriter(flags: Int, verify: Boolean = true): ClassWriter(flags, verify) {
 	init {
 		if (rootConfig.watermark) {
 			this.newUTF8("Protected by binclub.dev/binscure")

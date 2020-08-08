@@ -21,7 +21,7 @@ import java.util.*
 object StringProxyGenerator {
 	var classNode: ClassNode? = null
 	
-	fun generateStringProxy(actual: ClassNode, decryptMethod: MethodNode, simpleDecryptMethod: MethodNode): ClassNode {
+	fun generateStringProxy(actual: ClassNode, decryptMethod: MethodNode, simpleDecryptMethod: MethodNode, resourceName: String): ClassNode {
 		classNode?.let {
 			return it
 		}
@@ -81,13 +81,13 @@ object StringProxyGenerator {
 			}
 		})
 		
-		genClinit(classNode, actual)
+		genClinit(classNode, actual, resourceName)
 		
 		this.classNode = classNode
 		return classNode
 	}
 	
-	fun genClinit(proxy: ClassNode, actual: ClassNode) {
+	fun genClinit(proxy: ClassNode, actual: ClassNode, resourceName: String) {
 		val mn = MethodNode(
 			ACC_STATIC,
 			"<clinit>",
@@ -97,8 +97,6 @@ object StringProxyGenerator {
 		)
 		
 		mn.instructions = insnBuilder {
-			val resourceName = "${actual.name}.binscure"
-			
 			ldc(Type.getType("L${proxy.name};"))
 			invokevirtual(
 				"java/lang/Class",

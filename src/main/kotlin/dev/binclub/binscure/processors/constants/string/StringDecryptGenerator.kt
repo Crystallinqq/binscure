@@ -63,7 +63,7 @@ object StringDecryptGenerator {
 		val veryveryStart = newLabel()
 		
 		decryptorMethod.tryCatchBlocks.apply {
-			add(TryCatchBlockNode(finalReturn, classNotFoundHandler, classNotFoundHandler, "java/lang/Throwable"))
+			add(TryCatchBlockNode(finalReturn, classNotFoundHandler, classNotFoundHandler, "java/lang/Object"))
 			add(TryCatchBlockNode(getCurrentThread, switch, setCharArrVal, "java/lang/NoClassDefFoundError"))
 			add(TryCatchBlockNode(getClassName, genericCatch, popBeforeGetMethodName, "java/lang/BootstrapMethodError"))
 			add(TryCatchBlockNode(getCurrentThread, switch, switchExceptionReceiver, "java/lang/IllegalMonitorStateException"))
@@ -80,12 +80,12 @@ object StringDecryptGenerator {
 			add(TryCatchBlockNode(getCurrentThread, finalReturn, handler, "java/lang/IllegalArgumentException"))
 			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, genericCatch, "java/lang/NoClassDefFoundError"))
 			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/NoClassDefFoundError"))
-			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
-			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Object"))
+			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, "java/lang/Object"))
 			add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
-			add(TryCatchBlockNode(start, end, handler, null))
-			add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
-			add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Throwable"))
+			add(TryCatchBlockNode(start, end, handler, "java/lang/Object"))
+			add(TryCatchBlockNode(fakeEnd, end, secondCatch, "java/lang/Object"))
+			add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Object"))
 			add(TryCatchBlockNode(getCurrentThread, xors, secondCatch, null))
 		}
 		
@@ -334,7 +334,7 @@ object StringDecryptGenerator {
 			add(InsnNode(IXOR))
 			add(VarInsnNode(ISTORE, 15))
 			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
-			add(JumpInsnNode(GOTO, getCurrentThread))
+			add(JumpInsnNode(GOTO, fakeEnd))
 			
 			add(popBeforeGetMethodName)
 			add(POP)
@@ -360,7 +360,6 @@ object StringDecryptGenerator {
 			// Return if not null
 			val b4afterRet = newLabel()
 			add(JumpInsnNode(IFNULL, b4afterRet))
-			add(TypeInsnNode(CHECKCAST, "java/lang/String"))
 			add(InsnNode(ARETURN))
 			add(b4afterRet)
 			add(TypeInsnNode(NEW, "java/lang/IllegalStateException"))
@@ -479,8 +478,70 @@ object StringDecryptGenerator {
 			)
 		}
 		decryptorMethod.instructions.add(insnList)
-		//decryptorMethod.instructions = insnListOf(InsnNode(ACONST_NULL), InsnNode(ARETURN))
+		
+		
+		
 		classNode.methods.add(decryptorMethod)
+		
+		val fuckeryMethod = MethodNode(
+			ACC_STATIC,
+			"fuckery",
+			"()V",
+			null,
+			null
+		)
+		kotlin.run {
+			fuckeryMethod.instructions = insnBuilder {
+				getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+				aconst_null()
+				invokevirtual("java/io/PrintStream", "println", "(I)V")
+				
+				val start = LabelNode()
+				val end = LabelNode()
+				val handler = LabelNode()
+				+start
+				ldc("hi")
+				athrow()
+				+end
+				+handler
+				getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+				swap()
+				invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/String;)V")
+				_return()
+				fuckeryMethod.tryCatchBlocks.add(
+					TryCatchBlockNode(start, end, handler, "java/lang/String")
+				)
+			}
+			
+			/*val start = LabelNode()
+			val end = LabelNode()
+			val handler = LabelNode()
+			start.label.resolve(1)
+			end.label.resolve(2)
+			handler.label.resolve(2)
+			fuckeryMethod.tryCatchBlocks.add(TryCatchBlockNode(
+				start,
+				end,
+				handler,
+				"java/lang/HiHowAreYou"
+			))*/
+		}
+		classNode.methods.add(fuckeryMethod)
+		
+		/*val clinit = MethodNode(
+			ACC_STATIC,
+			"<clinit>",
+			"()V",
+			null,
+			null
+		)
+		clinit.instructions = insnBuilder {
+			invokestatic(classNode.name, fuckeryMethod.name, fuckeryMethod.desc)
+			_return()
+		}
+		
+		classNode.methods.add(clinit)*/
+		
 		return decryptorMethod
 	}
 }

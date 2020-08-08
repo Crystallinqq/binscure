@@ -191,7 +191,7 @@ public class ByteVector {
 	 * @param shortValue2 another short.
 	 * @return this byte vector.
 	 */
-	final ByteVector put122(final int byteValue, final int shortValue1, final int shortValue2) {
+	public final ByteVector put122(final int byteValue, final int shortValue1, final int shortValue2) {
 		int currentLength = length;
 		if (currentLength + 5 > data.length) {
 			enlarge(5);

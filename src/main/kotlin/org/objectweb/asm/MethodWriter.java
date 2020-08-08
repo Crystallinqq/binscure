@@ -575,12 +575,20 @@ final class MethodWriter extends MethodVisitor {
 		this.compute = compute;
 		if (compute != COMPUTE_NOTHING) {
 			// Update maxLocals and currentLocals.
-			int argumentsSize = Type.getArgumentsAndReturnSizes(descriptor) >> 2;
-			if ((access & Opcodes.ACC_STATIC) != 0) {
+			int argumentsSize = 0;
+			try {
+				argumentsSize = Type.getArgumentsAndReturnSizes(descriptor) >> 2;
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+			
+			if ((access & Opcodes.ACC_STATIC) != 0 && argumentsSize > 0) {
 				--argumentsSize;
 			}
+			
 			maxLocals = argumentsSize;
 			currentLocals = argumentsSize;
+			
 			// Create and visit the label for the first basic block.
 			firstBasicBlock = new Label();
 			visitLabel(firstBasicBlock);
@@ -866,7 +874,7 @@ final class MethodWriter extends MethodVisitor {
 	public void visitVarInsn(final int opcode, final int var) {
 		lastBytecodeOffset = code.length;
 		// Add the instruction to the bytecode of the method.
-		if (var < 4 && opcode != Opcodes.RET) {
+		if (var > 0 && var < 4 && opcode != Opcodes.RET) {
 			int optimizedOpcode;
 			if (opcode < Opcodes.ISTORE) {
 				optimizedOpcode = Constants.ILOAD_0 + ((opcode - Opcodes.ILOAD) << 2) + var;

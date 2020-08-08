@@ -77,7 +77,7 @@ public class ClassWriter extends ClassVisitor {
 	private int version;
 	
 	/** The symbol table for this class (contains the constant_pool and the BootstrapMethods). */
-	private final SymbolTable symbolTable;
+	public final SymbolTable symbolTable;
 	
 	/**
 	 * The access_flags field of the JVMS ClassFile structure. This field can contain ASM specific
@@ -197,6 +197,8 @@ public class ClassWriter extends ClassVisitor {
 	 */
 	private int compute;
 	
+	private boolean verify = true;
+	
 	// -----------------------------------------------------------------------------------------------
 	// Constructor
 	// -----------------------------------------------------------------------------------------------
@@ -209,6 +211,11 @@ public class ClassWriter extends ClassVisitor {
 	 */
 	public ClassWriter(final int flags) {
 		this(null, flags);
+	}
+	
+	public ClassWriter(final int flags, boolean verify) {
+		this(null, flags);
+		this.verify = verify;
 	}
 	
 	/**

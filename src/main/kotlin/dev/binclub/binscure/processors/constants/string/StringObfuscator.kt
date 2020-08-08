@@ -141,11 +141,12 @@ object StringObfuscator: IClassProcessor {
 			}
 			decryptNode.methods.add(simpleDecryptMethod)
 			
-			val writer = CustomClassWriter(ClassWriter.COMPUTE_MAXS)
+			val writer = CustomClassWriter(ClassWriter.COMPUTE_MAXS, verify = false)
 			decryptNode.accept(writer)
-			ClassPath.passThrough["${decryptNode.name}.binscure"] = writer.toByteArray()
+			val resourceName = "${decryptNode.name}.class"
+			ClassPath.passThrough[resourceName] = writer.toByteArray()
 			
-			val proxyNode = StringProxyGenerator.generateStringProxy(decryptNode, decryptorMethod, simpleDecryptMethod)
+			val proxyNode = StringProxyGenerator.generateStringProxy(decryptNode, decryptorMethod, simpleDecryptMethod, resourceName)
 			this.proxyNode = proxyNode
 			
 			for ((index, string) in stringInsns.withIndex()) {
@@ -183,6 +184,9 @@ object StringObfuscator: IClassProcessor {
 		val staticInit =
 			classNode.methods.firstOrNull { it.name == "<clinit>" && it.desc == "()V" }
 			?: MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also { mn ->
+				mn.instructions = insnBuilder {
+					invokestatic(classNode.name, "fuckery", "()V")
+				}
 				mn.instructions.apply {
 					val tc1S = newLabel()
 					val tc1E = newLabel()
