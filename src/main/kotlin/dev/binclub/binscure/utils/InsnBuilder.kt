@@ -41,6 +41,8 @@ class InsnBuilder {
 	inline fun iand() = insn(IAND)
 	inline fun ixor() = insn(IXOR)
 	
+	inline fun i2f() = insn(I2F)
+	
 	inline fun swap() = insn(SWAP)
 	
 	inline fun dup() = insn(DUP)
@@ -65,6 +67,8 @@ class InsnBuilder {
 	inline fun aload(`var`: Int) = +VarInsnNode(ALOAD, `var`)
 	inline fun iload(`var`: Int) = +VarInsnNode(ILOAD, `var`)
 	inline fun istore(`var`: Int) = +VarInsnNode(ISTORE, `var`)
+	inline fun fload(`var`: Int) = +VarInsnNode(FLOAD, `var`)
+	inline fun fstore(`var`: Int) = +VarInsnNode(FSTORE, `var`)
 	
 	inline fun aastore() = insn(AASTORE)
 	

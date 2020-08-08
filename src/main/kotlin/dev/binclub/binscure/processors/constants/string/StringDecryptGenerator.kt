@@ -22,6 +22,10 @@ object StringDecryptGenerator {
 			null
 		)
 		
+		val returnHandlerStart = newLabel()
+		val returnHandlerEnd = newLabel()
+		val returnHandlerHandler = newLabel()
+		
 		val realStart = newLabel()
 		val fakeEnd = newLabel()
 		val start = newLabel()
@@ -87,6 +91,7 @@ object StringDecryptGenerator {
 			add(TryCatchBlockNode(fakeEnd, end, secondCatch, "java/lang/Object"))
 			add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Object"))
 			add(TryCatchBlockNode(getCurrentThread, xors, secondCatch, null))
+			add(TryCatchBlockNode(returnHandlerStart, returnHandlerEnd, returnHandlerHandler, "java/io/Serializable"))
 		}
 		
 		// First check if the value is cached
@@ -100,10 +105,10 @@ object StringDecryptGenerator {
 			add(VarInsnNode(ASTORE, 3)) // Switch control
 			
 			
-			add(ICONST_1)
+			add(ldcFloat(1f))
 			add(FieldInsnNode(GETSTATIC, classNode.name, StringObfuscator.keysField.name, StringObfuscator.keysField.desc))
 			add(VarInsnNode(ASTORE, 16))
-			add(VarInsnNode(ISTORE, 13))
+			add(VarInsnNode(FSTORE, 13))
 			
 			add(VarInsnNode(ALOAD, 16))
 			add(VarInsnNode(ASTORE, 12))
@@ -133,34 +138,28 @@ object StringDecryptGenerator {
 			add(ICONST_M1)
 			add(VarInsnNode(ILOAD, 1))
 			add(VarInsnNode(ISTORE, 11))
-			add(ldcInt(StringObfuscator.key))
-			add(VarInsnNode(ISTORE, 1))
+			add(ldcLong(StringObfuscator.key.toLong()))
+			add(VarInsnNode(LSTORE, 1))
 			add(VarInsnNode(ISTORE, 2))
-			add(ICONST_M1)
+			add(ldcFloat(0f))
 			add(ACONST_NULL)
 			add(VarInsnNode(ASTORE, 9))
-			add(VarInsnNode(ISTORE, 10))
-			add(ldcInt(0))
+			add(VarInsnNode(FSTORE, 10))
+			add(ICONST_M1)
 			add(VarInsnNode(ISTORE, 15))
 			add(VarInsnNode(ISTORE, 6))
 			newLabel().also {
 				add(randomOpaqueJump(it))
-				add(
-					InvokeDynamicInsnNode(
+				add(InvokeDynamicInsnNode(
 					null, null, null
-				)
-				)
-				add(
-					InvokeDynamicInsnNode(
+				))
+				add(InvokeDynamicInsnNode(
 					"fuck", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")
-				)
-				)
-				add(
-					InvokeDynamicInsnNode(
+				))
+				add(InvokeDynamicInsnNode(
 					"yayeet", "()Ljava/lang/YaYeet;", Handle(H_INVOKESTATIC, "a", "a", "()[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[I")
-				)
-				)
-				add(POP)
+				))
+				add(POP2)
 				add(it)
 			}
 			add(ICONST_M1)
@@ -173,7 +172,7 @@ object StringDecryptGenerator {
 			add(JumpInsnNode(GOTO, start))
 			add(switchDefault)
 			add(InsnNode(ACONST_NULL))
-			add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
+			add(TypeInsnNode(CHECKCAST, "java/lang/String"))
 			add(InsnNode(POP))
 			add(l5) // xor i
 			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
@@ -212,6 +211,8 @@ object StringDecryptGenerator {
 			add(InsnNode(POP))
 			add(end)
 			// Fake try catch start half end
+			
+			add(returnHandlerStart)
 			
 			add(JumpInsnNode(GOTO, realStart))
 			
@@ -324,7 +325,7 @@ object StringDecryptGenerator {
 			
 			add(MethodInsnNode(INVOKEVIRTUAL, Type.getType(storageField.desc).internalName, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
 			add(SWAP)
-			add(InsnNode(ARETURN)) // Return string
+			add(InsnNode(ATHROW)) // Return string
 			
 			add(l2) // xor classhash
 			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
@@ -360,7 +361,7 @@ object StringDecryptGenerator {
 			// Return if not null
 			val b4afterRet = newLabel()
 			add(JumpInsnNode(IFNULL, b4afterRet))
-			add(InsnNode(ARETURN))
+			add(InsnNode(ATHROW))
 			add(b4afterRet)
 			add(TypeInsnNode(NEW, "java/lang/IllegalStateException"))
 			add(DUP)
@@ -422,12 +423,17 @@ object StringDecryptGenerator {
 			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
 			add(JumpInsnNode(GOTO, getCurrentThread))
 			
+			add(returnHandlerHandler)
+			add(ARETURN)
+			
 			add(switchEnd)
 			add(InsnNode(ACONST_NULL))
 			add(InsnNode(ATHROW))
 			
 			add(popBeforeRealStart)
 			add(POP)
+			
+			add(returnHandlerEnd)
 			
 			add(realStart)
 			add(ldcInt(StringObfuscator.key))
@@ -492,25 +498,31 @@ object StringDecryptGenerator {
 		)
 		kotlin.run {
 			fuckeryMethod.instructions = insnBuilder {
-				getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
-				aconst_null()
-				invokevirtual("java/io/PrintStream", "println", "(I)V")
-				
-				val start = LabelNode()
-				val end = LabelNode()
-				val handler = LabelNode()
-				+start
-				ldc("hi")
-				athrow()
-				+end
-				+handler
-				getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
-				swap()
-				invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/String;)V")
-				_return()
-				fuckeryMethod.tryCatchBlocks.add(
-					TryCatchBlockNode(start, end, handler, "java/lang/String")
-				)
+				if (true) {
+					_return()
+				} else {
+					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+					ldc(java.lang.Float.intBitsToFloat(1))
+					fstore(1)
+					iload(1)
+					invokevirtual("java/io/PrintStream", "println", "(I)V")
+					
+					val start = LabelNode()
+					val end = LabelNode()
+					val handler = LabelNode()
+					+start
+					ldc("hi")
+					athrow()
+					+end
+					+handler
+					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+					swap()
+					invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/String;)V")
+					_return()
+					fuckeryMethod.tryCatchBlocks.add(
+						TryCatchBlockNode(start, end, handler, "java/lang/String")
+					)
+				}
 			}
 			
 			/*val start = LabelNode()
