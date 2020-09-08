@@ -81,13 +81,13 @@ object StringProxyGenerator {
 			}
 		})
 		
-		genClinit(classNode, actual, resourceName)
+		genClinit(classNode, actual, simpleDecryptMethod, resourceName)
 		
 		this.classNode = classNode
 		return classNode
 	}
 	
-	fun genClinit(proxy: ClassNode, actual: ClassNode, resourceName: String) {
+	fun genClinit(proxy: ClassNode, actual: ClassNode, simpleDecryptMethod: MethodNode, resourceName: String) {
 		val mn = MethodNode(
 			ACC_STATIC,
 			"<clinit>",
@@ -97,6 +97,21 @@ object StringProxyGenerator {
 		)
 		
 		mn.instructions = insnBuilder {
+			ldc("dontinline,${actual.name}.${simpleDecryptMethod.name},${simpleDecryptMethod.desc}")
+			dup()
+			getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+			swap()
+			invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/Object;)V")
+			invokestatic(
+				"java/lang/Compiler",
+				"command",
+				"(Ljava/lang/Object;)Ljava/lang/Object;"
+			)
+			getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+			swap()
+			invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/Object;)V")
+			
+			
 			ldc(Type.getType("L${proxy.name};"))
 			invokevirtual(
 				"java/lang/Class",

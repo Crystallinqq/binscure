@@ -9,6 +9,8 @@ import java.lang.reflect.Modifier
 import java.security.SecureRandom
 import java.util.*
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KProperty
 
 /**
  * @author cookiedragon234 20/Jan/2020
@@ -102,8 +104,23 @@ fun <T> Array<T>.random(random: SecureRandom): T {
 	return elementAt(random.nextInt(size))
 }
 
-val <T: Any> KClass<T>.internalName: String
-	get() = Type.getInternalName(this.java)
+inline fun <reified T: Any> Any?.cast(type: KClass<T>): T = this as T
+inline fun <reified T: Any> Any?.cast(type: Class<T>): T = this as T
+
+inline val <T: Any> KClass<T>.internalName: String
+	inline get() = Type.getInternalName(this.java)
+
+inline val KFunction<*>.descriptor: String
+	inline get() {
+		val params = parameters.map { Type.getType(it.type.classifier.cast(KClass::class).java) }
+		val returnType = Type.getType(returnType.classifier.cast(KClass::class).java)
+		return Type.getMethodDescriptor(returnType, *params.toTypedArray())
+	}
+inline val KProperty<*>.descriptor: String
+	inline get() {
+		val returnType = returnType.classifier.cast(KClass::class).java
+		return Type.getDescriptor(returnType)
+	}
 
 //public infix fun Int.xor(other: Int): Int = this.xor(other)
 

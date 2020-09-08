@@ -7,6 +7,10 @@ import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KProperty
+import kotlin.reflect.jvm.jvmName
 
 /**
  * @author cookiedragon234 18/May/2020
@@ -41,7 +45,18 @@ class InsnBuilder {
 	inline fun iand() = insn(IAND)
 	inline fun ixor() = insn(IXOR)
 	
+	inline fun lneg() = insn(LNEG)
+	inline fun lsub() = insn(LSUB)
+	inline fun ladd() = insn(LADD)
+	inline fun lmul() = insn(LMUL)
+	inline fun lor() = insn(LOR)
+	inline fun land() = insn(LAND)
+	inline fun lxor() = insn(LXOR)
+	
 	inline fun i2f() = insn(I2F)
+	inline fun i2l() = insn(I2L)
+	
+	inline fun lcmp() = insn(LCMP)
 	
 	inline fun swap() = insn(SWAP)
 	
@@ -51,6 +66,7 @@ class InsnBuilder {
 	inline fun dup2() = insn(DUP2)
 	
 	inline fun iconst_m1() = insn(ICONST_M1)
+	inline fun iconst_0() = insn(ICONST_0)
 	inline fun iconst_1() = insn(ICONST_1)
 	inline fun iconst_2() = insn(ICONST_2)
 	inline fun iconst_3() = insn(ICONST_3)
@@ -59,6 +75,7 @@ class InsnBuilder {
 	inline fun goto(labelNode: LabelNode) = +JumpInsnNode(GOTO, labelNode)
 	inline fun ifeq(labelNode: LabelNode) = +JumpInsnNode(IFEQ, labelNode)
 	inline fun ifne(labelNode: LabelNode) = +JumpInsnNode(IFNE, labelNode)
+	inline fun ifle(labelNode: LabelNode) = +JumpInsnNode(IFLE, labelNode)
 	inline fun if_icmpeq(labelNode: LabelNode) = +JumpInsnNode(IF_ICMPEQ, labelNode)
 	inline fun ifnull(labelNode: LabelNode) = +JumpInsnNode(IFNULL, labelNode)
 	inline fun ifnonnull(labelNode: LabelNode) = +JumpInsnNode(IFNONNULL, labelNode)
@@ -71,19 +88,37 @@ class InsnBuilder {
 	inline fun fstore(`var`: Int) = +VarInsnNode(FSTORE, `var`)
 	
 	inline fun aastore() = insn(AASTORE)
+	inline fun aaload() = insn(AALOAD)
 	
 	inline fun arraylength() = insn(ARRAYLENGTH)
 	
 	inline fun invokestatic(owner: String, name: String, desc: String, `interface`: Boolean = false)
 	= +MethodInsnNode(INVOKESTATIC, owner, name, desc, `interface`)
+	inline fun invokestatic(kClass: KClass<*>, kFunction: KFunction<*>)
+	= +MethodInsnNode(INVOKESTATIC, kClass.internalName, kFunction.name, kFunction.descriptor)
 	inline fun invokevirtual(owner: String, name: String, desc: String, `interface`: Boolean = false)
 	= +MethodInsnNode(INVOKEVIRTUAL, owner, name, desc, `interface`)
+	inline fun invokevirtual(kClass: KClass<*>, kFunction: KFunction<*>)
+	= +MethodInsnNode(INVOKEVIRTUAL, kClass.internalName, kFunction.name, kFunction.descriptor)
 	inline fun invokespecial(owner: String, name: String, desc: String, `interface`: Boolean = false)
 	= +MethodInsnNode(INVOKESPECIAL, owner, name, desc, `interface`)
+	inline fun invokespecial(kClass: KClass<*>, kFunction: KFunction<*>)
+	= +MethodInsnNode(INVOKESPECIAL, kClass.internalName, kFunction.name, kFunction.descriptor)
+	inline fun invokespecial(kClass: KClass<*>, name: String, desc: String, `interface`: Boolean = false)
+	= +MethodInsnNode(INVOKESPECIAL, kClass.internalName, name, desc, `interface`)
+	
+	
 	inline fun getstatic(owner: String, name: String, desc: String)
 	= +FieldInsnNode(GETSTATIC, owner, name, desc)
+	inline fun getstatic(kClass: KClass<*>, kField: KProperty<*>)
+	= +FieldInsnNode(GETSTATIC, kClass.internalName, kField.name, kField.descriptor)
+	inline fun getfield(owner: String, name: String, desc: String)
+	= +FieldInsnNode(GETFIELD, owner, name, desc)
+	inline fun getfield(kClass: KClass<*>, kField: KProperty<*>)
+	= +FieldInsnNode(GETFIELD, kClass.internalName, kField.name, kField.descriptor)
 	
 	inline fun new(type: String) = +TypeInsnNode(NEW, type)
+	inline fun new(type: KClass<*>) = +TypeInsnNode(NEW, type.internalName)
 	inline fun newboolarray() = newarray(T_BOOLEAN)
 	inline fun newchararray() = newarray(T_CHAR)
 	inline fun newbytearray() = newarray(T_BYTE)
@@ -95,12 +130,15 @@ class InsnBuilder {
 	inline fun newarray(type: Int) = +IntInsnNode(NEWARRAY, type)
 	inline fun anewarray(desc: String) = +TypeInsnNode(ANEWARRAY, desc)
 	
-	inline fun ldc(`val`: Int) = +ldcInt(`val`)
-	inline fun ldc(`val`: Float) = +ldcFloat(`val`)
-	inline fun ldc(`val`: Long) = +ldcLong(`val`)
-	inline fun ldc(`val`: Double) = +ldcDouble(`val`)
-	inline fun ldc(`val`: String) = +LdcInsnNode(`val`)
-	inline fun ldc(`val`: Type) = +LdcInsnNode(`val`)
-	inline fun ldc(`val`: Handle) = +LdcInsnNode(`val`)
-	inline fun ldc(`val`: ConstantDynamic) = +LdcInsnNode(`val`)
+	inline fun ldc(int: Int) = +ldcInt(int)
+	inline fun ldc(float: Float) = +ldcFloat(float)
+	inline fun ldc(long: Long) = +ldcLong(long)
+	inline fun ldc(double: Double) = +ldcDouble(double)
+	inline fun ldc(string: String) = +LdcInsnNode(string)
+	inline fun ldc(type: Type) = +LdcInsnNode(type)
+	inline fun ldc(handle: Handle) = +LdcInsnNode(handle)
+	
+	inline fun tableswitch(baseNumber: Int, dflt: LabelNode, vararg targets: LabelNode) = +constructTableSwitch(baseNumber, dflt, *targets)
+	inline fun lookupswitch(defaultLabel: LabelNode, lookup: Array<Pair<Int, LabelNode>>) = +constructLookupSwitch(defaultLabel, lookup)
+	
 }

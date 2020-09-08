@@ -325,7 +325,7 @@ object StringDecryptGenerator {
 			
 			add(MethodInsnNode(INVOKEVIRTUAL, Type.getType(storageField.desc).internalName, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"))
 			add(SWAP)
-			add(InsnNode(ATHROW)) // Return string
+			add(InsnNode(ARETURN)) // Return string
 			
 			add(l2) // xor classhash
 			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
@@ -361,7 +361,7 @@ object StringDecryptGenerator {
 			// Return if not null
 			val b4afterRet = newLabel()
 			add(JumpInsnNode(IFNULL, b4afterRet))
-			add(InsnNode(ATHROW))
+			add(InsnNode(ARETURN))
 			add(b4afterRet)
 			add(TypeInsnNode(NEW, "java/lang/IllegalStateException"))
 			add(DUP)
@@ -517,7 +517,7 @@ object StringDecryptGenerator {
 					+handler
 					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
 					swap()
-					invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/String;)V")
+					invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/Object;)V")
 					_return()
 					fuckeryMethod.tryCatchBlocks.add(
 						TryCatchBlockNode(start, end, handler, "java/lang/String")
@@ -548,7 +548,6 @@ object StringDecryptGenerator {
 			null
 		)
 		clinit.instructions = insnBuilder {
-			invokestatic(classNode.name, fuckeryMethod.name, fuckeryMethod.desc)
 			_return()
 		}
 		

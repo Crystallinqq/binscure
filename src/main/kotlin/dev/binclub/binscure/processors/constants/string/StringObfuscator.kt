@@ -32,6 +32,7 @@ object StringObfuscator: IClassProcessor {
 	var decryptNode: ClassNode? = null
 	var proxyNode: ClassNode? = null
 	var decryptMethod: MethodNode by Delegates.notNull()
+	var fastDecryptMethod: MethodNode by Delegates.notNull()
 	var keysField: FieldNode by Delegates.notNull()
 	override val progressDescription: String
 		get() = "Obfuscating string constants"
@@ -114,15 +115,6 @@ object StringObfuscator: IClassProcessor {
 				null
 			))
 			
-			generateStaticBlock(
-				decryptNode,
-				storageField
-			)
-			generateInitFunc(
-				decryptNode,
-				storageField
-			)
-			
 			val decryptorMethod =
 				StringDecryptGenerator.generateDecrypterMethod(
 					decryptNode,
@@ -131,7 +123,7 @@ object StringObfuscator: IClassProcessor {
 				)
 			this.decryptMethod = decryptorMethod
 			
-			val simpleDecryptMethod = MethodNode(ACC_PUBLIC + ACC_STATIC, "0", "(Ljava/lang/String;)Ljava/lang/String;", null, null).apply {
+			val simpleDecryptMethod = MethodNode(ACC_PUBLIC + ACC_STATIC, "2", "(Ljava/lang/String;)Ljava/lang/String;", null, null).apply {
 				instructions.apply {
 					add(VarInsnNode(ALOAD, 0))
 					add(ldcInt(3))
@@ -139,7 +131,17 @@ object StringObfuscator: IClassProcessor {
 					add(ARETURN)
 				}
 			}
+			this.fastDecryptMethod = simpleDecryptMethod
 			decryptNode.methods.add(simpleDecryptMethod)
+			
+			generateStaticBlock(
+				decryptNode,
+				storageField
+			)
+			generateInitFunc(
+				decryptNode,
+				storageField
+			)
 			
 			val writer = CustomClassWriter(ClassWriter.COMPUTE_MAXS, verify = false)
 			decryptNode.accept(writer)
@@ -157,9 +159,9 @@ object StringObfuscator: IClassProcessor {
 				val list = InsnList().apply {
 					add(MethodInsnNode(
 						INVOKESTATIC,
-						proxyNode.name,
-						decryptorMethod.name,
-						"(Ljava/lang/String;)Ljava/lang/String;",
+						decryptNode.name,
+						simpleDecryptMethod.name,
+						simpleDecryptMethod.desc,
 						false
 					))
 				}
@@ -185,7 +187,19 @@ object StringObfuscator: IClassProcessor {
 			classNode.methods.firstOrNull { it.name == "<clinit>" && it.desc == "()V" }
 			?: MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also { mn ->
 				mn.instructions = insnBuilder {
-					invokestatic(classNode.name, "fuckery", "()V")
+					ldc("dontinline,${classNode.name}.${fastDecryptMethod.name},${fastDecryptMethod.desc}")
+					dup()
+					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+					swap()
+					invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/Object;)V")
+					invokestatic(
+						"java/lang/Compiler",
+						"command",
+						"(Ljava/lang/Object;)Ljava/lang/Object;"
+					)
+					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+					swap()
+					invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/Object;)V")
 				}
 				mn.instructions.apply {
 					val tc1S = newLabel()

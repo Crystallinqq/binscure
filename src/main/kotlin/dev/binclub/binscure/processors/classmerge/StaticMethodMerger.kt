@@ -206,16 +206,16 @@ object StaticMethodMerger: IClassProcessor {
 					if (secondMethod.localVariables != null) newMethod.localVariables.addAll(incrementLocalVars(secondMethod.localVariables, secondStatic))
 					secondMethod.localVariables = null
 					
-					StringObfuscator.proxyNode?.let { decryptNode ->
+					StringObfuscator.decryptNode?.let { decryptNode ->
 						val modifier = InstructionModifier()
 						for (insn in newMethod.instructions) {
 							if (insn is MethodInsnNode) {
 								if (
 									insn.owner == decryptNode.name
 									&&
-									insn.name == decryptNode.name
+									insn.name == StringObfuscator.decryptMethod.name
 								) {
-									insn.desc = "(Ljava/lang/String;I)Ljava/lang/String;"
+									insn.desc = StringObfuscator.fastDecryptMethod.name
 									modifier.prepend(insn, InsnList().apply {
 										add(ldcInt(3))
 									})

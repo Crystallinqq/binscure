@@ -112,6 +112,8 @@ dependencies {
 
     compile 'com.sksamuel.hoplite:hoplite-core:1.1.4'
     compile 'com.sksamuel.hoplite:hoplite-yaml:1.1.4'
+
+    compile 'guru.nidi:graphviz-java:0.17.0'
 }
 
 compileKotlin {

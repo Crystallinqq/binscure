@@ -294,7 +294,7 @@ fun verifyMethodNode(methodNode: MethodNode) {
 	reader.accept(CheckClassAdapter(EmptyClassVisitor), EXPAND_FRAMES)
 }
 
-fun constructTableSwitch(
+inline fun constructTableSwitch(
 	baseNumber: Int,
 	defaultLabel: LabelNode,
 	vararg targetLabels: LabelNode
@@ -307,7 +307,7 @@ fun constructTableSwitch(
 	)
 }
 
-fun constructLookupSwitch(
+inline fun constructLookupSwitch(
 	defaultLabel: LabelNode,
 	lookup: Array<Pair<Int, LabelNode>>
 ): LookupSwitchInsnNode {
