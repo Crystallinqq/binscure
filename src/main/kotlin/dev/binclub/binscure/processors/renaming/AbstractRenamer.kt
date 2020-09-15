@@ -5,7 +5,6 @@ import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.utils.originalName
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import dev.binclub.binscure.utils.AnnotationFieldRemapper
 import org.objectweb.asm.Type
@@ -40,7 +39,7 @@ abstract class AbstractRenamer: IClassProcessor {
 			ClassPath.classes[new.name] = new
 			ClassPath.classPath.remove(old.name, old)
 			ClassPath.classPath[new.name] = new
-			ClassPath.originalNames[new] = old.originalName ?: continue
+			new.originalName = old.originalName
 		}
 		
 		CObfuscator.mappings.putAll(remapper.dumpMappings())

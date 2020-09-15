@@ -89,9 +89,6 @@ fun <K, V> Map<K, V>.toPrettyString(): String {
 	return sb.removeSuffix("\n").toString()
 }
 
-val ClassNode.originalName: String?
-	get() = ClassPath.originalNames[this]
-
 fun <T> Collection<T>.random(random: SecureRandom): T {
 	if (isEmpty())
 		throw NoSuchElementException("Collection is empty.")

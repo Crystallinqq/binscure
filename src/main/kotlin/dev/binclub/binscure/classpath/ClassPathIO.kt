@@ -101,7 +101,7 @@ object ClassPathIO {
 			passThrough[name] = bytes
 		}
 		ClassPath.classPath[classNode.name] = classNode
-		ClassPath.originalNames[classNode] = classNode.name
+		classNode.originalName = classNode.name
 	}
 	
 	fun loadClassPath(files: Collection<File>) = ClassPath.loadClassPath(files.toTypedArray())
