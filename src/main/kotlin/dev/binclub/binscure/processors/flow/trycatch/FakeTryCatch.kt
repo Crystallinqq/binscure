@@ -39,11 +39,11 @@ object FakeTryCatch: IClassProcessor {
 	private fun addFakeTryCatches(methodNode: MethodNode) {
 		methodNode.tryCatchBlocks = methodNode.tryCatchBlocks ?: arrayListOf()
 		methodNode.tryCatchBlocks.addAll(
-			addFakeTryCatches(methodNode.instructions)
+			addFakeTryCatches(methodNode.tryCatchBlocks, methodNode.instructions)
 		)
 	}
 	
-	private fun addFakeTryCatches(insnList: InsnList): Array<TryCatchBlockNode> {
+	private fun addFakeTryCatches(existing: List<TryCatchBlockNode>, insnList: InsnList): Array<TryCatchBlockNode> {
 		val switchStart = newLabel()
 		val fakeEnd = newLabel()
 		val start = newLabel()
@@ -60,7 +60,7 @@ object FakeTryCatch: IClassProcessor {
 					add(ACONST_NULL)
 					add(randomOpaqueJump(handler, false))
 					if (rootConfig.crasher.enabled) {
-						add(TypeInsnNode(CHECKCAST, "give up"))
+						add(TypeInsnNode(CHECKCAST, "a"))
 					}
 					add(end)
 					add(POP)

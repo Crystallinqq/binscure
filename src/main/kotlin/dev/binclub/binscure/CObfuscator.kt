@@ -85,7 +85,6 @@ object CObfuscator {
 			//JumpRearranger,
 			ArithmeticSubstitutionTransformer,
 			CfgFucker,
-			BadClinitExploit,
 			ClassInitMonitor,
 			FakeTryCatch,
 			UselessTryCatch,

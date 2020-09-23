@@ -96,7 +96,7 @@ object StringProxyGenerator {
 			null
 		)
 		
-		mn.instructions = insnBuilder {
+		/*mn.instructions = insnBuilder {
 			ldc("dontinline,${actual.name}.${simpleDecryptMethod.name},${simpleDecryptMethod.desc}")
 			dup()
 			getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
@@ -269,6 +269,10 @@ object StringProxyGenerator {
 				"(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;"
 			)
 			
+			_return()
+		}*/
+		
+		mn.instructions = insnBuilder {
 			_return()
 		}
 		
