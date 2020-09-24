@@ -10,6 +10,7 @@ import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import org.objectweb.asm.util.CheckClassAdapter
+import sun.misc.Unsafe
 import java.io.PrintStream
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -159,7 +160,13 @@ inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (I
 		else -> error("Out of bounds")
 	}
 }
-inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T, block3: (Int) -> T): T {
+inline fun <T> randomBranch(
+	random: SecureRandom,
+	block0: (Int) -> T,
+	block1: (Int) -> T,
+	block2: (Int) -> T,
+	block3: (Int) -> T
+): T {
 	return when (random.nextInt(4)) {
 		0 -> block0(0)
 		1 -> block1(1)
@@ -168,7 +175,14 @@ inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (I
 		else -> error("Out of bounds")
 	}
 }
-inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T, block3: (Int) -> T, block4: (Int) -> T): T {
+inline fun <T> randomBranch(
+	random: SecureRandom,
+	block0: (Int) -> T,
+	block1: (Int) -> T,
+	block2: (Int) -> T,
+	block3: (Int) -> T,
+	block4: (Int) -> T
+): T {
 	return when (random.nextInt(5)) {
 		0 -> block0(0)
 		1 -> block1(1)
@@ -178,7 +192,15 @@ inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (I
 		else -> error("Out of bounds")
 	}
 }
-inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T, block3: (Int) -> T, block4: (Int) -> T, block5: (Int) -> T): T {
+inline fun <T> randomBranch(
+	random: SecureRandom,
+	block0: (Int) -> T,
+	block1: (Int) -> T,
+	block2: (Int) -> T,
+	block3: (Int) -> T,
+	block4: (Int) -> T,
+	block5: (Int) -> T
+): T {
 	return when (random.nextInt(6)) {
 		0 -> block0(0)
 		1 -> block1(1)
@@ -189,7 +211,16 @@ inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (I
 		else -> error("Out of bounds")
 	}
 }
-inline fun <T> randomBranch(random: SecureRandom, block0: (Int) -> T, block1: (Int) -> T, block2: (Int) -> T, block3: (Int) -> T, block4: (Int) -> T, block5: (Int) -> T, block6: (Int) -> T): T {
+inline fun <T> randomBranch(
+	random: SecureRandom,
+	block0: (Int) -> T,
+	block1: (Int) -> T,
+	block2: (Int) -> T,
+	block3: (Int) -> T,
+	block4: (Int) -> T,
+	block5: (Int) -> T,
+	block6: (Int) -> T
+): T {
 	return when (random.nextInt(7)) {
 		0 -> block0(0)
 		1 -> block1(1)
@@ -398,5 +429,18 @@ fun <T> List<T>.asMutableList(): MutableList<T> {
 		this
 	} else {
 		this.toMutableList()
+	}
+}
+
+fun disableIllegalAccessWarning() {
+	try {
+		val theUnsafe = Unsafe::class.java.getDeclaredField("theUnsafe")
+		theUnsafe.isAccessible = true
+		val u = theUnsafe[null] as Unsafe
+		val cls = Class.forName("jdk.internal.module.IllegalAccessLogger")
+		val logger = cls.getDeclaredField("logger")
+		u.putObjectVolatile(cls, u.staticFieldOffset(logger), null)
+	} catch (e: Exception) {
+		// ignore
 	}
 }
