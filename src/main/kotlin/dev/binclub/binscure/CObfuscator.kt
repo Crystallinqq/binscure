@@ -33,6 +33,7 @@ import dev.binclub.binscure.processors.renaming.impl.LocalVariableRenamer
 import dev.binclub.binscure.processors.renaming.impl.MethodRenamer
 import dev.binclub.binscure.processors.resources.ManifestResourceProcessor
 import dev.binclub.binscure.processors.runtime.*
+import dev.binclub.binscure.utils.disableIllegalAccessWarning
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
@@ -52,6 +53,8 @@ object CObfuscator {
 	val mappings = mutableMapOf<String, String>()
 	
 	operator fun invoke() {
+		disableIllegalAccessWarning()
+		
 		val start = Instant.now()
 		if (!rootConfig.input.exists())
 			throw FileNotFoundException("File ${rootConfig.input} does not exist")
