@@ -142,22 +142,8 @@ object DynamicCallObfuscation: IClassProcessor {
 									}
 								}
 								
-								val debug = false//insn.owner.contains("TestEnum")
-								
-								if (debug) {
-									println("\r-----")
-									
-									println("Transforming: ${insn.owner}.${insn.name}.${insn.desc}")
-									println("Into: $newDesc")
-								}
-								
 								if (checkCast != null && insn.next?.opcode != CHECKCAST) {
 									if (checkCast.desc != Any::class.internalName) {
-										
-										if (debug) {
-											println("Checkcasting to ${checkCast.desc}")
-										}
-										
 										add(checkCast)
 									}
 								}
@@ -196,6 +182,4 @@ object DynamicCallObfuscation: IClassProcessor {
 		}
 		return String(new)
 	}
-	
-	data class MethodCall(val classNode: ClassNode, val methodNode: MethodNode, val insnNode: MethodInsnNode)
 }
