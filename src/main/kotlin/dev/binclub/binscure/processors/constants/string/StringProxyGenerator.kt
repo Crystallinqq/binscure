@@ -38,7 +38,7 @@ object StringProxyGenerator {
 				if (ConfigurationManager.rootConfig.crasher.enabled && ConfigurationManager.rootConfig.crasher.antiAsm) {
 					BadAttributeExploit.process(Collections.singleton(this), Collections.emptyMap())
 				}
-				BadClinitExploit.process(Collections.singleton(this), Collections.emptyMap())
+				//BadClinitExploit.process(Collections.singleton(this), Collections.emptyMap())
 			}
 		
 		classNode.methods.add(MethodNode(

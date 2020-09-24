@@ -86,7 +86,7 @@ object StringObfuscator: IClassProcessor {
 					if (rootConfig.crasher.enabled && rootConfig.crasher.antiAsm) {
 						BadAttributeExploit.process(Collections.singleton(this), Collections.emptyMap())
 					}
-					BadClinitExploit.process(Collections.singleton(this), Collections.emptyMap())
+					//BadClinitExploit.process(Collections.singleton(this), Collections.emptyMap())
 				}
 			this.decryptNode = decryptNode
 			val storageField = FieldNode(
