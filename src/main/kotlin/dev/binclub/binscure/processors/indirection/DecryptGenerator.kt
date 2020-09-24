@@ -168,7 +168,6 @@ fun generateDecryptorMethod(classNode: ClassNode, methodNode: MethodNode) {
 				add(switch11.also{jumpLabels.add(it)})
 				add(VarInsnNode(ALOAD, 4))
 				add(MethodInsnNode(INVOKEVIRTUAL, StackTraceElement::class.internalName, "getMethodName", "()Ljava/lang/String;", false))
-				add(printlnAsm())
 				add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/Object", "hashCode", "()I", false))
 				add(VarInsnNode(ISTORE, 6))
 				add(ldcInt(10))

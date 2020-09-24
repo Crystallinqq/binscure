@@ -22,10 +22,6 @@ object StringDecryptGenerator {
 			null
 		)
 		
-		val returnHandlerStart = newLabel()
-		val returnHandlerEnd = newLabel()
-		val returnHandlerHandler = newLabel()
-		
 		val realStart = newLabel()
 		val fakeEnd = newLabel()
 		val start = newLabel()
@@ -67,7 +63,7 @@ object StringDecryptGenerator {
 		val veryveryStart = newLabel()
 		
 		decryptorMethod.tryCatchBlocks.apply {
-			add(TryCatchBlockNode(finalReturn, classNotFoundHandler, classNotFoundHandler, "java/lang/Object"))
+			add(TryCatchBlockNode(finalReturn, classNotFoundHandler, classNotFoundHandler, "java/lang/Throwable"))
 			add(TryCatchBlockNode(getCurrentThread, switch, setCharArrVal, "java/lang/NoClassDefFoundError"))
 			add(TryCatchBlockNode(getClassName, genericCatch, popBeforeGetMethodName, "java/lang/BootstrapMethodError"))
 			add(TryCatchBlockNode(getCurrentThread, switch, switchExceptionReceiver, "java/lang/IllegalMonitorStateException"))
@@ -84,14 +80,13 @@ object StringDecryptGenerator {
 			add(TryCatchBlockNode(getCurrentThread, finalReturn, handler, "java/lang/IllegalArgumentException"))
 			add(TryCatchBlockNode(getCurrentThread, setCharArrVal, genericCatch, "java/lang/NoClassDefFoundError"))
 			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/NoClassDefFoundError"))
-			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Object"))
-			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, "java/lang/Object"))
+			add(TryCatchBlockNode(getCurrentThread, finalReturn, genericCatch, "java/lang/Throwable"))
+			add(TryCatchBlockNode(getStackTrace, getClassName, genericCatch, null))
 			add(TryCatchBlockNode(getMethodName, checkCache, genericCatch, "java/lang/Exception"))
-			add(TryCatchBlockNode(start, end, handler, "java/lang/Object"))
-			add(TryCatchBlockNode(fakeEnd, end, secondCatch, "java/lang/Object"))
-			add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Object"))
+			add(TryCatchBlockNode(start, end, handler, null))
+			add(TryCatchBlockNode(fakeEnd, end, secondCatch, null))
+			add(TryCatchBlockNode(l3, xors, secondCatch, "java/lang/Throwable"))
 			add(TryCatchBlockNode(getCurrentThread, xors, secondCatch, null))
-			add(TryCatchBlockNode(returnHandlerStart, returnHandlerEnd, returnHandlerHandler, "java/io/Serializable"))
 		}
 		
 		// First check if the value is cached
@@ -105,10 +100,10 @@ object StringDecryptGenerator {
 			add(VarInsnNode(ASTORE, 3)) // Switch control
 			
 			
-			add(ldcFloat(1f))
+			add(ICONST_1)
 			add(FieldInsnNode(GETSTATIC, classNode.name, StringObfuscator.keysField.name, StringObfuscator.keysField.desc))
 			add(VarInsnNode(ASTORE, 16))
-			add(VarInsnNode(FSTORE, 13))
+			add(VarInsnNode(ISTORE, 13))
 			
 			add(VarInsnNode(ALOAD, 16))
 			add(VarInsnNode(ASTORE, 12))
@@ -138,28 +133,34 @@ object StringDecryptGenerator {
 			add(ICONST_M1)
 			add(VarInsnNode(ILOAD, 1))
 			add(VarInsnNode(ISTORE, 11))
-			add(ldcLong(StringObfuscator.key.toLong()))
-			add(VarInsnNode(LSTORE, 1))
+			add(ldcInt(StringObfuscator.key))
+			add(VarInsnNode(ISTORE, 1))
 			add(VarInsnNode(ISTORE, 2))
-			add(ldcFloat(0f))
+			add(ICONST_M1)
 			add(ACONST_NULL)
 			add(VarInsnNode(ASTORE, 9))
-			add(VarInsnNode(FSTORE, 10))
-			add(ICONST_M1)
+			add(VarInsnNode(ISTORE, 10))
+			add(ldcInt(0))
 			add(VarInsnNode(ISTORE, 15))
 			add(VarInsnNode(ISTORE, 6))
 			newLabel().also {
 				add(randomOpaqueJump(it))
-				add(InvokeDynamicInsnNode(
-					null, null, null
-				))
-				add(InvokeDynamicInsnNode(
-					"fuck", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")
-				))
-				add(InvokeDynamicInsnNode(
-					"yayeet", "()Ljava/lang/YaYeet;", Handle(H_INVOKESTATIC, "a", "a", "()[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[I")
-				))
-				add(POP2)
+				add(
+					InvokeDynamicInsnNode(
+						null, null, null
+					)
+				)
+				add(
+					InvokeDynamicInsnNode(
+						"fuck", "()V", Handle(H_INVOKESTATIC, "a", "a", "(IIIIIIIIIIIIIIIIIIIIIIII)Ljava/lang/Throwable;")
+					)
+				)
+				add(
+					InvokeDynamicInsnNode(
+						"yayeet", "()Ljava/lang/YaYeet;", Handle(H_INVOKESTATIC, "a", "a", "()[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[I")
+					)
+				)
+				add(POP)
 				add(it)
 			}
 			add(ICONST_M1)
@@ -172,7 +173,7 @@ object StringDecryptGenerator {
 			add(JumpInsnNode(GOTO, start))
 			add(switchDefault)
 			add(InsnNode(ACONST_NULL))
-			add(TypeInsnNode(CHECKCAST, "java/lang/String"))
+			add(TypeInsnNode(CHECKCAST, "java/lang/YourMum"))
 			add(InsnNode(POP))
 			add(l5) // xor i
 			add(VarInsnNode(ALOAD, 8)) // Encrypted Char Array
@@ -211,8 +212,6 @@ object StringDecryptGenerator {
 			add(InsnNode(POP))
 			add(end)
 			// Fake try catch start half end
-			
-			add(returnHandlerStart)
 			
 			add(JumpInsnNode(GOTO, realStart))
 			
@@ -335,7 +334,7 @@ object StringDecryptGenerator {
 			add(InsnNode(IXOR))
 			add(VarInsnNode(ISTORE, 15))
 			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
-			add(JumpInsnNode(GOTO, fakeEnd))
+			add(JumpInsnNode(GOTO, getCurrentThread))
 			
 			add(popBeforeGetMethodName)
 			add(POP)
@@ -361,6 +360,7 @@ object StringDecryptGenerator {
 			// Return if not null
 			val b4afterRet = newLabel()
 			add(JumpInsnNode(IFNULL, b4afterRet))
+			add(TypeInsnNode(CHECKCAST, "java/lang/String"))
 			add(InsnNode(ARETURN))
 			add(b4afterRet)
 			add(TypeInsnNode(NEW, "java/lang/IllegalStateException"))
@@ -423,17 +423,12 @@ object StringDecryptGenerator {
 			add(MethodInsnNode(INVOKESTATIC, "_______", "a", "()V"))
 			add(JumpInsnNode(GOTO, getCurrentThread))
 			
-			add(returnHandlerHandler)
-			add(ARETURN)
-			
 			add(switchEnd)
 			add(InsnNode(ACONST_NULL))
 			add(InsnNode(ATHROW))
 			
 			add(popBeforeRealStart)
 			add(POP)
-			
-			add(returnHandlerEnd)
 			
 			add(realStart)
 			add(ldcInt(StringObfuscator.key))
@@ -468,91 +463,24 @@ object StringDecryptGenerator {
 			add(switchImmediate)
 			add(
 				constructTableSwitch(
-				0,
-				switchDefault,
-				checkCache,
-				finalReturn,
-				getCurrentThread,
-				getStackTrace,
-				getClassName,
-				getMethodName,
-				checkCache,
-				createCharArrays,
-				xors,
-				l0, l1, l2, l3, l4, l5
-			)
+					0,
+					switchDefault,
+					checkCache,
+					finalReturn,
+					getCurrentThread,
+					getStackTrace,
+					getClassName,
+					getMethodName,
+					checkCache,
+					createCharArrays,
+					xors,
+					l0, l1, l2, l3, l4, l5
+				)
 			)
 		}
 		decryptorMethod.instructions.add(insnList)
-		
-		
-		
+		//decryptorMethod.instructions = insnListOf(InsnNode(ACONST_NULL), InsnNode(ARETURN))
 		classNode.methods.add(decryptorMethod)
-		
-		val fuckeryMethod = MethodNode(
-			ACC_STATIC,
-			"fuckery",
-			"()V",
-			null,
-			null
-		)
-		kotlin.run {
-			fuckeryMethod.instructions = insnBuilder {
-				if (true) {
-					_return()
-				} else {
-					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
-					ldc(java.lang.Float.intBitsToFloat(1))
-					fstore(1)
-					iload(1)
-					invokevirtual("java/io/PrintStream", "println", "(I)V")
-					
-					val start = LabelNode()
-					val end = LabelNode()
-					val handler = LabelNode()
-					+start
-					ldc("hi")
-					athrow()
-					+end
-					+handler
-					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
-					swap()
-					invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/Object;)V")
-					_return()
-					fuckeryMethod.tryCatchBlocks.add(
-						TryCatchBlockNode(start, end, handler, "java/lang/String")
-					)
-				}
-			}
-			
-			/*val start = LabelNode()
-			val end = LabelNode()
-			val handler = LabelNode()
-			start.label.resolve(1)
-			end.label.resolve(2)
-			handler.label.resolve(2)
-			fuckeryMethod.tryCatchBlocks.add(TryCatchBlockNode(
-				start,
-				end,
-				handler,
-				"java/lang/HiHowAreYou"
-			))*/
-		}
-		classNode.methods.add(fuckeryMethod)
-		
-		/*val clinit = MethodNode(
-			ACC_STATIC,
-			"<clinit>",
-			"()V",
-			null,
-			null
-		)
-		clinit.instructions = insnBuilder {
-			_return()
-		}
-		
-		classNode.methods.add(clinit)*/
-		
 		return decryptorMethod
 	}
 }

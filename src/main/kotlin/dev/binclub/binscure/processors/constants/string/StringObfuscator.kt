@@ -186,21 +186,6 @@ object StringObfuscator: IClassProcessor {
 		val staticInit =
 			classNode.methods.firstOrNull { it.name == "<clinit>" && it.desc == "()V" }
 			?: MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also { mn ->
-				mn.instructions = insnBuilder {
-					ldc("dontinline,${classNode.name}.${fastDecryptMethod.name},${fastDecryptMethod.desc}")
-					dup()
-					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
-					swap()
-					invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/Object;)V")
-					invokestatic(
-						"java/lang/Compiler",
-						"command",
-						"(Ljava/lang/Object;)Ljava/lang/Object;"
-					)
-					getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
-					swap()
-					invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/Object;)V")
-				}
 				mn.instructions.apply {
 					val tc1S = newLabel()
 					val tc1E = newLabel()
