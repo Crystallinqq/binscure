@@ -1,12 +1,24 @@
-plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.30'
-    id 'java'
-    id 'idea'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+buildscript {
+    ext.kotlin_version = '1.4.0'
+    repositories {
+        mavenCentral()
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.guardsquare:proguard-gradle:7.0.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
+    }
 }
 
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+
 group 'cookiedragon'
-version 'alpha'
+version ''
 
 jar {
     manifest {
@@ -14,15 +26,12 @@ jar {
                 "Main-Class": "dev.binclub.binscure.api.Binscure"
         )
     }
+    archiveName = "binscure.jar"
 }
 
 shadowJar() {
-    minimize {
-        exclude(dependency('com.sksamuel.hoplite:hoplite-core:1.1.4'))
-        exclude(dependency('com.sksamuel.hoplite:hoplite-yaml:1.1.4'))
-    }
     classifier = "shadow"
-
+    archiveName = "binscure-shadow.jar"
     manifest {
         attributes 'Main-Class': "dev.binclub.binscure.api.Binscure"
     }
@@ -33,55 +42,18 @@ task apiJar(type: Jar, dependsOn: shadowJar) {
         include "dev/binclub/binscure/api/**"
     }
     classifier = "api"
+    archiveName = "binscure-api.jar"
 }
 
-task releaseJar(type: Jar, dependsOn: shadowJar) {
-    from (zipTree(shadowJar.archivePath)) {
-        include "dev/binclub/binscure/**"
-        include "arrow/core/*.class"
-        include "arrow/*.class"
-        include "arrow/core/extensions/nonemptylist/semigroup/**"
-        include "arrow/core/extensions/NonEmptyListSemigroup.class"
-        include "arrow/core/extensions/ValidatedApplicative.class"
-        include "arrow/core/extensions/ValidatedFunctor.class"
-        include "arrow/core/extensions/list/traverse/**"
-        include "arrow/core/extensions/ListKTraverse*.class"
-        include "arrow/core/extensions/ValidatedApplicative*.class"
-        include "arrow/typeclasses/Semigroup*"
-        include "arrow/typeclasses/Applicative*"
-        include "arrow/typeclasses/Apply*"
-        include "arrow/typeclasses/Functor.class"
-        include "arrow/typeclasses/Invariant.class"
-        include "arrow/typeclasses/ListKTraverse.class"
-        include "arrow/typeclasses/Traverse*"
-        include "arrow/typeclasses/Foldable.class"
-        include "org/intellij/**"
-        include "org/jetbrains/**"
-        include "org/objectweb/**"
-        include "org/yaml/**"
-        include "META-INF/**"
-        include "com/sksamuel/**"
-        include "kotlin/jvm/**"
-        include "kotlin/*"
-        include "kotlin/collections/**"
-        include "kotlin/text/**"
-        include "kotlin/reflect/**"
-        include "kotlin/ranges/**"
-        include "kotlin/io/**"
-        include "kotlin/internal/**"
-        include "kotlin/properties/**"
-        include "kotlin/sequences/**"
-        include "kotlin/comparisons/**"
-    }
-    classifier = "release"
+task proguard(type: proguard.gradle.ProGuardTask, dependsOn: shadowJar) {
+    configuration 'proguard/proguard.txt'
 
-    manifest {
-        attributes 'Main-Class': "dev.binclub.binscure.api.Binscure"
-    }
+    injars 'build/libs/binscure-shadow.jar'
+    outjars 'build/libs/bingait-release.jar'
 }
 
 //build.dependsOn.add("apiJar")
-build.finalizedBy (apiJar, releaseJar)
+build.finalizedBy (apiJar)
 
 sourceSets {
     main {
@@ -96,14 +68,10 @@ sourceSets {
 
 repositories {
     mavenCentral()
-    maven {
-        name "hackery"
-        url "https://maven.hackery.site/"
-    }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     compile 'org.ow2.asm:asm:7.1'
     compile 'org.ow2.asm:asm-tree:7.1'
@@ -112,8 +80,6 @@ dependencies {
 
     compile 'com.sksamuel.hoplite:hoplite-core:1.1.4'
     compile 'com.sksamuel.hoplite:hoplite-yaml:1.1.4'
-
-    compile 'guru.nidi:graphviz-java:0.17.0'
 }
 
 compileKotlin {
