@@ -1,5 +1,9 @@
+import dev.binclub.binscure.processors.exploit.BadAttributeExploit
 import dev.binclub.binscure.utils.insnBuilder
+import dev.binclub.binscure.utils.printlnAsm
 import dev.binclub.binscure.utils.toOpcodeStrings
+import org.objectweb.asm.Attribute
+import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
@@ -13,6 +17,7 @@ import java.util.jar.Attributes
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
 import java.util.jar.Manifest
+import kotlin.random.Random
 
 /**
  * @author cookiedragon234 09/Aug/2020
@@ -31,8 +36,43 @@ Unsuccessful output: "Incorrect"
 
 
  */
-
 fun main() {
+	//val main = genMainClass()
+	val main = ClassNode().apply {
+		name = "Test"
+		superName = "java/lang/Object"
+		version = V1_8
+		
+		methods.add(MethodNode().apply {
+			access = ACC_STATIC or ACC_PUBLIC
+			name = "main"
+			desc = "([Ljava/lang/String;)V"
+			
+			instructions = insnBuilder {
+				+printlnAsm("hi")
+				_return()
+			}
+		})
+		
+		attrs = attrs ?: arrayListOf()
+		attrs.add(DummyAttribute("Module"))
+	}
+	val cw = ClassWriter(ClassWriter.COMPUTE_MAXS)
+	main.accept(cw)
+	val bytes = cw.toByteArray()
+	File("Test.class").writeBytes(bytes)
+	
+	ClassReader(bytes).accept(ClassNode(), ClassReader.SKIP_FRAMES)
+}
+
+private class DummyAttribute(name: String, bytes: ByteArray = ByteArray(Random.nextInt(2))): Attribute(name) {
+	init {
+		content = bytes
+	}
+}
+
+
+fun main1() {
 	//val main = genMainClass()
 	val main = ClassNode().apply {
 		name = "Test"

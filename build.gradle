@@ -49,7 +49,7 @@ task proguard(type: proguard.gradle.ProGuardTask, dependsOn: shadowJar) {
     configuration 'proguard/proguard.txt'
 
     injars 'build/libs/binscure-shadow.jar'
-    outjars 'build/libs/bingait-release.jar'
+    outjars 'build/libs/binscure-release.jar'
 }
 
 //build.dependsOn.add("apiJar")

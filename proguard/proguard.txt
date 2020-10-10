@@ -10,7 +10,6 @@
 -libraryjars <java.home>/lib/ext/jfxrt.jar
 
 -dontwarn  arrow.core.**
--dontwarn  org.objectweb.asm.**
 -dontwarn  guru.nidi.graphviz.**
 
 -printmapping out.map
@@ -47,10 +46,25 @@
     java.lang.Object readResolve();
 }
 
--keep public class dev.binclub.binscure.api.** {*; }
+-keep class dev.binclub.binscure.api.** {*; }
+-keep class com.sksamuel.hoplite.decoder.** { *; }
+-keep class com.sksamuel.hoplite.yaml.** { *; }
+-keep class com.sksamuel.hoplite.parsers.** { *; }
+-keep class org.yaml.** { *; }
+
+
+-keep class arrow.core.Eval$Companion
 
 #-keep class kotlin.** { *; }
 -keep class kotlin.reflect.** { *; }
+-keep class kotlin.** { *; }
+-keep class kotlin.Metadata { *; }
+-keepclassmembers class kotlin.SafePublicationLazyImpl {
+    <fields>;
+}
+-keepclassmembers class kotlin.Metadata {
+    public <methods>;
+}
 -dontwarn kotlin.**
 -keepclassmembers class **$WhenMappings {
     <fields>;
@@ -65,3 +79,7 @@
 -optimizations *
 -optimizationpasses 10
 -overloadaggressively
+
+-keep @interface * {*;}
+-keepattributes RuntimeVisibleAnnotations
+-keepattributes AnnotationDefault
