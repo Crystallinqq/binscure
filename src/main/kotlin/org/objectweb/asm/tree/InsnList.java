@@ -27,10 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm.tree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
+
 import org.objectweb.asm.MethodVisitor;
 
 /**
@@ -55,6 +53,11 @@ public class InsnList {
 	AbstractInsnNode[] cache;
 	
 	public void resetCache() { cache = null; }
+	public void checkCache() {
+		if (cache == null) {
+			cache = toArray();
+		}
+	}
 	
 	/**
 	 * Returns the number of instructions in this list.
@@ -97,9 +100,7 @@ public class InsnList {
 		if (index < 0 || index >= size) {
 			throw new IndexOutOfBoundsException();
 		}
-		if (cache == null) {
-			cache = toArray();
-		}
+		checkCache();
 		return cache[index];
 	}
 	
@@ -131,9 +132,7 @@ public class InsnList {
 	 *     to test if an instruction belongs to an instruction list or not.
 	 */
 	public int indexOf(final AbstractInsnNode insnNode) {
-		if (cache == null) {
-			cache = toArray();
-		}
+		checkCache();
 		return insnNode.index;
 	}
 	
@@ -167,6 +166,7 @@ public class InsnList {
 	 */
 	@SuppressWarnings("unchecked")
 	public ListIterator<AbstractInsnNode> iterator(final int index) {
+		checkCache();
 		return new InsnListIterator(index);
 	}
 	
@@ -505,6 +505,7 @@ public class InsnList {
 				previousInsn = getLast();
 			} else {
 				nextInsn = get(index);
+				Objects.requireNonNull(nextInsn, "Insn at index " + index + " is null for list " + InsnList.this);
 				previousInsn = nextInsn.previousInsn;
 			}
 		}
@@ -563,9 +564,7 @@ public class InsnList {
 			if (nextInsn == null) {
 				return size();
 			}
-			if (cache == null) {
-				cache = toArray();
-			}
+			checkCache();
 			return nextInsn.index;
 		}
 		
@@ -574,9 +573,7 @@ public class InsnList {
 			if (previousInsn == null) {
 				return -1;
 			}
-			if (cache == null) {
-				cache = toArray();
-			}
+			checkCache();
 			return previousInsn.index;
 		}
 		

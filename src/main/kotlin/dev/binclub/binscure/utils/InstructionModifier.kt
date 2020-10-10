@@ -48,6 +48,8 @@ class InstructionModifier {
 		return true
 	}
 	
+	fun isEmpty(): Boolean = this.replacements.isEmpty() && this.prepends.isEmpty() && this.appends.isEmpty()
+	
 	interface Op {
 		fun apply(instructions: InsnList)
 	}

@@ -1,16 +1,13 @@
 CrackmeKt -> CrackmeKt:
     void main(java.lang.String[]) -> main
 CrackmeKt$main$main$1$1$1 -> a:
-    org.objectweb.asm.tree.LabelNode $ts -> a
-    org.objectweb.asm.tree.LabelNode $te -> b
-    org.objectweb.asm.tree.LabelNode $th -> c
+    CrackmeKt$main$main$1$1$1 INSTANCE -> a
     java.lang.Object invoke(java.lang.Object) -> invoke
-    void <init>(org.objectweb.asm.tree.LabelNode,org.objectweb.asm.tree.LabelNode,org.objectweb.asm.tree.LabelNode) -> <init>
-CrackmeKt$main$main$1$1$1$1 -> b:
-    kotlin.reflect.KProperty0 INSTANCE -> a
-    void <clinit>() -> <clinit>
     void <init>() -> <init>
-    java.lang.Object get() -> get
+    void <clinit>() -> <clinit>
+DummyAttribute -> b:
+    void <init>(java.lang.String,byte[]) -> <init>
+    void <init>(java.lang.String) -> <init>
 arrow.Kind -> arrow.a:
 arrow.autofold -> arrow.autofold:
 arrow.coproduct -> arrow.coproduct:
@@ -2982,6 +2979,7 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     java.util.List libraries -> libraries
     java.util.List exclusions -> exclusions
     java.util.List hardExclusions -> hardExclusions
+    dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration arithmetic -> arithmetic
     dev.binclub.binscure.api.transformers.RemapConfiguration remap -> remap
     dev.binclub.binscure.api.transformers.SourceStripConfiguration sourceStrip -> sourceStrip
     dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration kotlinMetadata -> kotlinMetadata
@@ -3007,6 +3005,7 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     java.io.File getMappingFile() -> getMappingFile
     java.util.List getLibraries() -> getLibraries
     java.util.List getHardExclusions() -> getHardExclusions
+    dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration getArithmetic() -> getArithmetic
     dev.binclub.binscure.api.transformers.RemapConfiguration getRemap() -> getRemap
     dev.binclub.binscure.api.transformers.SourceStripConfiguration getSourceStrip() -> getSourceStrip
     dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration getKotlinMetadata() -> getKotlinMetadata
@@ -3025,24 +3024,24 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     boolean getPrintProgress() -> getPrintProgress
     boolean getWatermark() -> getWatermark
     boolean getLazyLibraryLoading() -> getLazyLibraryLoading
-    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> <init>
-    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
+    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> <init>
+    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
     java.io.File component1() -> component1
     java.io.File component2() -> component2
     java.io.File component3() -> component3
     java.util.List component4() -> component4
     java.util.List component5() -> component5
     java.util.List component6() -> component6
-    dev.binclub.binscure.api.transformers.RemapConfiguration component7() -> component7
-    dev.binclub.binscure.api.transformers.SourceStripConfiguration component8() -> component8
-    dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration component9() -> component9
-    dev.binclub.binscure.api.transformers.CrasherConfiguration component10() -> component10
-    dev.binclub.binscure.api.transformers.IndirectionConfiguration component11() -> component11
-    dev.binclub.binscure.api.transformers.StringObfuscationConfiguration component12() -> component12
-    dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration component13() -> component13
-    dev.binclub.binscure.api.transformers.OptimisationConfiguration component14() -> component14
-    dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration component15() -> component15
-    boolean component16() -> component16
+    dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration component7() -> component7
+    dev.binclub.binscure.api.transformers.RemapConfiguration component8() -> component8
+    dev.binclub.binscure.api.transformers.SourceStripConfiguration component9() -> component9
+    dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration component10() -> component10
+    dev.binclub.binscure.api.transformers.CrasherConfiguration component11() -> component11
+    dev.binclub.binscure.api.transformers.IndirectionConfiguration component12() -> component12
+    dev.binclub.binscure.api.transformers.StringObfuscationConfiguration component13() -> component13
+    dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration component14() -> component14
+    dev.binclub.binscure.api.transformers.OptimisationConfiguration component15() -> component15
+    dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration component16() -> component16
     boolean component17() -> component17
     boolean component18() -> component18
     boolean component19() -> component19
@@ -3051,8 +3050,9 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     boolean component22() -> component22
     boolean component23() -> component23
     boolean component24() -> component24
-    dev.binclub.binscure.api.RootConfiguration copy(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> copy
-    dev.binclub.binscure.api.RootConfiguration copy$default(dev.binclub.binscure.api.RootConfiguration,java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,java.lang.Object) -> copy$default
+    boolean component25() -> component25
+    dev.binclub.binscure.api.RootConfiguration copy(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> copy
+    dev.binclub.binscure.api.RootConfiguration copy$default(dev.binclub.binscure.api.RootConfiguration,java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,java.lang.Object) -> copy$default
     int hashCode() -> hashCode
     boolean equals(java.lang.Object) -> equals
 dev.binclub.binscure.api.TransformerConfiguration -> dev.binclub.binscure.api.TransformerConfiguration:
@@ -3092,6 +3092,23 @@ dev.binclub.binscure.api.runtime.NativeRuntime -> dev.binclub.binscure.api.runti
     java.lang.Object a(java.lang.Object,java.lang.Object) -> a
     void <init>() -> <init>
     void <clinit>() -> <clinit>
+dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration -> dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration:
+    boolean enabled -> enabled
+    int repeat -> repeat
+    java.util.List exclusions -> exclusions
+    boolean getEnabled() -> getEnabled
+    int getRepeat() -> getRepeat
+    void <init>(boolean,int,java.util.List) -> <init>
+    void <init>(boolean,int,java.util.List,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
+    void <init>() -> <init>
+    boolean component1() -> component1
+    int component2() -> component2
+    java.util.List component3() -> component3
+    dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration copy(boolean,int,java.util.List) -> copy
+    dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration copy$default(dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,boolean,int,java.util.List,int,java.lang.Object) -> copy$default
+    java.lang.String toString() -> toString
+    int hashCode() -> hashCode
+    boolean equals(java.lang.Object) -> equals
 dev.binclub.binscure.api.transformers.CrasherConfiguration -> dev.binclub.binscure.api.transformers.CrasherConfiguration:
     boolean enabled -> enabled
     boolean checksums -> checksums
@@ -3117,21 +3134,27 @@ dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration -> dev.binclu
     int severity -> severity
     dev.binclub.binscure.api.transformers.MergeMethods mergeMethods -> mergeMethods
     boolean arithmetic -> arithmetic
+    boolean noverify -> noverify
+    boolean java8 -> java8
     java.util.List exclusions -> exclusions
     boolean getEnabled() -> getEnabled
     int getSeverity() -> getSeverity
     dev.binclub.binscure.api.transformers.MergeMethods getMergeMethods() -> getMergeMethods
     boolean getArithmetic() -> getArithmetic
-    void <init>(boolean,int,dev.binclub.binscure.api.transformers.MergeMethods,boolean,java.util.List) -> <init>
-    void <init>(boolean,int,dev.binclub.binscure.api.transformers.MergeMethods,boolean,java.util.List,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
+    boolean getNoverify() -> getNoverify
+    boolean getJava8() -> getJava8
+    void <init>(boolean,int,dev.binclub.binscure.api.transformers.MergeMethods,boolean,boolean,boolean,java.util.List) -> <init>
+    void <init>(boolean,int,dev.binclub.binscure.api.transformers.MergeMethods,boolean,boolean,boolean,java.util.List,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
     void <init>() -> <init>
     boolean component1() -> component1
     int component2() -> component2
     dev.binclub.binscure.api.transformers.MergeMethods component3() -> component3
     boolean component4() -> component4
-    java.util.List component5() -> component5
-    dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration copy(boolean,int,dev.binclub.binscure.api.transformers.MergeMethods,boolean,java.util.List) -> copy
-    dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration copy$default(dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,boolean,int,dev.binclub.binscure.api.transformers.MergeMethods,boolean,java.util.List,int,java.lang.Object) -> copy$default
+    boolean component5() -> component5
+    boolean component6() -> component6
+    java.util.List component7() -> component7
+    dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration copy(boolean,int,dev.binclub.binscure.api.transformers.MergeMethods,boolean,boolean,boolean,java.util.List) -> copy
+    dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration copy$default(dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,boolean,int,dev.binclub.binscure.api.transformers.MergeMethods,boolean,boolean,boolean,java.util.List,int,java.lang.Object) -> copy$default
     java.lang.String toString() -> toString
     int hashCode() -> hashCode
     boolean equals(java.lang.Object) -> equals
@@ -3401,8 +3424,7 @@ dev.binclub.binscure.classpath.CustomClassWriter -> dev.binclub.binscure.a.n:
     java.lang.String getCommonSuperClass1(java.lang.String,java.lang.String) -> b
     java.lang.String getCommonSuperClass0(java.lang.String,java.lang.String) -> c
     boolean isAssignableFrom(java.lang.String,java.lang.String) -> a
-    void <init>(int) -> <init>
-    void <init>(int,byte) -> <init>
+    void <init>(int,boolean) -> <init>
 dev.binclub.binscure.classpath.tree.ClassNodeTreeEntry -> dev.binclub.binscure.a.a.a:
     kotlin.Lazy supers$delegate -> a
     kotlin.Lazy methods0$delegate -> b
@@ -3492,21 +3514,6 @@ dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder -> dev.bi
     boolean isExcluded(java.lang.String) -> a
     java.lang.String toString() -> toString
     void <init>(java.lang.String) -> <init>
-dev.binclub.binscure.processors.AbstractMethodImplementor -> dev.binclub.binscure.c.a:
-    dev.binclub.binscure.api.TransformerConfiguration config -> a
-    dev.binclub.binscure.processors.AbstractMethodImplementor INSTANCE -> a
-    java.lang.String getProgressDescription() -> a
-    dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
-    void process(java.util.Collection,java.util.Map) -> a
-    void <init>() -> <init>
-    void <clinit>() -> <clinit>
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
-dev.binclub.binscure.processors.AbstractMethodImplementor$process$1$1$1 -> dev.binclub.binscure.c.b:
-    dev.binclub.binscure.processors.AbstractMethodImplementor$process$1$1$1 INSTANCE -> a
-    java.lang.Object invoke(java.lang.Object) -> invoke
-    void <init>() -> <init>
-    void <clinit>() -> <clinit>
 dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer -> dev.binclub.binscure.c.a.a:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
     dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer INSTANCE -> a
@@ -3559,6 +3566,122 @@ dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer$pro
     void <clinit>() -> <clinit>
 dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer$process$1$1$9$1 -> dev.binclub.binscure.c.a.j:
     dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer$process$1$1$9$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer -> dev.binclub.binscure.c.a.k:
+    java.lang.String progressDescription -> a
+    dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration config -> a
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer INSTANCE -> a
+    java.lang.String getProgressDescription() -> a
+    dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
+    void process(java.util.Collection,java.util.Map) -> a
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$1 -> dev.binclub.binscure.c.a.l:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$2 -> dev.binclub.binscure.c.a.m:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$2 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$3 -> dev.binclub.binscure.c.a.n:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$3 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$1$1 -> dev.binclub.binscure.c.a.o:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$1$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$10$1 -> dev.binclub.binscure.c.a.p:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$10$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$11$1 -> dev.binclub.binscure.c.a.q:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$11$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$12$1 -> dev.binclub.binscure.c.a.r:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$12$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$13$1 -> dev.binclub.binscure.c.a.s:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$13$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$14$1 -> dev.binclub.binscure.c.a.t:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$14$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$15$1 -> dev.binclub.binscure.c.a.u:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$15$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$16$1 -> dev.binclub.binscure.c.a.v:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$16$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$17$1 -> dev.binclub.binscure.c.a.w:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$17$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$18$1 -> dev.binclub.binscure.c.a.x:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$18$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$2$1 -> dev.binclub.binscure.c.a.y:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$2$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$3$1 -> dev.binclub.binscure.c.a.z:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$3$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$4$1 -> dev.binclub.binscure.c.a.A:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$4$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$5$1 -> dev.binclub.binscure.c.a.B:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$5$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$6$1 -> dev.binclub.binscure.c.a.C:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$6$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$7$1 -> dev.binclub.binscure.c.a.D:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$7$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$8$1 -> dev.binclub.binscure.c.a.E:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$8$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$9$1 -> dev.binclub.binscure.c.a.F:
+    dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$sub$9$1 INSTANCE -> a
     java.lang.Object invoke(java.lang.Object) -> invoke
     void <init>() -> <init>
     void <clinit>() -> <clinit>
@@ -3742,7 +3865,32 @@ dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch -> dev.binclub.binscu
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
-dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch -> dev.binclub.binscure.c.f.b.b:
+dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication -> dev.binclub.binscure.c.f.b.b:
+    java.lang.String progressDescription -> a
+    dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
+    dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication INSTANCE -> a
+    java.lang.String getProgressDescription() -> a
+    dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
+    void process(java.util.Collection,java.util.Map) -> a
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication$$special$$inlined$Array$lambda$1 -> dev.binclub.binscure.c.f.b.c:
+    int $i$inlined -> a
+    int $key$inlined -> b
+    org.objectweb.asm.tree.LabelNode $switch$inlined -> a
+    void <init>(int,int,org.objectweb.asm.tree.LabelNode) -> <init>
+    java.lang.Object invoke(java.lang.Object) -> invoke
+dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication$process$1$1$1$2 -> dev.binclub.binscure.c.f.b.d:
+    java.util.ArrayList $blocks -> a
+    org.objectweb.asm.tree.LabelNode $switch -> a
+    int $key -> a
+    org.objectweb.asm.tree.LabelNode[] $labels -> a
+    org.objectweb.asm.tree.LabelNode $handlerLabel -> b
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>(java.util.ArrayList,org.objectweb.asm.tree.LabelNode,int,org.objectweb.asm.tree.LabelNode[],org.objectweb.asm.tree.LabelNode) -> <init>
+dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch -> dev.binclub.binscure.c.f.b.e:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
     dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch INSTANCE -> a
     java.lang.String getProgressDescription() -> a
@@ -3985,7 +4133,11 @@ dev.binclub.binscure.utils.DummyHashSet -> dev.binclub.binscure.d.c:
     boolean add(java.lang.Object) -> add
     void <init>() -> <init>
     int size() -> size
-dev.binclub.binscure.utils.ExtensionsKt -> dev.binclub.binscure.d.d:
+dev.binclub.binscure.utils.EmptyClassVisitor -> dev.binclub.binscure.d.d:
+    dev.binclub.binscure.utils.EmptyClassVisitor INSTANCE -> a
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.utils.ExtensionsKt -> dev.binclub.binscure.d.e:
     java.lang.String replaceLast$68bc1f08(java.lang.String,java.lang.String) -> a
     char xor(char,int) -> a
     java.lang.Object getOrPutLazy(java.util.Map,java.lang.Object,kotlin.jvm.functions.Function0) -> a
@@ -3994,32 +4146,53 @@ dev.binclub.binscure.utils.ExtensionsKt -> dev.binclub.binscure.d.d:
     int removeAccess(int,int) -> a
     int addAccess$255f288(int) -> a
     boolean hasAccess(int,int) -> a
-    boolean versionAtLeast$66f96fa5(org.objectweb.asm.tree.ClassNode) -> a
-    boolean versionAtMost$66f96fa5(org.objectweb.asm.tree.ClassNode) -> b
+    boolean versionAtLeast(org.objectweb.asm.tree.ClassNode,int) -> a
+    boolean versionAtMost$66f96fa5(org.objectweb.asm.tree.ClassNode) -> a
     void <clinit>() -> <clinit>
-dev.binclub.binscure.utils.ExtensionsKt$opcodes$2 -> dev.binclub.binscure.d.e:
+dev.binclub.binscure.utils.ExtensionsKt$opcodes$2 -> dev.binclub.binscure.d.f:
     dev.binclub.binscure.utils.ExtensionsKt$opcodes$2 INSTANCE -> a
     java.lang.Object invoke() -> invoke
     void <init>() -> <init>
     void <clinit>() -> <clinit>
-dev.binclub.binscure.utils.InstructionModifier -> dev.binclub.binscure.d.f:
-    java.util.HashMap replacements -> a
-    java.util.HashMap appends -> b
-    java.util.HashMap prepends -> c
+dev.binclub.binscure.utils.InstructionModifier -> dev.binclub.binscure.d.g:
+    java.util.ArrayList replacements -> a
+    java.util.ArrayList appends -> b
+    java.util.ArrayList prepends -> c
     org.objectweb.asm.tree.InsnList EMPTY_LIST -> a
     void append(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> a
     void prepend(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> b
     void replace(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.AbstractInsnNode[]) -> a
-    void replace(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> c
     void remove(org.objectweb.asm.tree.AbstractInsnNode) -> a
-    void apply(org.objectweb.asm.tree.MethodNode) -> a
-    void apply(org.objectweb.asm.tree.InsnList) -> a
+    void replace(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> c
+    boolean apply(org.objectweb.asm.tree.MethodNode) -> a
+    boolean apply$24ace8e5(org.objectweb.asm.tree.InsnList) -> a
+    boolean apply$default$1fce4008$7b798a2c(dev.binclub.binscure.utils.InstructionModifier,org.objectweb.asm.tree.InsnList) -> a
     void <init>() -> <init>
     void <clinit>() -> <clinit>
-dev.binclub.binscure.utils.InstructionModifier$Companion -> dev.binclub.binscure.d.g:
+dev.binclub.binscure.utils.InstructionModifier$AppendOp -> dev.binclub.binscure.d.h:
+    org.objectweb.asm.tree.AbstractInsnNode insn -> a
+    org.objectweb.asm.tree.InsnList list -> a
+    void <init>(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> <init>
+dev.binclub.binscure.utils.InstructionModifier$Companion -> dev.binclub.binscure.d.i:
     void <init>() -> <init>
     void <init>(byte) -> <init>
-dev.binclub.binscure.utils.UtilsKt -> dev.binclub.binscure.d.h:
+dev.binclub.binscure.utils.InstructionModifier$PrependOp -> dev.binclub.binscure.d.j:
+    org.objectweb.asm.tree.AbstractInsnNode insn -> a
+    org.objectweb.asm.tree.InsnList list -> a
+    void <init>(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> <init>
+dev.binclub.binscure.utils.InstructionModifier$ReplaceOp -> dev.binclub.binscure.d.k:
+    org.objectweb.asm.tree.AbstractInsnNode insn -> a
+    org.objectweb.asm.tree.InsnList list -> a
+    void <init>(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> <init>
+dev.binclub.binscure.utils.StackHeightCalculationException -> dev.binclub.binscure.d.l:
+    void <init>(org.objectweb.asm.tree.AbstractInsnNode,java.lang.Throwable) -> <init>
+dev.binclub.binscure.utils.StackHeightCalculatorLite -> dev.binclub.binscure.d.m:
+    dev.binclub.binscure.utils.StackHeightCalculatorLite INSTANCE -> a
+    java.util.HashMap calculate(org.objectweb.asm.tree.MethodNode) -> a
+    void calculate(org.objectweb.asm.tree.AbstractInsnNode,java.util.HashMap,int) -> a
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.utils.UtilsKt -> dev.binclub.binscure.d.n:
     java.lang.String[] throwables -> a
     java.util.Map numOps -> a
     org.objectweb.asm.tree.AbstractInsnNode ldcInt(int) -> a
@@ -4029,8 +4202,10 @@ dev.binclub.binscure.utils.UtilsKt -> dev.binclub.binscure.d.h:
     java.lang.String randomThrowable$default$3c8140e0$3da8d3c4() -> a
     boolean isNumberLdc(org.objectweb.asm.tree.AbstractInsnNode) -> a
     java.lang.Number getNumFromLdc(org.objectweb.asm.tree.AbstractInsnNode) -> a
+    org.objectweb.asm.tree.InsnList printlnAsm(java.lang.String) -> a
     int getRetForType(org.objectweb.asm.Type) -> a
     int getLoadForType(org.objectweb.asm.Type) -> b
+    void verifyMethodNode(org.objectweb.asm.tree.MethodNode) -> a
     org.objectweb.asm.tree.LabelNode newLabel() -> a
     int randomInt() -> a
     org.objectweb.asm.tree.MethodNode getClinit(org.objectweb.asm.tree.ClassNode) -> a
@@ -4040,7 +4215,7 @@ dev.binclub.binscure.utils.UtilsKt -> dev.binclub.binscure.d.h:
     org.objectweb.asm.tree.InsnList insnListOf(org.objectweb.asm.tree.AbstractInsnNode[]) -> a
     void disableIllegalAccessWarning() -> a
     void <clinit>() -> <clinit>
-dev.binclub.binscure.utils.UtilsKt$constructLookupSwitch$1 -> dev.binclub.binscure.d.i:
+dev.binclub.binscure.utils.UtilsKt$constructLookupSwitch$1 -> dev.binclub.binscure.d.o:
     dev.binclub.binscure.utils.UtilsKt$constructLookupSwitch$1 INSTANCE -> a
     int compare(java.lang.Object,java.lang.Object) -> compare
     void <init>() -> <init>
@@ -32035,8 +32210,9 @@ org.objectweb.asm.ClassWriter -> org.objectweb.asm.g:
     org.objectweb.asm.Attribute firstAttribute -> a
     int compute -> m
     void <init>(int) -> <init>
+    void <init>(int,boolean) -> <init>
     void <init>(int,byte) -> <init>
-    void <init>(int,char) -> <init>
+    void <init>(int,boolean,byte) -> <init>
     void visit(int,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String[]) -> a
     void visitSource(java.lang.String,java.lang.String) -> a
     org.objectweb.asm.ModuleVisitor visitModule(java.lang.String,int,java.lang.String) -> a
@@ -32201,6 +32377,7 @@ org.objectweb.asm.MethodTooLargeException -> org.objectweb.asm.r:
     long serialVersionUID -> serialVersionUID
     void <init>(java.lang.String,java.lang.String,java.lang.String) -> <init>
 org.objectweb.asm.MethodVisitor -> org.objectweb.asm.s:
+    int api -> a
     org.objectweb.asm.MethodVisitor mv -> a
     void <init>() -> <init>
     void <init>(org.objectweb.asm.MethodVisitor) -> <init>
@@ -32238,54 +32415,54 @@ org.objectweb.asm.MethodVisitor -> org.objectweb.asm.s:
 org.objectweb.asm.MethodWriter -> org.objectweb.asm.t:
     int[] STACK_SIZE_DELTA -> c
     org.objectweb.asm.SymbolTable symbolTable -> a
-    int accessFlags -> a
-    int nameIndex -> b
+    int accessFlags -> b
+    int nameIndex -> c
     java.lang.String name -> a
-    int descriptorIndex -> c
+    int descriptorIndex -> d
     java.lang.String descriptor -> b
-    int maxStack -> d
-    int maxLocals -> e
+    int maxStack -> e
+    int maxLocals -> f
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt code$6d90af15 -> a
     org.objectweb.asm.Handler firstHandler -> a
     org.objectweb.asm.Handler lastHandler -> b
-    int lineNumberTableLength -> f
+    int lineNumberTableLength -> g
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt lineNumberTable$6d90af15 -> b
-    int localVariableTableLength -> g
+    int localVariableTableLength -> h
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt localVariableTable$6d90af15 -> c
-    int localVariableTypeTableLength -> h
+    int localVariableTypeTableLength -> i
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt localVariableTypeTable$6d90af15 -> d
-    int stackMapTableNumberOfEntries -> i
+    int stackMapTableNumberOfEntries -> j
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt stackMapTableEntries$6d90af15 -> e
     org.objectweb.asm.AnnotationWriter lastCodeRuntimeVisibleTypeAnnotation -> a
     org.objectweb.asm.AnnotationWriter lastCodeRuntimeInvisibleTypeAnnotation -> b
-    int numberOfExceptions -> j
+    int numberOfExceptions -> k
     int[] exceptionIndexTable -> a
-    int signatureIndex -> k
+    int signatureIndex -> l
     org.objectweb.asm.AnnotationWriter lastRuntimeVisibleAnnotation -> c
     org.objectweb.asm.AnnotationWriter lastRuntimeInvisibleAnnotation -> d
-    int visibleAnnotableParameterCount -> l
+    int visibleAnnotableParameterCount -> m
     org.objectweb.asm.AnnotationWriter[] lastRuntimeVisibleParameterAnnotations -> a
-    int invisibleAnnotableParameterCount -> m
+    int invisibleAnnotableParameterCount -> n
     org.objectweb.asm.AnnotationWriter[] lastRuntimeInvisibleParameterAnnotations -> b
     org.objectweb.asm.AnnotationWriter lastRuntimeVisibleTypeAnnotation -> e
     org.objectweb.asm.AnnotationWriter lastRuntimeInvisibleTypeAnnotation -> f
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt defaultValue$6d90af15 -> f
-    int parametersCount -> n
+    int parametersCount -> o
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt parameters$6d90af15 -> g
     org.objectweb.asm.Attribute firstAttribute -> a
-    int compute -> o
+    int compute -> p
     org.objectweb.asm.Label firstBasicBlock -> a
     org.objectweb.asm.Label lastBasicBlock -> b
     org.objectweb.asm.Label currentBasicBlock -> c
-    int relativeStackSize -> p
-    int maxRelativeStackSize -> q
-    int currentLocals -> r
-    int previousFrameOffset -> s
+    int relativeStackSize -> q
+    int maxRelativeStackSize -> r
+    int currentLocals -> s
+    int previousFrameOffset -> t
     int[] previousFrame -> d
     int[] currentFrame -> b
     boolean hasSubroutines -> b
     boolean hasAsmInstructions -> a
-    int lastBytecodeOffset -> t
+    int lastBytecodeOffset -> u
     void <init>(org.objectweb.asm.SymbolTable,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String[],int) -> <init>
     void visitParameter(java.lang.String,int) -> a
     org.objectweb.asm.AnnotationVisitor visitAnnotationDefault() -> a
@@ -32681,6 +32858,7 @@ org.objectweb.asm.tree.AnnotationNode -> org.objectweb.asm.c.b:
     void accept(org.objectweb.asm.AnnotationVisitor) -> a
     void accept(org.objectweb.asm.AnnotationVisitor,java.lang.String,java.lang.Object) -> a
 org.objectweb.asm.tree.ClassNode -> org.objectweb.asm.c.c:
+    boolean verify -> a
     int version -> a
     int access -> b
     java.lang.String name -> a
@@ -32720,6 +32898,7 @@ org.objectweb.asm.tree.ClassNode -> org.objectweb.asm.c.c:
     org.objectweb.asm.MethodVisitor visitMethod(int,java.lang.String,java.lang.String,java.lang.String,java.lang.String[]) -> a
     void visitEnd() -> a
     void accept(org.objectweb.asm.ClassVisitor) -> a
+    java.lang.String toString() -> toString
 org.objectweb.asm.tree.FieldInsnNode -> org.objectweb.asm.c.d:
     java.lang.String owner -> a
     java.lang.String name -> c
@@ -32774,7 +32953,6 @@ org.objectweb.asm.tree.InsnList -> org.objectweb.asm.c.i:
     org.objectweb.asm.tree.AbstractInsnNode[] cache -> a
     void <init>() -> <init>
     int size() -> a
-    org.objectweb.asm.tree.AbstractInsnNode getLast() -> a
     org.objectweb.asm.tree.AbstractInsnNode get(int) -> a
     int indexOf(org.objectweb.asm.tree.AbstractInsnNode) -> a
     void accept(org.objectweb.asm.MethodVisitor) -> a
@@ -32784,11 +32962,11 @@ org.objectweb.asm.tree.InsnList -> org.objectweb.asm.c.i:
     void add(org.objectweb.asm.tree.InsnList) -> a
     void insert(org.objectweb.asm.tree.AbstractInsnNode) -> b
     void insert(org.objectweb.asm.tree.InsnList) -> b
+    void insert(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.AbstractInsnNode) -> a
     void insert(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> a
-    void insertBefore(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> b
     void remove(org.objectweb.asm.tree.AbstractInsnNode) -> c
-    void removeAll$1385ff() -> b
-    void resetLabels() -> a
+    void removeAll$1385ff() -> a
+    void resetLabels() -> b
 org.objectweb.asm.tree.InsnList$InsnListIterator -> org.objectweb.asm.c.j:
     org.objectweb.asm.tree.AbstractInsnNode nextInsn -> a
     org.objectweb.asm.tree.AbstractInsnNode previousInsn -> b
@@ -32877,7 +33055,7 @@ org.objectweb.asm.tree.MethodInsnNode -> org.objectweb.asm.c.u:
     int getType() -> b
     void accept(org.objectweb.asm.MethodVisitor) -> a
 org.objectweb.asm.tree.MethodNode -> org.objectweb.asm.c.v:
-    int access -> a
+    int access -> b
     java.lang.String name -> a
     java.lang.String desc -> b
     java.lang.String signature -> c
@@ -32889,14 +33067,14 @@ org.objectweb.asm.tree.MethodNode -> org.objectweb.asm.c.v:
     java.util.List invisibleTypeAnnotations -> i
     java.util.List attrs -> c
     java.lang.Object annotationDefault -> a
-    int visibleAnnotableParameterCount -> d
+    int visibleAnnotableParameterCount -> e
     java.util.List[] visibleParameterAnnotations -> a
-    int invisibleAnnotableParameterCount -> e
+    int invisibleAnnotableParameterCount -> f
     java.util.List[] invisibleParameterAnnotations -> b
     org.objectweb.asm.tree.InsnList instructions -> a
     java.util.List tryCatchBlocks -> d
-    int maxStack -> b
-    int maxLocals -> c
+    int maxStack -> c
+    int maxLocals -> d
     java.util.List localVariables -> e
     java.util.List visibleLocalVariableAnnotations -> j
     java.util.List invisibleLocalVariableAnnotations -> k
@@ -32941,6 +33119,7 @@ org.objectweb.asm.tree.MethodNode -> org.objectweb.asm.c.v:
     java.lang.Object[] getLabelNodes(java.lang.Object[]) -> a
     void accept(org.objectweb.asm.ClassVisitor) -> a
     void accept(org.objectweb.asm.MethodVisitor) -> a
+    java.lang.String toString() -> toString
 org.objectweb.asm.tree.MethodNode$1 -> org.objectweb.asm.c.w:
     org.objectweb.asm.tree.MethodNode this$0 -> a
     void <init>(org.objectweb.asm.tree.MethodNode) -> <init>
@@ -33094,6 +33273,7 @@ org.objectweb.asm.tree.analysis.BasicValue -> org.objectweb.asm.c.a.d:
     void <clinit>() -> <clinit>
 org.objectweb.asm.tree.analysis.BasicVerifier -> org.objectweb.asm.c.a.e:
     void <init>() -> <init>
+    void <init>(byte) -> <init>
     org.objectweb.asm.tree.analysis.BasicValue copyOperation(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.analysis.BasicValue) -> a
     org.objectweb.asm.tree.analysis.BasicValue unaryOperation(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.analysis.BasicValue) -> b
     org.objectweb.asm.tree.analysis.BasicValue binaryOperation(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.analysis.BasicValue,org.objectweb.asm.tree.analysis.BasicValue) -> a
@@ -33112,13 +33292,14 @@ org.objectweb.asm.tree.analysis.BasicVerifier -> org.objectweb.asm.c.a.e:
 org.objectweb.asm.tree.analysis.Frame -> org.objectweb.asm.c.a.f:
     org.objectweb.asm.tree.analysis.Value returnValue -> a
     org.objectweb.asm.tree.analysis.Value[] values -> a
-    int numLocals -> b
-    int numStack -> a
+    int numLocals -> a
+    int numStack -> b
     void <init>(int,int) -> <init>
     void <init>(org.objectweb.asm.tree.analysis.Frame) -> <init>
     org.objectweb.asm.tree.analysis.Frame init(org.objectweb.asm.tree.analysis.Frame) -> a
     org.objectweb.asm.tree.analysis.Value getLocal(int) -> a
     void setLocal(int,org.objectweb.asm.tree.analysis.Value) -> a
+    org.objectweb.asm.tree.analysis.Value getStack(int) -> b
     org.objectweb.asm.tree.analysis.Value pop() -> a
     void push(org.objectweb.asm.tree.analysis.Value) -> a
     void execute(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.analysis.Interpreter) -> a
@@ -33264,16 +33445,19 @@ org.objectweb.asm.util.CheckAnnotationAdapter -> org.objectweb.asm.util.b:
     void checkName(java.lang.String) -> a
     void checkVisitEndNotCalled() -> b
 org.objectweb.asm.util.CheckClassAdapter -> org.objectweb.asm.util.CheckClassAdapter:
+    boolean checkDataFlow -> a
     int version -> a
-    boolean visitCalled -> a
-    boolean visitModuleCalled -> b
-    boolean visitSourceCalled -> c
-    boolean visitOuterClassCalled -> d
-    boolean visitNestHostCalled -> e
+    boolean visitCalled -> b
+    boolean visitModuleCalled -> c
+    boolean visitSourceCalled -> d
+    boolean visitOuterClassCalled -> e
+    boolean visitNestHostCalled -> f
     java.lang.String nestMemberPackageName -> a
-    boolean visitEndCalled -> f
+    boolean visitEndCalled -> g
     java.util.Map labelInsnIndices -> a
     void <init>(org.objectweb.asm.ClassVisitor) -> <init>
+    void <init>(org.objectweb.asm.ClassVisitor,byte) -> <init>
+    void <init>(org.objectweb.asm.ClassVisitor,boolean) -> <init>
     void visit(int,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String[]) -> a
     void visitSource(java.lang.String,java.lang.String) -> a
     org.objectweb.asm.ModuleVisitor visitModule(java.lang.String,int,java.lang.String) -> a
@@ -33306,6 +33490,8 @@ org.objectweb.asm.util.CheckClassAdapter -> org.objectweb.asm.util.CheckClassAda
     void checkTypeRef(int) -> a
     void main(java.lang.String[]) -> main
     void verify$5ac4c649$379f1e54$527a58d0(org.intellij.lang.annotations.JdkConstants,java.io.PrintWriter) -> a
+    void printAnalyzerResult(org.objectweb.asm.tree.MethodNode,org.objectweb.asm.tree.analysis.Analyzer,java.io.PrintWriter) -> a
+    java.lang.String getUnqualifiedName(java.lang.String) -> a
 org.objectweb.asm.util.CheckClassAdapter$1 -> org.objectweb.asm.util.c:
     void <init>(org.objectweb.asm.ClassVisitor) -> <init>
 org.objectweb.asm.util.CheckFieldAdapter -> org.objectweb.asm.util.d:
@@ -33318,20 +33504,22 @@ org.objectweb.asm.util.CheckFieldAdapter -> org.objectweb.asm.util.d:
     void checkVisitEndNotCalled() -> b
 org.objectweb.asm.util.CheckMethodAdapter -> org.objectweb.asm.util.e:
     int[] OPCODE_METHODS$51cc29ff -> a
-    int version -> a
-    int visibleAnnotableParameterCount -> b
-    int invisibleAnnotableParameterCount -> c
+    int version -> b
+    int access -> c
+    int visibleAnnotableParameterCount -> d
+    int invisibleAnnotableParameterCount -> e
     boolean visitCodeCalled -> a
     boolean visitMaxCalled -> b
     boolean visitEndCalled -> c
-    int insnCount -> d
+    int insnCount -> f
     java.util.Map labelInsnIndices -> a
     java.util.Set referencedLabels -> a
-    int lastFrameInsnIndex -> e
-    int numExpandedFrames -> f
-    int numCompressedFrames -> g
+    int lastFrameInsnIndex -> g
+    int numExpandedFrames -> h
+    int numCompressedFrames -> i
     java.util.List handlers -> a
     void <init>(org.objectweb.asm.MethodVisitor,java.util.Map) -> <init>
+    void <init>(int,java.lang.String,java.lang.String,org.objectweb.asm.MethodVisitor,java.util.Map) -> <init>
     void visitParameter(java.lang.String,int) -> a
     org.objectweb.asm.AnnotationVisitor visitAnnotation(java.lang.String,boolean) -> a
     org.objectweb.asm.AnnotationVisitor visitTypeAnnotation(int,org.objectweb.asm.TypePath,java.lang.String,boolean) -> a
@@ -33382,7 +33570,12 @@ org.objectweb.asm.util.CheckMethodAdapter -> org.objectweb.asm.util.e:
     void checkMethodDescriptor(int,java.lang.String) -> c
     void checkLabel(org.objectweb.asm.Label,boolean,java.lang.String) -> a
     void <clinit>() -> <clinit>
-org.objectweb.asm.util.CheckMethodAdapter$Method -> org.objectweb.asm.util.f:
+org.objectweb.asm.util.CheckMethodAdapter$1 -> org.objectweb.asm.util.f:
+    org.objectweb.asm.MethodVisitor val$methodVisitor -> b
+    void <init>(int,java.lang.String,java.lang.String,org.objectweb.asm.MethodVisitor) -> <init>
+    void visitEnd() -> b
+    void throwError(org.objectweb.asm.tree.analysis.Analyzer,java.lang.Exception) -> a
+org.objectweb.asm.util.CheckMethodAdapter$Method -> org.objectweb.asm.util.g:
     int VISIT_INSN$4f589664 -> a
     int VISIT_INT_INSN$4f589664 -> b
     int VISIT_VAR_INSN$4f589664 -> c
@@ -33393,7 +33586,7 @@ org.objectweb.asm.util.CheckMethodAdapter$Method -> org.objectweb.asm.util.f:
     int[] $VALUES$51cc29ff -> a
     int[] values$455760a2() -> values$455760a2
     void <clinit>() -> <clinit>
-org.objectweb.asm.util.CheckModuleAdapter -> org.objectweb.asm.util.g:
+org.objectweb.asm.util.CheckModuleAdapter -> org.objectweb.asm.util.h:
     boolean isOpen -> a
     org.objectweb.asm.util.CheckModuleAdapter$NameSet requiredModules -> a
     org.objectweb.asm.util.CheckModuleAdapter$NameSet exportedPackages -> b
@@ -33412,12 +33605,12 @@ org.objectweb.asm.util.CheckModuleAdapter -> org.objectweb.asm.util.g:
     void visitProvide(java.lang.String,java.lang.String[]) -> a
     void visitEnd() -> a
     void checkVisitEndNotCalled() -> b
-org.objectweb.asm.util.CheckModuleAdapter$NameSet -> org.objectweb.asm.util.h:
+org.objectweb.asm.util.CheckModuleAdapter$NameSet -> org.objectweb.asm.util.i:
     java.lang.String type -> a
     java.util.HashSet names -> a
     void <init>(java.lang.String) -> <init>
     void checkNameNotAlreadyDeclared(java.lang.String) -> a
-org.objectweb.asm.util.Printer -> org.objectweb.asm.util.i:
+org.objectweb.asm.util.Printer -> org.objectweb.asm.util.j:
     java.lang.String[] OPCODES -> a
     java.lang.String[] TYPES -> b
     java.lang.String[] HANDLE_TAG -> c
@@ -33589,8 +33782,8 @@ org.objectweb.asm.util.Textifier -> org.objectweb.asm.util.Textifier:
     org.objectweb.asm.util.Printer visitField(int,java.lang.String,java.lang.String,java.lang.String,java.lang.Object) -> a
     org.objectweb.asm.util.Printer visitClassAnnotation(java.lang.String,boolean) -> c
     void <clinit>() -> <clinit>
-org.objectweb.asm.util.TextifierSupport -> org.objectweb.asm.util.j:
-org.objectweb.asm.util.TraceAnnotationVisitor -> org.objectweb.asm.util.k:
+org.objectweb.asm.util.TextifierSupport -> org.objectweb.asm.util.k:
+org.objectweb.asm.util.TraceAnnotationVisitor -> org.objectweb.asm.util.l:
     org.objectweb.asm.util.Printer printer -> a
     void <init>(org.objectweb.asm.AnnotationVisitor,org.objectweb.asm.util.Printer) -> <init>
     void visit(java.lang.String,java.lang.Object) -> a
@@ -33598,7 +33791,7 @@ org.objectweb.asm.util.TraceAnnotationVisitor -> org.objectweb.asm.util.k:
     org.objectweb.asm.AnnotationVisitor visitAnnotation(java.lang.String,java.lang.String) -> a
     org.objectweb.asm.AnnotationVisitor visitArray(java.lang.String) -> a
     void visitEnd() -> a
-org.objectweb.asm.util.TraceClassVisitor -> org.objectweb.asm.util.l:
+org.objectweb.asm.util.TraceClassVisitor -> org.objectweb.asm.util.m:
     java.io.PrintWriter printWriter -> a
     org.objectweb.asm.util.Printer p -> a
     void <init>(org.objectweb.asm.util.Printer,java.io.PrintWriter) -> <init>
@@ -33615,15 +33808,16 @@ org.objectweb.asm.util.TraceClassVisitor -> org.objectweb.asm.util.l:
     org.objectweb.asm.FieldVisitor visitField(int,java.lang.String,java.lang.String,java.lang.String,java.lang.Object) -> a
     org.objectweb.asm.MethodVisitor visitMethod(int,java.lang.String,java.lang.String,java.lang.String,java.lang.String[]) -> a
     void visitEnd() -> a
-org.objectweb.asm.util.TraceFieldVisitor -> org.objectweb.asm.util.m:
+org.objectweb.asm.util.TraceFieldVisitor -> org.objectweb.asm.util.n:
     org.objectweb.asm.util.Printer p -> a
     void <init>(org.objectweb.asm.FieldVisitor,org.objectweb.asm.util.Printer) -> <init>
     org.objectweb.asm.AnnotationVisitor visitAnnotation(java.lang.String,boolean) -> a
     org.objectweb.asm.AnnotationVisitor visitTypeAnnotation(int,org.objectweb.asm.TypePath,java.lang.String,boolean) -> a
     void visitAttribute(org.objectweb.asm.Attribute) -> a
     void visitEnd() -> a
-org.objectweb.asm.util.TraceMethodVisitor -> org.objectweb.asm.util.n:
+org.objectweb.asm.util.TraceMethodVisitor -> org.objectweb.asm.util.o:
     org.objectweb.asm.util.Printer p -> a
+    void <init>(org.objectweb.asm.util.Printer) -> <init>
     void <init>(org.objectweb.asm.MethodVisitor,org.objectweb.asm.util.Printer) -> <init>
     void visitParameter(java.lang.String,int) -> a
     org.objectweb.asm.AnnotationVisitor visitAnnotation(java.lang.String,boolean) -> a
@@ -33656,7 +33850,7 @@ org.objectweb.asm.util.TraceMethodVisitor -> org.objectweb.asm.util.n:
     void visitLineNumber(int,org.objectweb.asm.Label) -> b
     void visitMaxs(int,int) -> d
     void visitEnd() -> b
-org.objectweb.asm.util.TraceModuleVisitor -> org.objectweb.asm.util.o:
+org.objectweb.asm.util.TraceModuleVisitor -> org.objectweb.asm.util.p:
     org.objectweb.asm.util.Printer p -> a
     void <init>(org.objectweb.asm.ModuleVisitor,org.objectweb.asm.util.Printer) -> <init>
     void visitMainClass(java.lang.String) -> a
@@ -33667,7 +33861,7 @@ org.objectweb.asm.util.TraceModuleVisitor -> org.objectweb.asm.util.o:
     void visitUse(java.lang.String) -> c
     void visitProvide(java.lang.String,java.lang.String[]) -> a
     void visitEnd() -> a
-org.objectweb.asm.util.TraceSignatureVisitor -> org.objectweb.asm.util.p:
+org.objectweb.asm.util.TraceSignatureVisitor -> org.objectweb.asm.util.q:
     java.util.Map BASE_TYPES -> a
     boolean isInterface -> a
     java.lang.StringBuilder declaration -> a

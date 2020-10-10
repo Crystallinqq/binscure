@@ -34,12 +34,20 @@ object MbaTransformer: IClassProcessor {
 		
 		forClass(classes) { cn ->
 			forMethod(cn) { mn ->
-				mn.instructions?.let { list ->
+				val list = mn.instructions
+				if (list != null && list.size() > 0) {
 					for (i in 0 until config.repeat) {
 						val modifier = InstructionModifier()
+						println("List ${list.size()}")
+						var skip = 0
 						for (op in list) {
-							substitute(op, modifier)
+							if (skip > 0) {
+								skip -= 1
+								continue
+							}
+							skip += substitute(op, modifier)
 						}
+						if (modifier.isEmpty()) break
 						if (!modifier.apply(list)) {
 							println("\rWarning: Stopped MBA for method ${cn.originalName}.${mn.name}${mn.desc} ($maxInsns instructions)")
 							break
@@ -50,8 +58,65 @@ object MbaTransformer: IClassProcessor {
 		}
 	}
 	
-	fun substitute(op: AbstractInsnNode, modifier: InstructionModifier) {
+	fun substitute(op: AbstractInsnNode, modifier: InstructionModifier): Int {
+		var skip = 0
 		when {
+			op.opcode == ICONST_M1 && op.next?.opcode == IXOR && op.next.next?.opcode == IAND -> {
+				modifier.remove(op.next.next)
+				modifier.remove(op.next)
+				val sub = randomBranch(random, {
+					// x & ~y == (x | y) - y
+					insnBuilder {
+						dup_x1()
+						ior()
+						swap()
+						isub()
+					}
+				}, {
+					// x & ~y == x - (x & y)
+					insnBuilder {
+						swap()
+						dup_x1()
+						iand()
+						isub()
+					}
+				})
+				modifier.replace(op, sub)
+				skip = 2
+			}
+			op.opcode == ISUB && op.next?.opcode == ICONST_M1 && op.next.next?.opcode == IXOR -> {
+				modifier.remove(op.next.next)
+				modifier.remove(op.next)
+				val sub = randomBranch(random, {
+					// ~(x - y) == y - x - 1
+					insnBuilder {
+						swap()
+						isub()
+						iconst_1()
+						isub()
+					}
+				}, {
+					// ~(x - y) == ~x + y
+					insnBuilder {
+						swap()
+						iconst_m1()
+						ixor()
+						iadd()
+					}
+				})
+				modifier.replace(op, sub)
+				skip = 2
+			}
+			op.opcode == ICONST_M1 && op.next?.opcode == IXOR -> {
+				// ~x == (-x)-1
+				modifier.remove(op.next)
+				modifier.replace(op, insnBuilder {
+					ineg()
+					iconst_m1()
+					iadd()
+				})
+				skip = 1
+			}
 			op.opcode == INEG -> {
 				val sub = randomBranch(random, {
 					// -x == (~x)+1
@@ -176,59 +241,6 @@ object MbaTransformer: IClassProcessor {
 				})
 				modifier.replace(op, sub)
 			}
-			op.opcode == IAND && op.previous?.opcode == IXOR && op.previous?.previous?.opcode == ICONST_M1 -> {
-				modifier.remove(op.previous.previous)
-				modifier.remove(op.previous)
-				val sub = randomBranch(random, {
-					// x & ~y == (x | y) - y
-					insnBuilder {
-						dup_x1()
-						ior()
-						swap()
-						isub()
-					}
-				}, {
-					// x & ~y == x - (x & y)
-					insnBuilder {
-						swap()
-						dup_x1()
-						iand()
-						isub()
-					}
-				})
-				modifier.replace(op, sub)
-			}
-			op.opcode == IXOR && op.previous?.opcode == ICONST_M1 && op.previous?.opcode == ISUB -> {
-				modifier.remove(op.previous.previous)
-				modifier.remove(op.previous)
-				val sub = randomBranch(random, {
-					// ~(x - y) == y - x - 1
-					insnBuilder {
-						swap()
-						isub()
-						iconst_1()
-						isub()
-					}
-				}, {
-					// ~(x - y) == ~x + y
-					insnBuilder {
-						swap()
-						iconst_m1()
-						ixor()
-						iadd()
-					}
-				})
-				modifier.replace(op, sub)
-			}
-			op.opcode == IXOR && op.previous?.opcode == ICONST_M1 -> {
-				// ~x == (-x)-1
-				modifier.remove(op.previous)
-				modifier.replace(op, insnBuilder {
-					ineg()
-					iconst_m1()
-					iadd()
-				})
-			}
 			op.opcode == IXOR -> {
 				val sub = randomBranch(random, {
 					// x ^ y == (x | y) - (x & y)
@@ -310,5 +322,6 @@ object MbaTransformer: IClassProcessor {
 				})
 			}
 		}
+		return skip
 	}
 }
