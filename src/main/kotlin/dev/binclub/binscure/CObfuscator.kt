@@ -8,7 +8,9 @@ import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
 import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
 import dev.binclub.binscure.processors.AbstractMethodImplementor
+import dev.binclub.binscure.processors.VariableInitializer
 import dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer
+import dev.binclub.binscure.processors.arithmetic.MbaTransformer
 import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
 import dev.binclub.binscure.processors.constants.FieldInitialiser
 import dev.binclub.binscure.processors.constants.NumberObfuscation
@@ -24,6 +26,7 @@ import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
 import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.whenNotNull
 import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
+import dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication
 import dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch
 import dev.binclub.binscure.processors.indirection.DynamicCallObfuscation
 import dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser
@@ -69,7 +72,6 @@ object CObfuscator {
 		ClassPath.constructHierarchy()
 		
 		val processors = arrayOf(
-			//VariableInitializer,
 			FieldInitialiser,
 			AccessStripper,
 			EnumValuesOptimiser,
@@ -85,20 +87,21 @@ object CObfuscator {
 			StringObfuscator,
 			DynamicCallObfuscation,
 			
-			//JumpRearranger,
 			ArithmeticSubstitutionTransformer,
 			CfgFucker,
 			ClassInitMonitor,
 			FakeTryCatch,
 			UselessTryCatch,
+			TryCatchDuplication,
 			
 			StaticMethodMerger,
 			NumberObfuscation,
 			
 			BadAttributeExploit,
 			BadIndyConstant,
+			MbaTransformer,
 			
-			AbstractMethodImplementor,
+			//AbstractMethodImplementor, this is dumb
 			
 			ManifestResourceProcessor
 		)
