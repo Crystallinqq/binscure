@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.objectweb.asm;
 
+import dev.binclub.binscure.utils.ExtensionsKt;
+import dev.binclub.binscure.utils.UtilsKt;
+
 import java.io.IOException;
 import java.util.Objects;
 

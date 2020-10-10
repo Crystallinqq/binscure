@@ -44,7 +44,7 @@ import org.objectweb.asm.TypePath;
  * @author Eric Bruneton
  */
 public class ClassNode extends ClassVisitor {
-	
+	public boolean verify = true;
 	/**
 	 * The class version. The minor version is stored in the 16 most significant bits, and the major
 	 * version in the 16 least significant bits.
@@ -427,5 +427,10 @@ public class ClassNode extends ClassVisitor {
 			methods.get(i).accept(classVisitor);
 		}
 		classVisitor.visitEnd();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }

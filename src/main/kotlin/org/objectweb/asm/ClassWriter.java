@@ -214,8 +214,7 @@ public class ClassWriter extends ClassVisitor {
 	}
 	
 	public ClassWriter(final int flags, boolean verify) {
-		this(null, flags);
-		this.verify = verify;
+		this(null, flags, verify);
 	}
 	
 	/**
@@ -243,10 +242,19 @@ public class ClassWriter extends ClassVisitor {
 	 *     maximum stack size nor the stack frames will be computed for these methods</i>.
 	 */
 	public ClassWriter(final ClassReader classReader, final int flags) {
+		this(classReader, flags, true);
+	}
+	
+	public ClassWriter(final ClassReader classReader, final int flags, boolean verify) {
 		super(Opcodes.ASM7);
+		this.verify = verify;
 		symbolTable = classReader == null ? new SymbolTable(this) : new SymbolTable(this, classReader);
 		if ((flags & COMPUTE_FRAMES) != 0) {
-			this.compute = MethodWriter.COMPUTE_ALL_FRAMES;
+			if (verify) {
+				this.compute = MethodWriter.COMPUTE_ALL_FRAMES;
+			} else {
+				this.compute = MethodWriter.COMPUTE_MAX_STACK_AND_LOCAL;
+			}
 		} else if ((flags & COMPUTE_MAXS) != 0) {
 			this.compute = MethodWriter.COMPUTE_MAX_STACK_AND_LOCAL;
 		} else {
