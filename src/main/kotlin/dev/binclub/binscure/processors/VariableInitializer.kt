@@ -103,10 +103,10 @@ object VariableInitializer: IClassProcessor {
 						if (insn is FrameNode) {
 							lastFrame = insn
 						} else if (insn is VarInsnNode) {
-							if (insn.opcode == ALOAD && lastFrame != null) {
-								val frame = lastFrame
-								if (frame.local.size > insn.`var` && frame.local[insn.`var`] is String) {
-									modifier.append(insn, TypeInsnNode(CHECKCAST, frame.local[insn.`var`] as String))
+							val local = lastFrame?.local
+							if (insn.opcode == ALOAD && local != null) {
+								if (local.size > insn.`var` && local[insn.`var`] is String) {
+									modifier.append(insn, TypeInsnNode(CHECKCAST, local[insn.`var`] as String))
 								}
 							}
 							varMap[insn.`var`] = when (insn.opcode) {

@@ -25,7 +25,7 @@ object DynamicCallObfuscation: IClassProcessor {
 		ClassNode().apply {
 			access = ACC_PUBLIC + ACC_FINAL
 			version = V1_8
-			name = ClassRenamer.namer.uniqueRandomString()
+			name = ClassRenamer.namer.uniqueUntakenClass()
 			signature = null
 			superName = "java/lang/Object"
 		}

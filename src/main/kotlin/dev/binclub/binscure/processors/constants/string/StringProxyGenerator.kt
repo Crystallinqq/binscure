@@ -28,9 +28,9 @@ object StringProxyGenerator {
 		
 		val classNode = ClassNode()
 			.apply {
-				this.access = Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL
-				this.version = Opcodes.V1_8
-				this.name = ClassRenamer.namer.uniqueRandomString()
+				this.access = ACC_PUBLIC + ACC_FINAL
+				this.version = V1_8
+				this.name = ClassRenamer.namer.uniqueUntakenClass()
 				this.signature = null
 				this.superName = "java/lang/Object"
 				ClassPath.classes[this.name] = this

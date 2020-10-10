@@ -1,5 +1,7 @@
 package dev.binclub.binscure.processors.renaming.generation
 
+import dev.binclub.binscure.classpath.ClassPath
+import dev.binclub.binscure.classpath.ClassPathIO
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 
 /**
@@ -34,4 +36,24 @@ open class NameGenerator(val prefix: String = "") {
 	protected var index = 0
 	
 	open fun uniqueRandomString() = prefix + intToStr(index++, CHARSET)
+	
+	fun uniqueUntakenClass(): String {
+		do {
+			val out = uniqueRandomString()
+			val resourceName = "$out.class"
+			if (
+				!ClassPath.passThrough.containsKey(resourceName) &&
+				!ClassPath.classes.containsKey(out) &&
+				!ClassPath.classPath.containsKey(out)
+			) {
+				/*val b = ClassPath.classes
+				val c = ClassPath.classPath
+				val d = ClassPath.passThrough
+				val g = ClassPath.originalNames
+				println("Resource Name $resourceName")
+				println("Classes ${ClassPath.classes.keys}")*/
+				return out
+			}
+		} while (true)
+	}
 }

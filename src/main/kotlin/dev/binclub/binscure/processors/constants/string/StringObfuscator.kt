@@ -76,9 +76,9 @@ object StringObfuscator: IClassProcessor {
 				.apply {
 					this.access = ACC_PUBLIC + ACC_FINAL
 					this.version = V1_8
-					this.name = ClassRenamer.namer.uniqueRandomString()
+					this.name = ClassRenamer.namer.uniqueUntakenClass()
 					this.signature = null
-					this.superName = "sun/reflect/MagicAccessorImpl"
+					this.superName = "java/lang/Object"
 					this.sourceFile = "a"
 					this.sourceDebug = "hello"
 					//ClassPath.classes[this.name] = this
@@ -143,7 +143,7 @@ object StringObfuscator: IClassProcessor {
 				storageField
 			)
 			
-			val writer = CustomClassWriter(ClassWriter.COMPUTE_MAXS, verify = false)
+			val writer = ClassWriter(ClassWriter.COMPUTE_FRAMES)//CustomClassWriter(ClassWriter.COMPUTE_MAXS, verify = false)
 			decryptNode.accept(writer)
 			val resourceName = "${decryptNode.name}.class"
 			ClassPath.passThrough[resourceName] = writer.toByteArray()

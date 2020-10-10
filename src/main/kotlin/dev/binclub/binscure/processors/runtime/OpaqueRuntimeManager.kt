@@ -31,7 +31,7 @@ object OpaqueRuntimeManager {
 	val classNodeDelegate = lazy { ClassNode().apply {
 		this.access = ACC_PUBLIC
 		this.version = V1_8
-		this.name = ClassRenamer.namer.uniqueRandomString()
+		this.name = ClassRenamer.namer.uniqueUntakenClass()
 		this.signature = null
 		this.superName = "java/util/concurrent/ConcurrentHashMap"
 		
@@ -51,16 +51,18 @@ object OpaqueRuntimeManager {
 	fun getClassNodeSafe(): ClassNode? =
 		if (classNodeDelegate.isInitialized()) classNode else null
 	
-	private val clinit =
+	private val clinit by lazy {
 		MethodNode(ACC_STATIC, "<clinit>", "()V", null, null).also {
 			it.instructions.add(InsnNode(RETURN))
 			classNode.methods.add(it)
 		}
+	}
 	
 	// The larger the application, the larger the number of fields we want available
 	// We will use the number of classes / 2, at least 3 and at most 25
-	val fields =
+	val fields by lazy {
 		Array(min(max(ClassPath.classes.size / 2, 3), 25)) { generateField() }
+	}
 	
 	private fun generateField(): FieldInfo {
 		val fieldNode = FieldNode(

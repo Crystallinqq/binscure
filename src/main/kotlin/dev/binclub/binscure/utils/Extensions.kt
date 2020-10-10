@@ -267,3 +267,8 @@ fun InsnList.populateWithLineNumbers() {
 		}
 	}
 }
+
+fun InsnList.replace(op: AbstractInsnNode, list: InsnList) {
+	insert(op, list)
+	remove(op)
+}

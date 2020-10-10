@@ -21,6 +21,8 @@ class BlameableLabelNode(label: Label) : LabelNode(label) {
 	}
 	
 	override fun toString(): String {
-		return "BLabelNode ${stackTrace!![2].lineNumber}"
+		return stackTrace?.let {
+			"BLabelNode ${it[2].lineNumber}"
+		} ?: "lbl_${super.hashCode()}"
 	}
 }

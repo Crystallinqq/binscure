@@ -49,7 +49,7 @@ object StringCompressor: IClassProcessor {
 				if (classNode == null || size > (65535/2)) {
 					classNode = ClassNode().apply {
 						access = ACC_PUBLIC
-						name = ClassRenamer.namer.uniqueRandomString()
+						name = ClassRenamer.namer.uniqueUntakenClass()
 						superName = "java/lang/Object"
 					}
 				}
