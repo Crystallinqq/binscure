@@ -193,25 +193,25 @@ object ClassPathIO {
 					
 					var writer: ClassWriter
 					try {
-						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES)
+						writer = CustomClassWriter(ClassWriter.COMPUTE_FRAMES, classNode.verify)
 						classNode.accept(writer)
 						
 						val arr = writer.toByteArray()
 						it.write(arr)
 						it.closeEntry()
 					} catch (e: Throwable) {
-						println("${lineChar}Error while writing class ${classNode.name} with frames")
+						System.err.println("${lineChar}Error while writing class ${classNode.name} with frames")
 						e.printStackTrace()
 						
 						try {
-							writer = CustomClassWriter(0)
+							writer = CustomClassWriter(0, classNode.verify)
 							classNode.accept(writer)
 							
 							val arr = writer.toByteArray()
 							it.write(arr)
 							it.closeEntry()
 						} catch (e: Throwable) {
-							println("${lineChar}Error while writing class ${classNode.name} without frames")
+							System.err.println("${lineChar}Error while writing class ${classNode.name} without frames")
 							e.printStackTrace()
 						}
 					}
