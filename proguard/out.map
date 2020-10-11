@@ -2949,6 +2949,14 @@ dev.binclub.binscure.EntryPoint$Companion -> dev.binclub.binscure.b:
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    java.lang.Object getOrPutLazy(java.util.Map,java.lang.Object,kotlin.jvm.functions.Function0) -> a
+    java.lang.Object random(java.lang.Object[],java.security.SecureRandom) -> a
+    void add(org.objectweb.asm.tree.InsnList,int) -> a
+    boolean hasAccess(int,int) -> a
+    java.lang.String opcodeString(org.objectweb.asm.tree.AbstractInsnNode) -> a
+    java.lang.String implOpToStr(int) -> a
+    java.lang.String toOpcodeStrings(org.objectweb.asm.tree.InsnList,org.objectweb.asm.tree.AbstractInsnNode) -> a
+    boolean versionAtLeast(org.objectweb.asm.tree.ClassNode,int) -> a
     org.objectweb.asm.tree.InsnList insnBuilder(kotlin.jvm.functions.Function1) -> a
 dev.binclub.binscure.IClassProcessor -> dev.binclub.binscure.c:
     java.lang.String getProgressDescription() -> a
@@ -4138,29 +4146,7 @@ dev.binclub.binscure.utils.EmptyClassVisitor -> dev.binclub.binscure.d.d:
     dev.binclub.binscure.utils.EmptyClassVisitor INSTANCE -> a
     void <init>() -> <init>
     void <clinit>() -> <clinit>
-dev.binclub.binscure.utils.ExtensionsKt -> dev.binclub.binscure.d.e:
-    kotlin.Lazy opcodes$delegate -> a
-    java.lang.String replaceLast$68bc1f08(java.lang.String,java.lang.String) -> a
-    char xor(char,int) -> a
-    java.lang.Object getOrPutLazy(java.util.Map,java.lang.Object,kotlin.jvm.functions.Function0) -> a
-    java.lang.Object random(java.lang.Object[],java.security.SecureRandom) -> a
-    void add(org.objectweb.asm.tree.InsnList,int) -> a
-    int removeAccess(int,int) -> a
-    int addAccess$255f288(int) -> a
-    boolean hasAccess(int,int) -> a
-    java.util.Map getOpcodes() -> a
-    java.lang.String opcodeString(org.objectweb.asm.tree.AbstractInsnNode) -> a
-    java.lang.String implOpToStr(int) -> a
-    java.lang.String toOpcodeStrings(org.objectweb.asm.tree.InsnList,org.objectweb.asm.tree.AbstractInsnNode) -> a
-    boolean versionAtLeast(org.objectweb.asm.tree.ClassNode,int) -> a
-    boolean versionAtMost$66f96fa5(org.objectweb.asm.tree.ClassNode) -> a
-    void <clinit>() -> <clinit>
-dev.binclub.binscure.utils.ExtensionsKt$opcodes$2 -> dev.binclub.binscure.d.f:
-    dev.binclub.binscure.utils.ExtensionsKt$opcodes$2 INSTANCE -> a
-    java.lang.Object invoke() -> invoke
-    void <init>() -> <init>
-    void <clinit>() -> <clinit>
-dev.binclub.binscure.utils.InstructionModifier -> dev.binclub.binscure.d.g:
+dev.binclub.binscure.utils.InstructionModifier -> dev.binclub.binscure.d.e:
     java.util.ArrayList replacements -> a
     java.util.ArrayList appends -> b
     java.util.ArrayList prepends -> c
@@ -4175,21 +4161,50 @@ dev.binclub.binscure.utils.InstructionModifier -> dev.binclub.binscure.d.g:
     boolean apply$default$1fce4008$7b798a2c(dev.binclub.binscure.utils.InstructionModifier,org.objectweb.asm.tree.InsnList) -> a
     void <init>() -> <init>
     void <clinit>() -> <clinit>
-dev.binclub.binscure.utils.InstructionModifier$AppendOp -> dev.binclub.binscure.d.h:
+dev.binclub.binscure.utils.InstructionModifier$AppendOp -> dev.binclub.binscure.d.f:
     org.objectweb.asm.tree.AbstractInsnNode insn -> a
     org.objectweb.asm.tree.InsnList list -> a
     void <init>(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> <init>
-dev.binclub.binscure.utils.InstructionModifier$Companion -> dev.binclub.binscure.d.i:
+dev.binclub.binscure.utils.InstructionModifier$Companion -> dev.binclub.binscure.d.g:
     void <init>() -> <init>
     void <init>(byte) -> <init>
-dev.binclub.binscure.utils.InstructionModifier$PrependOp -> dev.binclub.binscure.d.j:
+dev.binclub.binscure.utils.InstructionModifier$PrependOp -> dev.binclub.binscure.d.h:
     org.objectweb.asm.tree.AbstractInsnNode insn -> a
     org.objectweb.asm.tree.InsnList list -> a
     void <init>(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> <init>
-dev.binclub.binscure.utils.InstructionModifier$ReplaceOp -> dev.binclub.binscure.d.k:
+dev.binclub.binscure.utils.InstructionModifier$ReplaceOp -> dev.binclub.binscure.d.i:
     org.objectweb.asm.tree.AbstractInsnNode insn -> a
     org.objectweb.asm.tree.InsnList list -> a
     void <init>(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> <init>
+dev.binclub.binscure.utils.OpcodesKt -> dev.binclub.binscure.d.j:
+    java.lang.String[] opcodeArr -> a
+    java.util.Map opcodeStrings -> a
+    java.util.Map getOpcodeStrings() -> a
+    void <clinit>() -> <clinit>
+    java.lang.String[] access$getOpcodeArr$p() -> a
+dev.binclub.binscure.utils.OpcodesKt$opcodeStrings$1 -> dev.binclub.binscure.d.k:
+    java.util.Set entrySet() -> entrySet
+    java.util.Set keySet() -> keySet
+    int size() -> size
+    java.util.Collection values() -> values
+    boolean containsKey(java.lang.Object) -> containsKey
+    boolean containsValue(java.lang.Object) -> containsValue
+    java.lang.Object get(java.lang.Object) -> get
+    boolean isEmpty() -> isEmpty
+    void <init>() -> <init>
+    void clear() -> clear
+    void putAll(java.util.Map) -> putAll
+    java.lang.Object remove(java.lang.Object) -> remove
+    boolean remove(java.lang.Object,java.lang.Object) -> remove
+    void replaceAll(java.util.function.BiFunction) -> replaceAll
+    java.lang.Object compute(java.lang.Object,java.util.function.BiFunction) -> compute
+    java.lang.Object computeIfAbsent(java.lang.Object,java.util.function.Function) -> computeIfAbsent
+    java.lang.Object computeIfPresent(java.lang.Object,java.util.function.BiFunction) -> computeIfPresent
+    java.lang.Object merge(java.lang.Object,java.lang.Object,java.util.function.BiFunction) -> merge
+    java.lang.Object put(java.lang.Object,java.lang.Object) -> put
+    java.lang.Object putIfAbsent(java.lang.Object,java.lang.Object) -> putIfAbsent
+    boolean replace(java.lang.Object,java.lang.Object,java.lang.Object) -> replace
+    java.lang.Object replace(java.lang.Object,java.lang.Object) -> replace
 dev.binclub.binscure.utils.StackHeightCalculationException -> dev.binclub.binscure.d.l:
     org.objectweb.asm.tree.AbstractInsnNode insn -> a
     void <init>(org.objectweb.asm.tree.AbstractInsnNode,java.lang.Throwable) -> <init>
@@ -32889,6 +32904,7 @@ org.objectweb.asm.tree.ClassNode -> org.objectweb.asm.c.c:
     java.util.List nestMembers -> j
     java.util.List fields -> h
     java.util.List methods -> i
+    java.lang.String getOriginalName() -> a
     void <init>() -> <init>
     void <init>(byte) -> <init>
     void visit(int,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String[]) -> a

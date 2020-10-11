@@ -148,14 +148,6 @@ fun Int.removeAccess(access: Int) = this and access.inv()
 fun Int.addAccess(access: Int) = this or access
 fun Int.hasAccess(access: Int) = this and access != 0
 
-val opcodes: Map<Int, String> by lazy {
-	val map = hashMapOf<Int, String>()
-	for (declaredField in Opcodes::class.java.declaredFields) {
-		map[declaredField.get(null) as Int] = declaredField.name
-	}
-	map
-}
-
 fun AbstractInsnNode.opcodeString(): String {
 	when (this) {
 		is BlameableLabelNode -> return this.toString()
@@ -173,7 +165,7 @@ fun AbstractInsnNode.opcodeString(): String {
 }
 
 private fun implOpToStr(op: Int): String {
-	return opcodes.getOrDefault(op, "0x${Integer.toHexString(op)} <invalid>")
+	return opcodeStrings.getOrDefault(op, "0x${Integer.toHexString(op)} <invalid>")
 }
 
 fun InsnList.toOpcodeStrings(highlight: AbstractInsnNode? = null): String {
