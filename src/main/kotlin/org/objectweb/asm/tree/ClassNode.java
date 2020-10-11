@@ -61,6 +61,11 @@ public class ClassNode extends ClassVisitor {
 	public String name;
 	public String originalName;
 	
+	public String getOriginalName() {
+		if (originalName == null) return name;
+		return originalName;
+	}
+	
 	/** The signature of this class. May be {@literal null}. */
 	public String signature;
 	

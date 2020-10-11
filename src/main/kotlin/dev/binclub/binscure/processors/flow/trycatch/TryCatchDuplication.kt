@@ -146,7 +146,7 @@ object TryCatchDuplication: IClassProcessor {
 							}
 						}
 					} catch (t: Throwable) {
-						Exception("Error duplicating try catch nodes for ${cn.name}.${mn.name}${mn.desc}", t).printStackTrace()
+						Exception("Error duplicating try catch nodes for ${cn.getOriginalName()}.${mn.name}${mn.desc}", t).printStackTrace()
 					}
 				}
 				if (injected && config.java8) {

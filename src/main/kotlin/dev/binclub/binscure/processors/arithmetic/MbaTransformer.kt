@@ -49,7 +49,7 @@ object MbaTransformer: IClassProcessor {
 							}
 							if (modifier.isEmpty()) break
 							if (!modifier.apply(list)) {
-								println("\rWarning: Stopped MBA for method ${cn.originalName}.${mn.name}${mn.desc} ($maxInsns instructions)")
+								println("\rWarning: Stopped MBA for method ${cn.getOriginalName()}.${mn.name}${mn.desc} ($maxInsns instructions)")
 								break
 							}
 						}
