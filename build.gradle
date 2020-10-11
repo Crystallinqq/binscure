@@ -35,6 +35,7 @@ shadowJar() {
     manifest {
         attributes 'Main-Class': "dev.binclub.binscure.api.Binscure"
     }
+    new File("build/libs/binscure-release.jar").delete()
 }
 
 task apiJar(type: Jar, dependsOn: shadowJar) {

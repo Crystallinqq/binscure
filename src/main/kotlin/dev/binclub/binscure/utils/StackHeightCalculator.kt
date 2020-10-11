@@ -47,7 +47,7 @@ object StackHeightCalculator {
 		} catch (e: StackHeightCalculationException) {
 			e.printStackTrace()
 			println("--- ${insnList.size()}")
-			insnList.toOpcodeStrings(e.insn)
+			println(insnList.toOpcodeStrings(e.insn))
 			println("---")
 		}
 		

@@ -3,22 +3,34 @@ package dev.binclub.binscure.utils
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import java.io.File
 
 /**
  * @author cookiedragon234 24/Sep/2020
  */
 object StackHeightCalculatorLite {
 	fun calculate(mn: MethodNode): HashMap<AbstractInsnNode, Int> {
-		val out = HashMap<AbstractInsnNode, Int>(mn.instructions?.size() ?: 0)
-		
-		mn.tryCatchBlocks?.forEach {
-			calculate(it.handler, out, 1)
+		try {
+			val out = HashMap<AbstractInsnNode, Int>(mn.instructions?.size() ?: 0)
+			
+			mn.tryCatchBlocks?.forEach {
+				calculate(it.handler, out, 1)
+			}
+			
+			val first = mn.instructions?.first ?: return out
+			calculate(first, out, 0)
+			
+			return out
+		} catch (ex: StackHeightCalculationException) {
+			File("stackheightlog.txt").printWriter().use {
+				it.println("--- ${mn.instructions.size()}:")
+				it.println(mn.instructions.toOpcodeStrings(ex.insn))
+				it.println("---")
+			}
+			println("\rStackHeightCalculation error! Written a detailed log to stackheightlog.txt")
+			
+			throw ex
 		}
-		
-		val first = mn.instructions?.first ?: return out
-		calculate(first, out, 0)
-		
-		return out
 	}
 	
 	fun calculate(insn: AbstractInsnNode, heights: HashMap<AbstractInsnNode, Int>, height: Int = 0) {

@@ -10,7 +10,7 @@ import dev.binclub.binscure.utils.randomBranch
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.InsnNode
+import java.lang.NullPointerException
 
 /**
  * Mixed boolean arithmetic is the process of converting a classical arithmetic operation (e.g. add, sub, mul...) into
@@ -34,25 +34,28 @@ object MbaTransformer: IClassProcessor {
 		
 		forClass(classes) { cn ->
 			forMethod(cn) { mn ->
-				val list = mn.instructions
-				if (list != null && list.size() > 0) {
-					for (i in 0 until config.repeat) {
-						val modifier = InstructionModifier()
-						println("List ${list.size()}")
-						var skip = 0
-						for (op in list) {
-							if (skip > 0) {
-								skip -= 1
-								continue
+				try {
+					val list = mn.instructions
+					if (list != null && list.size() > 0) {
+						for (i in 0 until config.repeat) {
+							val modifier = InstructionModifier()
+							var skip = 0
+							for (op in list) {
+								if (skip > 0) {
+									skip -= 1
+									continue
+								}
+								skip += substitute(op, modifier)
 							}
-							skip += substitute(op, modifier)
-						}
-						if (modifier.isEmpty()) break
-						if (!modifier.apply(list)) {
-							println("\rWarning: Stopped MBA for method ${cn.originalName}.${mn.name}${mn.desc} ($maxInsns instructions)")
-							break
+							if (modifier.isEmpty()) break
+							if (!modifier.apply(list)) {
+								println("\rWarning: Stopped MBA for method ${cn.originalName}.${mn.name}${mn.desc} ($maxInsns instructions)")
+								break
+							}
 						}
 					}
+				} catch (n: NullPointerException) {
+					n.printStackTrace()
 				}
 			}
 		}

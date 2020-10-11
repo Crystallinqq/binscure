@@ -3987,6 +3987,7 @@ dev.binclub.binscure.processors.renaming.impl.ClassRenamer -> dev.binclub.binscu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
 dev.binclub.binscure.processors.renaming.impl.FieldRenamer -> dev.binclub.binscure.c.i.b.b:
+    java.lang.String progressDescription -> a
     dev.binclub.binscure.processors.renaming.impl.FieldRenamer INSTANCE -> a
     boolean isEnabled() -> a
     java.lang.String getProgressDescription() -> a
@@ -4138,6 +4139,7 @@ dev.binclub.binscure.utils.EmptyClassVisitor -> dev.binclub.binscure.d.d:
     void <init>() -> <init>
     void <clinit>() -> <clinit>
 dev.binclub.binscure.utils.ExtensionsKt -> dev.binclub.binscure.d.e:
+    kotlin.Lazy opcodes$delegate -> a
     java.lang.String replaceLast$68bc1f08(java.lang.String,java.lang.String) -> a
     char xor(char,int) -> a
     java.lang.Object getOrPutLazy(java.util.Map,java.lang.Object,kotlin.jvm.functions.Function0) -> a
@@ -4146,6 +4148,10 @@ dev.binclub.binscure.utils.ExtensionsKt -> dev.binclub.binscure.d.e:
     int removeAccess(int,int) -> a
     int addAccess$255f288(int) -> a
     boolean hasAccess(int,int) -> a
+    java.util.Map getOpcodes() -> a
+    java.lang.String opcodeString(org.objectweb.asm.tree.AbstractInsnNode) -> a
+    java.lang.String implOpToStr(int) -> a
+    java.lang.String toOpcodeStrings(org.objectweb.asm.tree.InsnList,org.objectweb.asm.tree.AbstractInsnNode) -> a
     boolean versionAtLeast(org.objectweb.asm.tree.ClassNode,int) -> a
     boolean versionAtMost$66f96fa5(org.objectweb.asm.tree.ClassNode) -> a
     void <clinit>() -> <clinit>
@@ -4185,6 +4191,7 @@ dev.binclub.binscure.utils.InstructionModifier$ReplaceOp -> dev.binclub.binscure
     org.objectweb.asm.tree.InsnList list -> a
     void <init>(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> <init>
 dev.binclub.binscure.utils.StackHeightCalculationException -> dev.binclub.binscure.d.l:
+    org.objectweb.asm.tree.AbstractInsnNode insn -> a
     void <init>(org.objectweb.asm.tree.AbstractInsnNode,java.lang.Throwable) -> <init>
 dev.binclub.binscure.utils.StackHeightCalculatorLite -> dev.binclub.binscure.d.m:
     dev.binclub.binscure.utils.StackHeightCalculatorLite INSTANCE -> a
@@ -32901,8 +32908,8 @@ org.objectweb.asm.tree.ClassNode -> org.objectweb.asm.c.c:
     java.lang.String toString() -> toString
 org.objectweb.asm.tree.FieldInsnNode -> org.objectweb.asm.c.d:
     java.lang.String owner -> a
-    java.lang.String name -> c
-    java.lang.String desc -> b
+    java.lang.String name -> b
+    java.lang.String desc -> c
     void <init>(int,java.lang.String,java.lang.String,java.lang.String) -> <init>
     int getType() -> b
     void accept(org.objectweb.asm.MethodVisitor) -> a
@@ -32952,6 +32959,7 @@ org.objectweb.asm.tree.InsnList -> org.objectweb.asm.c.i:
     org.objectweb.asm.tree.AbstractInsnNode lastInsn -> b
     org.objectweb.asm.tree.AbstractInsnNode[] cache -> a
     void <init>() -> <init>
+    void checkCache() -> a
     int size() -> a
     org.objectweb.asm.tree.AbstractInsnNode get(int) -> a
     int indexOf(org.objectweb.asm.tree.AbstractInsnNode) -> a
@@ -32965,8 +32973,8 @@ org.objectweb.asm.tree.InsnList -> org.objectweb.asm.c.i:
     void insert(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.AbstractInsnNode) -> a
     void insert(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> a
     void remove(org.objectweb.asm.tree.AbstractInsnNode) -> c
-    void removeAll$1385ff() -> a
-    void resetLabels() -> b
+    void removeAll$1385ff() -> b
+    void resetLabels() -> c
 org.objectweb.asm.tree.InsnList$InsnListIterator -> org.objectweb.asm.c.j:
     org.objectweb.asm.tree.AbstractInsnNode nextInsn -> a
     org.objectweb.asm.tree.AbstractInsnNode previousInsn -> b
