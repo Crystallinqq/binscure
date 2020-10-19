@@ -30,6 +30,8 @@ import java.util.zip.ZipOutputStream
  * @author cookiedragon234 25/Jan/2020
  */
 object ClassPathIO {
+	const val HARD_EXCLUDED_CR_FLAGS = ClassReader.SKIP_CODE or ClassReader.SKIP_DEBUG or ClassReader.SKIP_FRAMES
+	
 	fun loadInputJar(file: File) {
 		if (rootConfig.useJavaClassloader) {
 			addFileToClassPath(file)
@@ -46,24 +48,25 @@ object ClassPathIO {
 					return
 				}
 				
-				loadInputClassNode(file.name, bytes, classNode)
+				loadInputClassNode(file.name, bytes, classNode, false)
 			} else if (file.extension == "jar" || file.extension == "zip") {
-				JarFile(file, false).use {
-					for (entry in it.entries()) {
-						val bytes = it.getInputStream(entry).readBytes()
+				JarFile(file, false).use { jar ->
+					for (entry in jar.entries()) {
+						val bytes = jar.getInputStream(entry).readBytes()
 						if (!entry.isDirectory && entry.name.endsWith(".class") && !entry.name.endsWith("module-info.class")) {
+							val hardExcluded = rootConfig.hardExclusions.any { entry.name.startsWith(it) }
 							val classNode = ClassNode()
 							
 							try {
 								ClassReader(bytes)
-									.accept(classNode, 0)
+									.accept(classNode, if (hardExcluded) HARD_EXCLUDED_CR_FLAGS else ClassReader.SKIP_FRAMES)
 							} catch (t: Throwable) {
 								println("\rError reading class file [${entry.name}], skipping")
 								t.printStackTrace()
 								continue
 							}
 							
-							loadInputClassNode(entry.name, bytes, classNode)
+							loadInputClassNode(entry.name, bytes, classNode, hardExcluded)
 						} else if (!entry.isDirectory) {
 							passThrough[entry.name] = bytes
 						}
@@ -75,9 +78,8 @@ object ClassPathIO {
 		}
 	}
 	
-	fun loadInputClassNode(name: String, bytes: ByteArray, classNode: ClassNode) {
+	fun loadInputClassNode(name: String, bytes: ByteArray, classNode: ClassNode, hardExcluded: Boolean) {
 		val excluded = rootConfig.tExclusions.isExcluded(classNode)
-		val hardExcluded = rootConfig.hardExclusions.any { name.startsWith(it.trim()) }
 		
 		if (!classNode.versionAtLeast(Opcodes.V1_7) && !excluded && !hardExcluded) {
 			if (rootConfig.upgradeVersions) {

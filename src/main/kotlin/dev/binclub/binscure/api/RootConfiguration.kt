@@ -13,7 +13,7 @@ data class RootConfiguration(
 	val mappingFile: File?,
 	val libraries: List<File> = arrayListOf(),
 	private val exclusions: List<String> = arrayListOf(),
-	val hardExclusions: List<String> = arrayListOf(),
+	val hardExclusions: MutableList<String> = arrayListOf(),
 	val arithmetic: ArithmeticObfuscationConfiguration,
 	val remap: RemapConfiguration,
 	val sourceStrip: SourceStripConfiguration,
@@ -35,6 +35,10 @@ data class RootConfiguration(
 	val lazyLibraryLoading: Boolean = true,
 	val upgradeVersions: Boolean = false
 ): TransformerConfiguration(true, exclusions) {
+	init {
+		hardExclusions.mapTo(hardExclusions) { it.trim() }
+	}
+	
 	fun getLineChar(): Char = if (resetLineProgress) '\r' else '\n'
 	
 	override fun toString(): String  = """
