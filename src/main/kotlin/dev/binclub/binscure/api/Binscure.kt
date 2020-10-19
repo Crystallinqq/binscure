@@ -13,20 +13,33 @@ object Binscure {
 	@JvmStatic
 	fun main(args: Array<String>) = obfuscate(args)
 	
-	fun obfuscate(args: Array<String>) = obfuscate(args.also {
-		if (args.isEmpty()) {
-			throw IllegalArgumentException("A config file must be provided")
+	fun obfuscate(args: Array<String>) {
+		val configFile = File(args.firstOrNull() ?: throw IllegalArgumentException("A config file must be provided"))
+		if (!configFile.exists()) {
+			throw FileNotFoundException("Config File [$configFile] does not exist")
 		}
-	}.first())
-	fun obfuscate(configFile: String) = obfuscate(File(configFile).also {
-		if (!it.exists()) {
-			throw FileNotFoundException("File [$it] does not exist")
+		
+		rootConfig = ConfigurationManager.parse(configFile)
+		CObfuscator()
+	}
+	
+	fun obfuscate(configFile: String) {
+		val configFile = File(configFile)
+		if (!configFile.exists()) {
+			throw FileNotFoundException("Config File [$configFile] does not exist")
 		}
-	})
-	fun obfuscate(configFile: File) = obfuscate(ConfigurationManager.parse(configFile))
+		
+		rootConfig = ConfigurationManager.parse(configFile)
+		CObfuscator()
+	}
+	
+	fun obfuscate(configFile: File) {
+		rootConfig = ConfigurationManager.parse(configFile)
+		CObfuscator()
+	}
+	
 	fun obfuscate(configuration: RootConfiguration) {
 		rootConfig = configuration
-		
 		CObfuscator()
 	}
 }

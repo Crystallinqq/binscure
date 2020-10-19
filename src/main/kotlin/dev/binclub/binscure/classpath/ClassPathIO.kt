@@ -48,7 +48,7 @@ object ClassPathIO {
 				
 				loadInputClassNode(file.name, bytes, classNode)
 			} else if (file.extension == "jar" || file.extension == "zip") {
-				JarFile(file).use {
+				JarFile(file, false).use {
 					for (entry in it.entries()) {
 						val bytes = it.getInputStream(entry).readBytes()
 						if (!entry.isDirectory && entry.name.endsWith(".class") && !entry.name.endsWith("module-info.class")) {
@@ -120,7 +120,7 @@ object ClassPathIO {
 	}
 	
 	fun writeOutput(file: File) {
-		val fileOut = FileOutputStream(file)
+		val fileOut = FileOutputStream(file).buffered()
 		JarOutputStream(fileOut).use {
 			namesField[it] = DummyHashSet<String>()
 			val crc = DummyCRC(0xDEADBEEF)
