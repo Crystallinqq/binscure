@@ -80,7 +80,11 @@ object ClassPathIO {
 		val hardExcluded = rootConfig.hardExclusions.any { name.startsWith(it.trim()) }
 		
 		if (!classNode.versionAtLeast(Opcodes.V1_7) && !excluded && !hardExcluded) {
-			println("\rUnsupported <J8 class file ${name}, will not be obfuscated as severely")
+			if (rootConfig.upgradeVersions) {
+				classNode.version = Opcodes.V1_7
+			} else {
+				println("\rUnsupported <J7 class file ${name}, will not be obfuscated as severely")
+			}
 		}
 		
 		if (!excluded && !hardExcluded) {

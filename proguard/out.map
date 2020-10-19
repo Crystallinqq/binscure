@@ -2955,8 +2955,9 @@ dev.binclub.binscure.EntryPoint$Companion -> dev.binclub.binscure.b:
     boolean hasAccess(int,int) -> a
     java.lang.String opcodeString(org.objectweb.asm.tree.AbstractInsnNode) -> a
     java.lang.String implOpToStr(int) -> a
-    java.lang.String toOpcodeStrings(org.objectweb.asm.tree.InsnList,org.objectweb.asm.tree.AbstractInsnNode) -> a
+    java.lang.String toOpcodeStrings(org.objectweb.asm.tree.InsnList,org.objectweb.asm.tree.AbstractInsnNode,java.util.Map) -> a
     boolean versionAtLeast(org.objectweb.asm.tree.ClassNode,int) -> a
+    boolean getDoubleSize(org.objectweb.asm.Type) -> a
     org.objectweb.asm.tree.InsnList insnBuilder(kotlin.jvm.functions.Function1) -> a
 dev.binclub.binscure.IClassProcessor -> dev.binclub.binscure.c:
     java.lang.String getProgressDescription() -> a
@@ -3006,6 +3007,7 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     boolean printProgress -> printProgress
     boolean watermark -> watermark
     boolean lazyLibraryLoading -> lazyLibraryLoading
+    boolean upgradeVersions -> upgradeVersions
     char getLineChar() -> getLineChar
     java.lang.String toString() -> toString
     java.io.File getInput() -> getInput
@@ -3032,8 +3034,9 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     boolean getPrintProgress() -> getPrintProgress
     boolean getWatermark() -> getWatermark
     boolean getLazyLibraryLoading() -> getLazyLibraryLoading
-    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> <init>
-    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
+    boolean getUpgradeVersions() -> getUpgradeVersions
+    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> <init>
+    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
     java.io.File component1() -> component1
     java.io.File component2() -> component2
     java.io.File component3() -> component3
@@ -3059,8 +3062,9 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     boolean component23() -> component23
     boolean component24() -> component24
     boolean component25() -> component25
-    dev.binclub.binscure.api.RootConfiguration copy(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> copy
-    dev.binclub.binscure.api.RootConfiguration copy$default(dev.binclub.binscure.api.RootConfiguration,java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,java.lang.Object) -> copy$default
+    boolean component26() -> component26
+    dev.binclub.binscure.api.RootConfiguration copy(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> copy
+    dev.binclub.binscure.api.RootConfiguration copy$default(dev.binclub.binscure.api.RootConfiguration,java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,java.lang.Object) -> copy$default
     int hashCode() -> hashCode
     boolean equals(java.lang.Object) -> equals
 dev.binclub.binscure.api.TransformerConfiguration -> dev.binclub.binscure.api.TransformerConfiguration:
@@ -4212,6 +4216,7 @@ dev.binclub.binscure.utils.StackHeightCalculatorLite -> dev.binclub.binscure.d.m
     dev.binclub.binscure.utils.StackHeightCalculatorLite INSTANCE -> a
     java.util.HashMap calculate(org.objectweb.asm.tree.MethodNode) -> a
     void calculate(org.objectweb.asm.tree.AbstractInsnNode,java.util.HashMap,int) -> a
+    int argsSize(org.objectweb.asm.Type[]) -> a
     void <init>() -> <init>
     void <clinit>() -> <clinit>
 dev.binclub.binscure.utils.UtilsKt -> dev.binclub.binscure.d.n:

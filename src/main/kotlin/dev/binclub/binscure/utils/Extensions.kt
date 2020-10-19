@@ -168,11 +168,11 @@ private fun implOpToStr(op: Int): String {
 	return opcodeStrings.getOrDefault(op, "0x${Integer.toHexString(op)} <invalid>")
 }
 
-fun InsnList.toOpcodeStrings(highlight: AbstractInsnNode? = null): String {
+fun InsnList.toOpcodeStrings(highlight: AbstractInsnNode? = null, info: Map<AbstractInsnNode, Any?>? = null): String {
 	val insnList = this
 	return buildString {
 		for ((i, insn) in insnList.iterator().withIndex()) {
-			append("\t $i: ${insn.opcodeString()}")
+			append("\t $i: ${insn.opcodeString()} (${info?.get(insn)})")
 			if (highlight == insn) {
 				append(" <---------------------- HERE")
 			}

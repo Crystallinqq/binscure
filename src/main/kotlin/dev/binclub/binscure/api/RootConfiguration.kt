@@ -32,7 +32,8 @@ data class RootConfiguration(
 	val resetLineProgress: Boolean = true,
 	val printProgress: Boolean = true,
 	val watermark: Boolean = true,
-	val lazyLibraryLoading: Boolean = true
+	val lazyLibraryLoading: Boolean = true,
+	val upgradeVersions: Boolean = false
 ): TransformerConfiguration(true, exclusions) {
 	fun getLineChar(): Char = if (resetLineProgress) '\r' else '\n'
 	

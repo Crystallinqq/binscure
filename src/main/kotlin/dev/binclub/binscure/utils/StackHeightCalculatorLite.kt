@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package dev.binclub.binscure.utils
 
 import org.objectweb.asm.Opcodes.*
@@ -10,9 +12,8 @@ import java.io.File
  */
 object StackHeightCalculatorLite {
 	fun calculate(mn: MethodNode): HashMap<AbstractInsnNode, Int> {
+		val out = HashMap<AbstractInsnNode, Int>(mn.instructions?.size() ?: 0)
 		try {
-			val out = HashMap<AbstractInsnNode, Int>(mn.instructions?.size() ?: 0)
-			
 			mn.tryCatchBlocks?.forEach {
 				calculate(it.handler, out, 1)
 			}
@@ -24,7 +25,7 @@ object StackHeightCalculatorLite {
 		} catch (ex: StackHeightCalculationException) {
 			File("stackheightlog.txt").printWriter().use {
 				it.println("--- ${mn.instructions.size()}:")
-				it.println(mn.instructions.toOpcodeStrings(ex.insn))
+				it.println(mn.instructions.toOpcodeStrings(ex.insn, out))
 				it.println("---")
 			}
 			println("\rStackHeightCalculation error! Written a detailed log to stackheightlog.txt")
@@ -60,38 +61,44 @@ object StackHeightCalculatorLite {
 				ICONST_3 -> 1
 				ICONST_4 -> 1
 				ICONST_5 -> 1
-				LCONST_0 -> 1
-				LCONST_1 -> 1
+				LCONST_0 -> 2
+				LCONST_1 -> 2
 				FCONST_0 -> 1
 				FCONST_1 -> 1
 				FCONST_2 -> 1
-				DCONST_0 -> 1
-				DCONST_1 -> 1
+				DCONST_0 -> 2
+				DCONST_1 -> 2
 				BIPUSH -> 1
 				SIPUSH -> 1
-				LDC -> 1
+				LDC -> {
+					when ((insn as LdcInsnNode).cst) {
+						is Double -> 2
+						is Long -> 2
+						else -> 1
+					}
+				}
 				ILOAD -> 1
-				LLOAD -> 1
+				LLOAD -> 2
 				FLOAD -> 1
-				DLOAD -> 1
+				DLOAD -> 2
 				ALOAD -> 1
 				IALOAD -> 1 - 2
-				LALOAD -> 1 - 2
+				LALOAD -> 2 - 2
 				FALOAD -> 1 - 2
-				DALOAD -> 1 - 2
+				DALOAD -> 2 - 2
 				AALOAD -> 1 - 2
 				BALOAD -> 1 - 2
 				CALOAD -> 1 - 2
 				SALOAD -> 1 - 2
 				ISTORE -> -1
-				LSTORE -> -1
+				LSTORE -> -2
 				FSTORE -> -1
-				DSTORE -> -1
+				DSTORE -> -2
 				ASTORE -> -1
 				IASTORE -> -3
-				LASTORE -> -3
+				LASTORE -> -4
 				FASTORE -> -3
-				DASTORE -> -3
+				DASTORE -> -4
 				AASTORE -> -3
 				BASTORE -> -3
 				CASTORE -> -3
@@ -106,57 +113,57 @@ object StackHeightCalculatorLite {
 				DUP2_X2 -> 2
 				SWAP -> 0
 				IADD -> 1 - 2
-				LADD -> 1 - 2
+				LADD -> 2 - 4
 				FADD -> 1 - 2
-				DADD -> 1 - 2
+				DADD -> 2 - 4
 				ISUB -> 1 - 2
-				LSUB -> 1 - 2
+				LSUB -> 2 - 4
 				FSUB -> 1 - 2
-				DSUB -> 1 - 2
+				DSUB -> 2 - 4
 				IMUL -> 1 - 2
-				LMUL -> 1 - 2
+				LMUL -> 2 - 4
 				FMUL -> 1 - 2
-				DMUL -> 1 - 2
+				DMUL -> 2 - 4
 				IDIV -> 1 - 2
-				LDIV -> 1 - 2
+				LDIV -> 2 - 4
 				FDIV -> 1 - 2
-				DDIV -> 1 - 2
+				DDIV -> 2 - 4
 				IREM -> 1 - 2
-				LREM -> 1 - 2
+				LREM -> 2 - 4
 				FREM -> 1 - 2
-				DREM -> 1 - 2
+				DREM -> 2 - 4
 				INEG -> 0
 				LNEG -> 0
 				FNEG -> 0
 				DNEG -> 0
 				ISHL -> 1 - 2
-				LSHL -> 1 - 2
+				LSHL -> 2 - 3
 				ISHR -> 1 - 2
-				LSHR -> 1 - 2
+				LSHR -> 2 - 3
 				IUSHR -> 1 - 2
-				LUSHR -> 1 - 2
+				LUSHR -> 2 - 3
 				IAND -> 1 - 2
-				LAND -> 1 - 2
+				LAND -> 2 - 4
 				IOR -> 1 - 2
-				LOR -> 1 - 2
+				LOR -> 2 - 4
 				IXOR -> 1 - 2
-				LXOR -> 1 - 2
-				IINC -> 0
-				I2L -> 0
-				I2F -> 0
-				I2D -> 0
-				L2I -> 0
-				L2F -> 0
-				L2D -> 0
-				F2I -> 0
-				F2L -> 0
-				F2D -> 0
-				D2I -> 0
-				D2L -> 0
-				D2F -> 0
-				I2B -> 0
-				I2C -> 0
-				I2S -> 0
+				LXOR -> 2 - 4
+				IINC -> 1 - 1
+				I2L -> 2 - 1
+				I2F -> 1 - 1
+				I2D -> 2 - 1
+				L2I -> 1 - 2
+				L2F -> 1 - 2
+				L2D -> 2 - 2
+				F2I -> 1 - 1
+				F2L -> 2 - 1
+				F2D -> 2 - 1
+				D2I -> 1 - 2
+				D2L -> 2 - 2
+				D2F -> 1 - 2
+				I2B -> 1 - 1
+				I2C -> 1 - 1
+				I2S -> 1 - 1
 				LCMP -> 1 - 2
 				FCMPL -> 1 - 2
 				FCMPG -> 1 - 2
@@ -265,34 +272,46 @@ object StackHeightCalculatorLite {
 				DRETURN -> break@insnLoop
 				ARETURN -> break@insnLoop
 				RETURN -> break@insnLoop
-				GETSTATIC -> 1
-				PUTSTATIC -> -1
-				GETFIELD -> 0
-				PUTFIELD -> -2
+				GETSTATIC -> {
+					insn as FieldInsnNode
+					typeSize(Type.getType(insn.desc)) - 0
+				}
+				GETFIELD -> {
+					insn as FieldInsnNode
+					typeSize(Type.getType(insn.desc)) - 1
+				}
+				PUTSTATIC -> {
+					insn as FieldInsnNode
+					-0 - typeSize(Type.getType(insn.desc))
+				}
+				PUTFIELD -> {
+					insn as FieldInsnNode
+					-1 - typeSize(Type.getType(insn.desc))
+				}
 				INVOKEVIRTUAL -> {
 					insn as MethodInsnNode
-					val ret = if (Type.getReturnType(insn.desc) == Type.VOID_TYPE) 0 else 1
-					ret - 1 - Type.getArgumentTypes(insn.desc).size
+					val ret = typeSize(Type.getReturnType(insn.desc))
+					ret - 1 - argsSize(Type.getArgumentTypes(insn.desc))
 				}
 				INVOKESPECIAL -> {
 					insn as MethodInsnNode
-					val ret = if (Type.getReturnType(insn.desc) == Type.VOID_TYPE) 0 else 1
-					ret - 1 - Type.getArgumentTypes(insn.desc).size
+					val ret = typeSize(Type.getReturnType(insn.desc))
+					ret - 1 - argsSize(Type.getArgumentTypes(insn.desc))
 				}
 				INVOKESTATIC -> {
 					insn as MethodInsnNode
-					val ret = if (Type.getReturnType(insn.desc) == Type.VOID_TYPE) 0 else 1
-					ret - Type.getArgumentTypes(insn.desc).size
+					val ret = typeSize(Type.getReturnType(insn.desc))
+					ret - argsSize(Type.getArgumentTypes(insn.desc))
 				}
 				INVOKEINTERFACE -> {
 					insn as MethodInsnNode
-					val ret = if (Type.getReturnType(insn.desc) == Type.VOID_TYPE) 0 else 1
-					ret - 1 - Type.getArgumentTypes(insn.desc).size
+					val ret = typeSize(Type.getReturnType(insn.desc))
+					ret - 1 - argsSize(Type.getArgumentTypes(insn.desc))
 				}
 				INVOKEDYNAMIC -> {
 					insn as InvokeDynamicInsnNode
-					val ret = if (Type.getReturnType(insn.desc) == Type.VOID_TYPE) 0 else 1
-					ret - Type.getArgumentTypes(insn.desc).size
+					val ret = typeSize(Type.getReturnType(insn.desc))
+					ret - argsSize(Type.getArgumentTypes(insn.desc))
 				}
 				NEW -> 1
 				NEWARRAY -> 0
@@ -326,4 +345,19 @@ object StackHeightCalculatorLite {
 			insn = insn.next
 		}
 	}
+	
+	private fun argsSize(args: Array<Type>): Int {
+		var out = 0
+		args.forEach { arg ->
+			out += typeSize(arg)
+		}
+		return out
+	}
+	
+	private inline fun typeSize(type: Type): Int
+		= when {
+			type == Type.VOID_TYPE -> 0
+			type.doubleSize -> 2
+			else -> 1
+		}
 }
