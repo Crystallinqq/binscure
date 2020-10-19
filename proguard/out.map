@@ -2930,6 +2930,7 @@ dev.binclub.binscure.CObfuscator -> dev.binclub.binscure.a:
     dev.binclub.binscure.CObfuscator INSTANCE -> a
     java.security.SecureRandom getRandom() -> a
     java.util.Map getMappings() -> a
+    void invoke() -> a
     boolean noMethodInsns(org.objectweb.asm.tree.MethodNode) -> a
     boolean randomWeight(int) -> a
     void <init>() -> <init>
@@ -3382,7 +3383,7 @@ dev.binclub.binscure.classpath.ClassPathIO -> dev.binclub.binscure.a.d:
     kotlin.Lazy crcField$delegate -> b
     dev.binclub.binscure.classpath.ClassPathIO INSTANCE -> a
     void loadInputJar(java.io.File) -> a
-    void loadInputClassNode(java.lang.String,byte[],org.objectweb.asm.tree.ClassNode) -> a
+    void loadInputClassNode(java.lang.String,byte[],org.objectweb.asm.tree.ClassNode,boolean) -> a
     void loadClassPath(java.util.Collection) -> a
     void writeOutput(java.io.File) -> b
     void <init>() -> <init>
