@@ -46,8 +46,6 @@ object StringObfuscator: IClassProcessor {
 		for (classNode in classes) {
 			if (isExcluded(classNode))
 				continue
-			if (!classNode.versionAtLeast(V1_7))
-				continue
 			
 			for (method in classNode.methods) {
 				if (isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
