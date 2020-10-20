@@ -1,7 +1,6 @@
 package dev.binclub.binscure.processors.debug
 
-import dev.binclub.binscure.CObfuscator
-import dev.binclub.binscure.IClassProcessor
+import dev.binclub.binscure.*
 import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.utils.addAccess
@@ -22,23 +21,17 @@ object AccessStripper: IClassProcessor {
 		get() = rootConfig
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		for (classNode in classes) {
-			if (isExcluded(classNode))
-				continue
-			
+		forClass(classes) { classNode ->
 			classNode.access = makePublic(classNode.access)
 			
-			for (method in classNode.methods) {
+			forMethod(classNode) { method ->
 				// Dont run on static init
 				if (method.name != "<clinit>" && !isExcluded(classNode, method)) {
 					method.access = makePublic(method.access)
 				}
 			}
 			
-			for (field in classNode.fields) {
-				if (isExcluded(classNode, field))
-					continue
-				
+			forField(classNode) { field ->
 				field.access = makePublic(field.access, classNode.access.hasAccess(ACC_INTERFACE))
 			}
 		}

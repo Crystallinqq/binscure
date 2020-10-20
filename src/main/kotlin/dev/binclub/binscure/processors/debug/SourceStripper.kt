@@ -4,6 +4,8 @@ import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.api.transformers.LineNumberAction.*
+import dev.binclub.binscure.forClass
+import dev.binclub.binscure.forMethod
 import dev.binclub.binscure.utils.InstructionModifier
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.LineNumberNode
@@ -24,23 +26,22 @@ object SourceStripper: IClassProcessor {
 		
 		val action = config.lineNumbers
 		
-		for (classNode in classes) {
+		forClass(classes) { classNode ->
 			classNode.sourceDebug = null
 			classNode.sourceFile = null
 			classNode.signature = null
 			classNode.innerClasses?.clear()
 			
-			if (action == KEEP)
-				continue
-			
-			for (method in classNode.methods) {
-				val modifier = InstructionModifier()
-				for (insn in method.instructions) {
-					if (insn is LineNumberNode && action == REMOVE) {
-						modifier.remove(insn)
+			forMethod(classNode) { method ->
+				if (action != KEEP) {
+					val modifier = InstructionModifier()
+					for (insn in method.instructions) {
+						if (insn is LineNumberNode && action == REMOVE) {
+							modifier.remove(insn)
+						}
 					}
+					modifier.apply(method)
 				}
-				modifier.apply(method)
 				
 				method.exceptions = null
 				method.signature = null

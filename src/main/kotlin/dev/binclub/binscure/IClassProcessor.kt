@@ -65,3 +65,11 @@ inline fun IClassProcessor.forMethod(cn: ClassNode, op: (MethodNode) -> Unit) {
 		}
 	}
 }
+
+inline fun IClassProcessor.forField(cn: ClassNode, op: (FieldNode) -> Unit) {
+	cn.fields.forEach { mn ->
+		if (!isExcluded(cn, mn)) {
+			op(mn)
+		}
+	}
+}
