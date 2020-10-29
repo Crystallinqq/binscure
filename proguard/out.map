@@ -2950,6 +2950,7 @@ dev.binclub.binscure.EntryPoint$Companion -> dev.binclub.binscure.b:
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    boolean isExcluded(java.util.Collection,java.lang.String,java.lang.String,java.lang.String) -> a
     java.lang.Object getOrPutLazy(java.util.Map,java.lang.Object,kotlin.jvm.functions.Function0) -> a
     java.lang.Object random(java.lang.Object[],java.security.SecureRandom) -> a
     void add(org.objectweb.asm.tree.InsnList,int) -> a
@@ -2966,6 +2967,7 @@ dev.binclub.binscure.IClassProcessor -> dev.binclub.binscure.c:
     void process(java.util.Collection,java.util.Map) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.IClassProcessor$DefaultImpls -> dev.binclub.binscure.d:
     org.objectweb.asm.tree.InsnList list -> a
     boolean isExcluded(dev.binclub.binscure.IClassProcessor,org.objectweb.asm.tree.ClassNode) -> a
@@ -3536,6 +3538,7 @@ dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer -> 
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer$process$1$1$1$1 -> dev.binclub.binscure.c.a.b:
     dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer$process$1$1$1$1 INSTANCE -> a
@@ -3592,6 +3595,7 @@ dev.binclub.binscure.processors.arithmetic.MbaTransformer -> dev.binclub.binscur
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$1 -> dev.binclub.binscure.c.a.l:
     dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$1 INSTANCE -> a
@@ -3710,6 +3714,7 @@ dev.binclub.binscure.processors.classmerge.StaticMethodMerger -> dev.binclub.bin
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.classmerge.StaticMethodMerger$process$1 -> dev.binclub.binscure.c.b.b:
     dev.binclub.binscure.processors.classmerge.StaticMethodMerger$process$1 INSTANCE -> a
@@ -3724,6 +3729,7 @@ dev.binclub.binscure.processors.constants.FieldInitialiser -> dev.binclub.binscu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.constants.NumberObfuscation -> dev.binclub.binscure.c.c.b:
     dev.binclub.binscure.processors.constants.NumberObfuscation INSTANCE -> a
@@ -3733,6 +3739,7 @@ dev.binclub.binscure.processors.constants.NumberObfuscation -> dev.binclub.binsc
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.constants.string.StringDecryptGenerator -> dev.binclub.binscure.c.c.a.a:
     dev.binclub.binscure.processors.constants.string.StringDecryptGenerator INSTANCE -> a
@@ -3762,6 +3769,7 @@ dev.binclub.binscure.processors.constants.string.StringObfuscator -> dev.binclub
     dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
     void <init>() -> <init>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.constants.string.StringObfuscator$EncryptedString -> dev.binclub.binscure.c.c.a.c:
     java.lang.String original -> b
@@ -3805,6 +3813,7 @@ dev.binclub.binscure.processors.debug.AccessStripper -> dev.binclub.binscure.c.d
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.debug.KotlinMetadataStripper -> dev.binclub.binscure.c.d.b:
     dev.binclub.binscure.processors.debug.KotlinMetadataStripper INSTANCE -> a
     java.lang.String getProgressDescription() -> a
@@ -3814,7 +3823,18 @@ dev.binclub.binscure.processors.debug.KotlinMetadataStripper -> dev.binclub.bins
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
-dev.binclub.binscure.processors.debug.SourceStripper -> dev.binclub.binscure.c.d.c:
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+dev.binclub.binscure.processors.debug.KotlinMetadataStripper$process$1$2$1 -> dev.binclub.binscure.c.d.c:
+    dev.binclub.binscure.processors.debug.KotlinMetadataStripper$process$1$2$1 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.debug.KotlinMetadataStripper$process$1$2$2 -> dev.binclub.binscure.c.d.d:
+    dev.binclub.binscure.processors.debug.KotlinMetadataStripper$process$1$2$2 INSTANCE -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.processors.debug.SourceStripper -> dev.binclub.binscure.c.d.e:
     dev.binclub.binscure.api.transformers.SourceStripConfiguration config -> a
     dev.binclub.binscure.processors.debug.SourceStripper INSTANCE -> a
     java.lang.String getProgressDescription() -> a
@@ -3824,6 +3844,7 @@ dev.binclub.binscure.processors.debug.SourceStripper -> dev.binclub.binscure.c.d
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.exploit.BadAttributeExploit -> dev.binclub.binscure.c.e.a:
     dev.binclub.binscure.api.transformers.CrasherConfiguration config -> a
     dev.binclub.binscure.processors.exploit.BadAttributeExploit INSTANCE -> a
@@ -3833,6 +3854,7 @@ dev.binclub.binscure.processors.exploit.BadAttributeExploit -> dev.binclub.binsc
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.exploit.BadAttributeExploit$DummyAttribute -> dev.binclub.binscure.c.e.b:
     void <init>(java.lang.String,byte[]) -> <init>
@@ -3847,6 +3869,7 @@ dev.binclub.binscure.processors.exploit.BadIndyConstant -> dev.binclub.binscure.
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.flow.CfgFucker -> dev.binclub.binscure.c.f.a:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
@@ -3857,6 +3880,7 @@ dev.binclub.binscure.processors.flow.CfgFucker -> dev.binclub.binscure.c.f.a:
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor -> dev.binclub.binscure.c.f.a.a:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
@@ -3867,6 +3891,7 @@ dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor -> dev.binclub.b
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch -> dev.binclub.binscure.c.f.b.a:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
@@ -3877,6 +3902,7 @@ dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch -> dev.binclub.binscu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication -> dev.binclub.binscure.c.f.b.b:
     java.lang.String progressDescription -> a
@@ -3888,6 +3914,7 @@ dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication -> dev.binclub
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication$$special$$inlined$Array$lambda$1 -> dev.binclub.binscure.c.f.b.c:
     int $i$inlined -> a
@@ -3912,6 +3939,7 @@ dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch -> dev.binclub.bin
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.indirection.DynamicCallObfuscation -> dev.binclub.binscure.c.g.a:
     java.lang.Integer[] targetOps -> a
@@ -3930,6 +3958,7 @@ dev.binclub.binscure.processors.indirection.DynamicCallObfuscation -> dev.binclu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     void access$setInit$p$2db51c99() -> a
     org.objectweb.asm.tree.ClassNode access$getDecryptNode$p$2bb9cf96() -> a
@@ -3964,6 +3993,7 @@ dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser -> dev.binclub.bi
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.renaming.AbstractRenamer -> dev.binclub.binscure.c.i.a:
     dev.binclub.binscure.api.transformers.RemapConfiguration config -> a
@@ -3974,6 +4004,7 @@ dev.binclub.binscure.processors.renaming.AbstractRenamer -> dev.binclub.binscure
     boolean isEnabled() -> a
     void <init>() -> <init>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.renaming.generation.NameGenerator -> dev.binclub.binscure.c.i.a.a:
     int index -> a
@@ -4018,6 +4049,7 @@ dev.binclub.binscure.processors.renaming.impl.LocalVariableRenamer -> dev.binclu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.renaming.impl.MethodRenamer -> dev.binclub.binscure.c.i.b.d:
     dev.binclub.binscure.processors.renaming.impl.MethodRenamer INSTANCE -> a
@@ -4062,6 +4094,7 @@ dev.binclub.binscure.processors.resources.ManifestResourceProcessor -> dev.bincl
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.resources.ManifestResourceProcessor$process$$inlined$sortedByDescending$1 -> dev.binclub.binscure.c.j.b:
     void <init>() -> <init>

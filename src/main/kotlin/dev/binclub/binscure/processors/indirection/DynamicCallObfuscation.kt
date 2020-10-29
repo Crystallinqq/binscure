@@ -83,75 +83,75 @@ object DynamicCallObfuscation: IClassProcessor {
 				
 				method.instructions = InsnList().apply {
 					for (insn in method.instructions) {
-						if (insn is MethodInsnNode) {
-							if (targetOps.contains(insn.opcode)) {
-								if (isExcluded(insn.owner, insn.name, insn.desc))
-									continue
-								
-								var newDesc = insn.desc
-								if (insn.opcode != INVOKESTATIC) {
-									newDesc = if ((insn.owner.startsWith('L') || insn.owner.startsWith("["))) {
-										newDesc.replaceFirst("(", "(${insn.owner}")
-									} else {
-										newDesc.replaceFirst("(", "(L${insn.owner};")
-									}
+						if (
+							insn is MethodInsnNode
+							&& targetOps.contains(insn.opcode)
+							&& !isExcluded(insn.owner, insn.name, insn.desc)
+							&& !insn.owner.startsWith('[')
+						) {
+							var newDesc = insn.desc
+							if (insn.opcode != INVOKESTATIC) {
+								newDesc = if ((insn.owner.startsWith('L') || insn.owner.startsWith("["))) {
+									newDesc.replaceFirst("(", "(${insn.owner}")
+								} else {
+									newDesc.replaceFirst("(", "(L${insn.owner};")
 								}
-								val returnType = Type.getReturnType(newDesc)
-								val newReturnType = downCastType(returnType)
-								
-								val args = Type.getArgumentTypes(newDesc)
-								
-								// Downcast types to java/lang/Object
-								for (i in args.indices) {
-									if (insn.opcode != INVOKESTATIC && i == 0) continue
-									args[i] = downCastType(args[i])
-								}
-								
-								//newDesc = Type.getMethodDescriptor(downCastType(returnType), *args)
-								newDesc = Type.getMethodDescriptor(newReturnType, *args)
-								
-								val paramOwner = insn.owner.replace('/', '.')
-								
-								val indyNode = InvokeDynamicInsnNode(
-									"i",
-									newDesc,
-									handler,
-									insn.opcode,
-									encryptName(classNode, method, paramOwner),
-									encryptName(classNode, method, insn.name),
-									encryptName(classNode, method, insn.desc)
-								)
-								add(indyNode)
-								
-								// Cast return type to expected type (since we downcasted to Object earlier)
-								var checkCast: TypeInsnNode? = null
-								if (returnType.sort == Type.ARRAY) {
-									checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
-								} else if (returnType.sort == Type.OBJECT) {
-									if (insn.next is MethodInsnNode) {
-										val next = insn.next as MethodInsnNode
-										val params = Type.getArgumentTypes(next.desc)
-										if (params.isEmpty()) {
-											if (insn.next.opcode == INVOKEVIRTUAL) {
-												checkCast = TypeInsnNode(CHECKCAST, next.owner)
-											}
-										} else {
-											checkCast = TypeInsnNode(CHECKCAST, params.last().internalName)
-										}
-									} else if (arrayOf(POP, POP2, RETURN, IFNONNULL, IFNULL).contains(insn.next?.opcode)) {
-										// Ignore
-									} else {
-										checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
-									}
-								}
-								
-								if (checkCast != null && insn.next?.opcode != CHECKCAST) {
-									if (checkCast.desc != Any::class.internalName) {
-										add(checkCast)
-									}
-								}
-								continue
 							}
+							val returnType = Type.getReturnType(newDesc)
+							val newReturnType = downCastType(returnType)
+							
+							val args = Type.getArgumentTypes(newDesc)
+							
+							// Downcast types to java/lang/Object
+							for (i in args.indices) {
+								if (insn.opcode != INVOKESTATIC && i == 0) continue
+								args[i] = downCastType(args[i])
+							}
+							
+							//newDesc = Type.getMethodDescriptor(downCastType(returnType), *args)
+							newDesc = Type.getMethodDescriptor(newReturnType, *args)
+							
+							val paramOwner = insn.owner.replace('/', '.')
+							
+							val indyNode = InvokeDynamicInsnNode(
+								"i",
+								newDesc,
+								handler,
+								insn.opcode,
+								encryptName(classNode, method, paramOwner),
+								encryptName(classNode, method, insn.name),
+								encryptName(classNode, method, insn.desc)
+							)
+							add(indyNode)
+							
+							// Cast return type to expected type (since we downcasted to Object earlier)
+							var checkCast: TypeInsnNode? = null
+							if (returnType.sort == Type.ARRAY) {
+								checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
+							} else if (returnType.sort == Type.OBJECT) {
+								if (insn.next is MethodInsnNode) {
+									val next = insn.next as MethodInsnNode
+									val params = Type.getArgumentTypes(next.desc)
+									if (params.isEmpty()) {
+										if (insn.next.opcode == INVOKEVIRTUAL) {
+											checkCast = TypeInsnNode(CHECKCAST, next.owner)
+										}
+									} else {
+										checkCast = TypeInsnNode(CHECKCAST, params.last().internalName)
+									}
+								} else if (arrayOf(POP, POP2, RETURN, IFNONNULL, IFNULL).contains(insn.next?.opcode)) {
+									// Ignore
+								} else {
+									checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
+								}
+							}
+							
+							if (checkCast != null && insn.next?.opcode != CHECKCAST) {
+								if (checkCast.desc != Any::class.internalName) {
+									add(checkCast)
+								}
+							}
+							continue
 						}
 						add(insn)
 					}
