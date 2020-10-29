@@ -47,6 +47,13 @@ interface IClassProcessor {
 			config.tExclusions.isExcluded(classNode, fieldNode)
 		}
 	}
+	fun isExcluded(clazz: String, name: String, desc: String): Boolean {
+		return if (config != rootConfig) {
+			rootConfig.tExclusions.isExcluded(clazz, name, desc) || config.tExclusions.isExcluded(clazz, name, desc)
+		} else {
+			config.tExclusions.isExcluded(clazz, name, desc)
+		}
+	}
 	
 }
 

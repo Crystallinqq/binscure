@@ -78,12 +78,15 @@ object DynamicCallObfuscation: IClassProcessor {
 			for (method in classNode.methods) {
 				if (isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 					continue
+				if (classNode.access.hasAccess(ACC_ENUM) && method.name == "values")
+					continue
 				
 				method.instructions = InsnList().apply {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode) {
 							if (targetOps.contains(insn.opcode)) {
-								//if (insn.owner.startsWith('[')) continue
+								if (isExcluded(insn.owner, insn.name, insn.desc))
+									continue
 								
 								var newDesc = insn.desc
 								if (insn.opcode != INVOKESTATIC) {

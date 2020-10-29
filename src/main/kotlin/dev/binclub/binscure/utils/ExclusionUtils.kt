@@ -14,3 +14,4 @@ fun Collection<ExclusionConfiguration>.isExcluded(className: String) = this.any 
 fun Collection<ExclusionConfiguration>.isExcluded(classNode: ClassNode) = (classNode == OpaqueRuntimeManager.getClassNodeSafe()) || isExcluded(classNode.originalName ?: classNode.name)
 fun Collection<ExclusionConfiguration>.isExcluded(parentClass: ClassNode, methodNode: MethodNode) = isExcluded("${parentClass.originalName ?: parentClass.name}.${methodNode.name}")
 fun Collection<ExclusionConfiguration>.isExcluded(parentClass: ClassNode, fieldNode: FieldNode) = isExcluded("${parentClass.originalName ?: parentClass.name}.${fieldNode.name}")
+fun Collection<ExclusionConfiguration>.isExcluded(parentClass: String, name: String, _desc: String) = isExcluded("${parentClass}.${name}")
