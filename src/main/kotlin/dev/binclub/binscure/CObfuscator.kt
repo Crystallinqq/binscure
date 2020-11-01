@@ -1,14 +1,9 @@
 package dev.binclub.binscure
 
-import dev.binclub.binscure.annotations.ExcludeAll
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassPath.passThrough
 import dev.binclub.binscure.classpath.ClassPathIO
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.configuration.exclusions.ExclusionConfiguration
-import dev.binclub.binscure.configuration.exclusions.PackageBlacklistExcluder
-import dev.binclub.binscure.processors.AbstractMethodImplementor
-import dev.binclub.binscure.processors.VariableInitializer
 import dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer
 import dev.binclub.binscure.processors.arithmetic.MbaTransformer
 import dev.binclub.binscure.processors.classmerge.StaticMethodMerger
@@ -19,11 +14,9 @@ import dev.binclub.binscure.processors.debug.AccessStripper
 import dev.binclub.binscure.processors.debug.KotlinMetadataStripper
 import dev.binclub.binscure.processors.debug.SourceStripper
 import dev.binclub.binscure.processors.exploit.BadAttributeExploit
-import dev.binclub.binscure.processors.exploit.BadClinitExploit
 import dev.binclub.binscure.processors.exploit.BadIndyConstant
 import dev.binclub.binscure.processors.flow.CfgFucker
 import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
-import dev.binclub.binscure.utils.internalName
 import dev.binclub.binscure.utils.whenNotNull
 import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
 import dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication
@@ -38,7 +31,6 @@ import dev.binclub.binscure.processors.resources.ManifestResourceProcessor
 import dev.binclub.binscure.processors.runtime.*
 import dev.binclub.binscure.utils.disableIllegalAccessWarning
 import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -69,7 +61,7 @@ object CObfuscator {
 		ClassPathIO.loadInputJar(rootConfig.input)
 		ClassPathIO.loadClassPath(rootConfig.libraries)
 		
-		ClassPath.constructHierarchy()
+		ClassPath.reconstructHierarchy()
 		
 		val processors = arrayOf(
 			FieldInitialiser,

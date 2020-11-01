@@ -2,12 +2,11 @@ package dev.binclub.binscure.processors.renaming
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
+import dev.binclub.binscure.forClass
 import dev.binclub.binscure.processors.renaming.utils.CustomRemapper
 import dev.binclub.binscure.utils.AnnotationFieldRemapper
-import org.objectweb.asm.Type
 import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.tree.ClassNode
 
@@ -24,7 +23,7 @@ abstract class AbstractRenamer: IClassProcessor {
 		val remapper = CustomRemapper()
 		remap(remapper, classes, passThrough)
 		val replacements = mutableMapOf<ClassNode, ClassNode>()
-		for (classNode in classes) {
+		forClass(classes) { classNode ->
 			val newNode = ClassNode()
 			val classMapper = ClassRemapper(newNode, remapper)
 			classNode.accept(classMapper)
@@ -43,7 +42,7 @@ abstract class AbstractRenamer: IClassProcessor {
 		}
 		
 		CObfuscator.mappings.putAll(remapper.dumpMappings())
-		ClassPath.constructHierarchy()
+		ClassPath.reconstructHierarchy()
 	}
 	
 	protected abstract fun remap(remapper: CustomRemapper, classes: Collection<ClassNode>, passThrough: MutableMap<String, ByteArray>)

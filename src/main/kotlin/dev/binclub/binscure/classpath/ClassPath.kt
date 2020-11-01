@@ -3,9 +3,7 @@ package dev.binclub.binscure.classpath
 import dev.binclub.binscure.classpath.tree.ClassNodeTreeEntry
 import dev.binclub.binscure.classpath.tree.ClassPathTreeEntry
 import dev.binclub.binscure.classpath.tree.ClassTreeEntry
-import dev.binclub.binscure.configuration.ConfigurationManager
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.utils.block
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.tree.ClassNode
 import java.io.File
@@ -20,7 +18,6 @@ object ClassPath {
 	val passThrough = mutableMapOf<String, ByteArray>()
 	private val treeEntries = hashMapOf<String, ClassTreeEntry>()
 	val hierachy = hashMapOf<String, ClassTree>()
-	val originalNames = hashMapOf<ClassNode, String>()
 	
 	
 	private val warnings = mutableSetOf<String>()
@@ -35,32 +32,28 @@ object ClassPath {
 	}
 	
 	fun getHierarchy(name: String): ClassTree? {
-		if (hierachy.containsKey(name))
-			return hierachy[name]!!
+		hierachy[name]?.let { return it }
 		
-		if (treeEntries.containsKey(name)) {
-			val tree = treeEntries[name]!!
+		treeEntries[name]?.let { tree ->
 			constructTreeSuperClasses(tree)
-			constructTreeHiearchy(name, tree)
-		} else {
-			if (classPath.containsKey(name)) {
-				val tree = ClassNodeTreeEntry(classPath[name]!!)
-				treeEntries[name] = tree
-				constructTreeSuperClasses(tree)
-				constructTreeHiearchy(name, tree)
-			} else {
-				try {
-					val tree = ClassPathTreeEntry(Class.forName(name.replace('/', '.')))
-					treeEntries[name] = tree
-					constructTreeSuperClasses(tree)
-					constructTreeHiearchy(name, tree)
-				} catch (ignored: Throwable){
-					return warn(name, null)
-				}
-			}
+			return constructTreeHiearchy(name, tree)
 		}
 		
-		return hierachy[name]!!
+		classPath[name]?.let {
+			val tree = ClassNodeTreeEntry(it)
+			treeEntries[name] = tree
+			constructTreeSuperClasses(tree)
+			return constructTreeHiearchy(name, tree)
+		}
+		
+		return try {
+			val tree = ClassPathTreeEntry(Class.forName(name.replace('/', '.')))
+			treeEntries[name] = tree
+			constructTreeSuperClasses(tree)
+			constructTreeHiearchy(name, tree)
+		} catch (ignored: ClassNotFoundException){
+			warn(name, null)
+		}
 	}
 	
 	fun constructTreeSuperClasses(treeEntry: ClassTreeEntry) {
@@ -74,9 +67,7 @@ object ClassPath {
 		}
 	}
 	
-	fun constructHierarchy() {
-		//val start = Instant.now()
-		
+	fun reconstructHierarchy() {
 		treeEntries.clear()
 		hierachy.clear()
 		for (classNode in classPath.values) {
@@ -88,11 +79,9 @@ object ClassPath {
 		for ((name, entry) in treeEntries) {
 			constructTreeHiearchy(name, entry)
 		}
-		
-		//println("Finished Constructing Hierarchy in ${Duration.between(start, Instant.now()).toMillis() * 1000}s (${hierachy.size} | ${treeEntries.size} entries)")
 	}
 	
-	private fun constructTreeHiearchy(name: String, entry: ClassTreeEntry) {
+	private fun constructTreeHiearchy(name: String, entry: ClassTreeEntry): ClassTree {
 		val tree = ClassTree(entry)
 		hierachy[name] = tree
 		for (aSuper in entry.getSuperClasses()) {
@@ -106,6 +95,7 @@ object ClassPath {
 				tree.children.add(entry2)
 			}
 		}
+		return tree
 	}
 	
 	
@@ -114,10 +104,10 @@ object ClassPath {
 	private val librarySources = arrayListOf<LibrarySource>()
 	
 	fun findClassNode(className: String): ClassNode? {
-		if (rootConfig.lazyLibraryLoading) {
-			return classPath[className] ?: findClassInLibraries(className)
+		return if (rootConfig.lazyLibraryLoading) {
+			classPath[className] ?: findClassInLibraries(className)
 		} else {
-			return classPath[className]
+			classPath[className]
 		}
 	}
 	

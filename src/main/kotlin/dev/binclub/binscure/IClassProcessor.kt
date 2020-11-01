@@ -57,7 +57,7 @@ interface IClassProcessor {
 	
 }
 
-inline fun IClassProcessor.forClass(classes: MutableCollection<ClassNode>, op: (ClassNode) -> Unit) {
+inline fun IClassProcessor.forClass(classes: Collection<ClassNode>, op: (ClassNode) -> Unit) {
 	classes.forEach { cn ->
 		if (!isExcluded(cn)) {
 			op(cn)

@@ -30,7 +30,7 @@ object MethodRenamer: AbstractRenamer() {
 			if (isExcluded(classNode))
 				continue
 			
-			val classTree = ClassPath.hierachy[classNode.name] ?: continue
+			val classTree = ClassPath.getHierarchy(classNode.name)!!
 			val names = mutableMapOf<String, NameGenerator>()
 			
 			for (method in classNode.methods) {
