@@ -3369,8 +3369,8 @@ dev.binclub.binscure.classpath.ClassPath -> dev.binclub.binscure.a.a:
     java.lang.Object warn(java.lang.String,java.lang.Object) -> a
     dev.binclub.binscure.classpath.ClassTree getHierarchy(java.lang.String) -> a
     void constructTreeSuperClasses(dev.binclub.binscure.classpath.tree.ClassTreeEntry) -> a
-    void constructHierarchy() -> a
-    void constructTreeHiearchy(java.lang.String,dev.binclub.binscure.classpath.tree.ClassTreeEntry) -> a
+    void reconstructHierarchy() -> a
+    dev.binclub.binscure.classpath.ClassTree constructTreeHiearchy(java.lang.String,dev.binclub.binscure.classpath.tree.ClassTreeEntry) -> a
     void loadClassPath(java.io.File[]) -> a
     void <init>() -> <init>
     void <clinit>() -> <clinit>
@@ -3812,8 +3812,8 @@ dev.binclub.binscure.processors.debug.AccessStripper -> dev.binclub.binscure.c.d
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.debug.KotlinMetadataStripper -> dev.binclub.binscure.c.d.b:
     dev.binclub.binscure.processors.debug.KotlinMetadataStripper INSTANCE -> a
     java.lang.String getProgressDescription() -> a
@@ -3822,8 +3822,8 @@ dev.binclub.binscure.processors.debug.KotlinMetadataStripper -> dev.binclub.bins
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.debug.KotlinMetadataStripper$process$1$2$1 -> dev.binclub.binscure.c.d.c:
     dev.binclub.binscure.processors.debug.KotlinMetadataStripper$process$1$2$1 INSTANCE -> a
     java.lang.Object invoke(java.lang.Object) -> invoke
@@ -3843,8 +3843,8 @@ dev.binclub.binscure.processors.debug.SourceStripper -> dev.binclub.binscure.c.d
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.exploit.BadAttributeExploit -> dev.binclub.binscure.c.e.a:
     dev.binclub.binscure.api.transformers.CrasherConfiguration config -> a
     dev.binclub.binscure.processors.exploit.BadAttributeExploit INSTANCE -> a
@@ -3949,6 +3949,7 @@ dev.binclub.binscure.processors.indirection.DynamicCallObfuscation -> dev.binclu
     kotlin.Lazy bootStrapMethod$delegate -> c
     kotlin.Lazy handler$delegate -> d
     dev.binclub.binscure.api.transformers.IndirectionConfiguration config -> a
+    java.lang.Integer[] IGNORE_RET_OPS -> b
     dev.binclub.binscure.processors.indirection.DynamicCallObfuscation INSTANCE -> a
     org.objectweb.asm.tree.ClassNode getDecryptNode() -> b
     java.lang.String getProgressDescription() -> a
@@ -4004,8 +4005,8 @@ dev.binclub.binscure.processors.renaming.AbstractRenamer -> dev.binclub.binscure
     boolean isEnabled() -> a
     void <init>() -> <init>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.renaming.generation.NameGenerator -> dev.binclub.binscure.c.i.a.a:
     int index -> a
     java.lang.String prefix -> a

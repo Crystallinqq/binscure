@@ -128,7 +128,7 @@ object DynamicCallObfuscation: IClassProcessor {
 							
 							// Cast return type to expected type (since we downcasted to Object earlier)
 							val checkCast = TypeInsnNode(CHECKCAST, returnType.internalName)
-							if (IGNORE_RET_OPS.contains(insn.next?.opcode)) {
+							if (!IGNORE_RET_OPS.contains(insn.next?.opcode)) {
 								if (checkCast.desc != Any::class.internalName) {
 									add(checkCast)
 								}
