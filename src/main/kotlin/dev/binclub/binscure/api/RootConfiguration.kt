@@ -36,9 +36,12 @@ data class RootConfiguration(
 	val upgradeVersions: Boolean = false
 ): TransformerConfiguration(true, exclusions) {
 	init {
-		for (i in 0 until hardExclusions.size) {
-			hardExclusions[i] = hardExclusions[i].trim()
-		}
+		// This might fail
+		try {
+			for (i in 0 until hardExclusions.size) {
+				hardExclusions[i] = hardExclusions[i].trim()
+			}
+		} catch (t: Throwable) {}
 	}
 	
 	fun getLineChar(): Char = if (resetLineProgress) '\r' else '\n'

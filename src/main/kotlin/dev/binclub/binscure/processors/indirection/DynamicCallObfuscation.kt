@@ -64,6 +64,8 @@ object DynamicCallObfuscation: IClassProcessor {
 		get() = "Transforming method calls to dynamic invokes"
 	override val config = rootConfig.indirection
 	
+	private val IGNORE_RET_OPS = arrayOf(POP, POP2, RETURN, IFNONNULL, IFNULL, CHECKCAST)
+	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
 		if (!config.enabled) {
 			return
@@ -125,28 +127,8 @@ object DynamicCallObfuscation: IClassProcessor {
 							add(indyNode)
 							
 							// Cast return type to expected type (since we downcasted to Object earlier)
-							var checkCast: TypeInsnNode? = null
-							if (returnType.sort == Type.ARRAY) {
-								checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
-							} else if (returnType.sort == Type.OBJECT) {
-								if (insn.next is MethodInsnNode) {
-									val next = insn.next as MethodInsnNode
-									val params = Type.getArgumentTypes(next.desc)
-									if (params.isEmpty()) {
-										if (insn.next.opcode == INVOKEVIRTUAL) {
-											checkCast = TypeInsnNode(CHECKCAST, next.owner)
-										}
-									} else {
-										checkCast = TypeInsnNode(CHECKCAST, params.last().internalName)
-									}
-								} else if (arrayOf(POP, POP2, RETURN, IFNONNULL, IFNULL).contains(insn.next?.opcode)) {
-									// Ignore
-								} else {
-									checkCast = (TypeInsnNode(CHECKCAST, returnType.internalName))
-								}
-							}
-							
-							if (checkCast != null && insn.next?.opcode != CHECKCAST) {
+							val checkCast = TypeInsnNode(CHECKCAST, returnType.internalName)
+							if (IGNORE_RET_OPS.contains(insn.next?.opcode)) {
 								if (checkCast.desc != Any::class.internalName) {
 									add(checkCast)
 								}
