@@ -3,7 +3,6 @@ package dev.binclub.binscure.processors.renaming.impl
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.utils.getOrPutLazy
 import dev.binclub.binscure.utils.hasAccess
 import dev.binclub.binscure.processors.renaming.AbstractRenamer
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
@@ -46,7 +45,7 @@ object MethodRenamer: AbstractRenamer() {
 				
 				if (!parentsHaveMethod(classTree, method)) {
 					val desc = if (rootConfig.remap.aggressiveOverloading) method.desc else method.desc.substringBefore(")")
-					val generator =  names.getOrPutLazy(desc) {NameGenerator(rootConfig.remap.methodPrefix)}
+					val generator =  names.getOrPut(desc) {NameGenerator(rootConfig.remap.methodPrefix)}
 					var newName: String
 					do {
 						newName = generator.uniqueRandomString()

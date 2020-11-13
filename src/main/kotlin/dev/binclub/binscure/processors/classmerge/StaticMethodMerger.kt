@@ -1,21 +1,19 @@
 package dev.binclub.binscure.processors.classmerge
 
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration
 import dev.binclub.binscure.api.transformers.MergeMethods.NONE
 import dev.binclub.binscure.classpath.ClassPath
 import dev.binclub.binscure.classpath.ClassTree
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
-import dev.binclub.binscure.utils.add
-import dev.binclub.binscure.utils.hasAccess
 import dev.binclub.binscure.processors.constants.string.StringObfuscator
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
-import org.objectweb.asm.Type.*
+import org.objectweb.asm.Type.getArgumentTypes
+import org.objectweb.asm.Type.getReturnType
 import org.objectweb.asm.tree.*
 
 /**
@@ -83,7 +81,7 @@ object StaticMethodMerger: IClassProcessor {
 					&&
 					!containsSpecial(classNode, method.instructions)
 				) {
-					staticMethods.getOrPutLazy(method.desc, { hashSetOf() }).add(Pair(classNode, method))
+					staticMethods.getOrPut(method.desc, { hashSetOf() }).add(Pair(classNode, method))
 				}
 			}
 		}

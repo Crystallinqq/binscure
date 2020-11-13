@@ -39,24 +39,6 @@ fun CharArray.random(random: SecureRandom): Char {
 	return get(random.nextInt(size))
 }
 
-fun <K, V> MutableMap<K, V>.getOrPut(key: K, default: V): V {
-	var out = this[key]
-	if (out == null) {
-		this[key] = default!!
-		out = default
-	}
-	return out
-}
-
-fun <K, V> MutableMap<K, V>.getOrPutLazy(key: K, default: () -> V): V {
-	var out = this[key]
-	if (out == null) {
-		out = default()!!
-		this[key] = out
-	}
-	return out
-}
-
 fun String.clampStart(length: Int, padding: Char = ' '): String {
 	return when {
 		this.length == length -> this
