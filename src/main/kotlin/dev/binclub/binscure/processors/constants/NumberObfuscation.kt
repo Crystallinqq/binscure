@@ -37,13 +37,11 @@ object NumberObfuscation: IClassProcessor {
 				val modifier = InstructionModifier()
 				for (insn in method.instructions) {
 					if (isNumberLdc(insn)) {
-						val num = getNumFromLdc(insn)
-						
-						when (num) {
-							is Int -> obfInt(classNode, modifier, insn, num as Int)
-							is Long -> obfLong(classNode, modifier, insn, num as Long)
-							is Double -> obfDouble(classNode, modifier, insn, num as Double)
-							is Float -> obfFloat(classNode, modifier, insn, num as Float)
+						when (val num = getNumFromLdc(insn)) {
+							is Int -> obfInt(classNode, modifier, insn, num)
+							is Long -> obfLong(classNode, modifier, insn, num)
+							is Double -> obfDouble(classNode, modifier, insn, num)
+							is Float -> obfFloat(classNode, modifier, insn, num)
 						}
 					}
 				}
