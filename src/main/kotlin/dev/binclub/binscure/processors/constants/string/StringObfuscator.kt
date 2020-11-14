@@ -317,7 +317,7 @@ object StringObfuscator: IClassProcessor {
 		val new = CharArray(original.length)
 		
 		for ((index, char) in old.withIndex()) {
-			new[index] = when (index % 5) {
+			new[index] = when (index % 6) {
 				0 -> char xor (4 + classHash)
 				1 -> char xor (key)
 				2 -> char xor (classHash)
@@ -355,7 +355,7 @@ object StringObfuscator: IClassProcessor {
 		val new = CharArray(first.length)
 		
 		for (i in 0 until (old.size)) {
-			new[i] = when (i % 5) {
+			new[i] = when (i % 6) {
 				0 -> old[i] xor (4 + classHash)
 				1 -> old[i] xor key
 				2 -> old[i] xor classHash
