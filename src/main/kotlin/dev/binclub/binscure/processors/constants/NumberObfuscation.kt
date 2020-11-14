@@ -1,6 +1,5 @@
 package dev.binclub.binscure.processors.constants
 
-import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
@@ -38,10 +37,10 @@ object NumberObfuscation: IClassProcessor {
 				for (insn in method.instructions) {
 					if (isNumberLdc(insn)) {
 						when (val num = getNumFromLdc(insn)) {
-							is Int -> obfInt(classNode, modifier, insn, num)
-							is Long -> obfLong(classNode, modifier, insn, num)
-							is Double -> obfDouble(classNode, modifier, insn, num)
-							is Float -> obfFloat(classNode, modifier, insn, num)
+							is Int -> obfInt(modifier, insn, num)
+							is Long -> obfLong(modifier, insn, num)
+							is Double -> obfDouble(modifier, insn, num)
+							is Float -> obfFloat(modifier, insn, num)
 						}
 					}
 				}
@@ -50,7 +49,7 @@ object NumberObfuscation: IClassProcessor {
 		}
 	}
 	
-	private fun obfFloat(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Float) {
+	private fun obfFloat(modifier: InstructionModifier, insn: AbstractInsnNode, num: Float) {
 		val firstRand = random.nextFloat() * Float.MAX_VALUE
 		val numAsInt = java.lang.Float.floatToIntBits(firstRand)
 		val list = InsnList().apply {
@@ -63,7 +62,7 @@ object NumberObfuscation: IClassProcessor {
 		modifier.replace(insn, list)
 	}
 	
-	private fun obfDouble(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Double) {
+	private fun obfDouble(modifier: InstructionModifier, insn: AbstractInsnNode, num: Double) {
 		val firstRand = random.nextDouble() * Double.MAX_VALUE
 		val numAsLong = java.lang.Double.doubleToLongBits(firstRand)
 		val list = InsnList().apply {
@@ -76,7 +75,7 @@ object NumberObfuscation: IClassProcessor {
 		modifier.replace(insn, list)
 	}
 	
-	private fun obfInt(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Int) {
+	private fun obfInt(modifier: InstructionModifier, insn: AbstractInsnNode, num: Int) {
 		val firstRand = randomInt()
 		val list = InsnList().apply {
 			add(ldcLong(firstRand.toLong()))
@@ -87,7 +86,7 @@ object NumberObfuscation: IClassProcessor {
 		modifier.replace(insn, list)
 	}
 	
-	private fun obfLong(classNode: ClassNode, modifier: InstructionModifier, insn: AbstractInsnNode, num: Long) {
+	private fun obfLong(modifier: InstructionModifier, insn: AbstractInsnNode, num: Long) {
 		val firstRand = randomInt()
 		val list = InsnList().apply {
 			add(ldcInt(firstRand))
@@ -96,12 +95,5 @@ object NumberObfuscation: IClassProcessor {
 			add(LXOR)
 		}
 		modifier.replace(insn, list)
-	}
-	
-	private fun randomDoubleArray(): DoubleArray = DoubleArray( random.nextInt(7)).apply {
-		for (i in 0 until size) this[i] = random.nextDouble()
-	}
-	private fun randomFloatArray(): FloatArray = FloatArray( random.nextInt(7)).apply {
-		for (i in 0 until size) this[i] = random.nextFloat() * 100
 	}
 }
