@@ -371,7 +371,7 @@ class Frame {
 				}
 				return ((elementDescriptorOffset - offset) << DIM_SHIFT) | typeValue;
 			default:
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException(buffer.charAt(offset) + "");
 		}
 	}
 	

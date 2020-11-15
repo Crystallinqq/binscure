@@ -20,7 +20,7 @@ object FakeTryCatch: IClassProcessor {
 	override val config = rootConfig.flowObfuscation
 	
 	override fun process(classes: MutableCollection<ClassNode>, passThrough: MutableMap<String, ByteArray>) {
-		if (!config.enabled) {
+		if (!config.enabled || !rootConfig.crasher.enabled) {
 			return
 		}
 		

@@ -211,9 +211,10 @@ object StaticMethodMerger: IClassProcessor {
 								if (
 									insn.owner == decryptNode.name
 									&&
-									insn.name == StringObfuscator.decryptMethod.name
+									insn.name == StringObfuscator.fastDecryptMethod.name
 								) {
-									insn.desc = StringObfuscator.fastDecryptMethod.name
+									insn.name = StringObfuscator.decryptMethod.name
+									insn.desc = StringObfuscator.decryptMethod.desc
 									modifier.prepend(insn, InsnList().apply {
 										add(ldcInt(3))
 									})
