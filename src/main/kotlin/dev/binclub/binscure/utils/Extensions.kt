@@ -20,8 +20,7 @@ fun String.replaceLast(oldChar: Char, newChar: Char): String {
 }
 
 fun String.replaceLast(oldChar: Char, newString: String): String {
-	val index = lastIndexOf(oldChar)
-	return when (index) {
+	return when (val index = lastIndexOf(oldChar)) {
 		-1 -> this
 		else -> this.replaceRange(index, index + 1, newString)
 	}
@@ -164,13 +163,6 @@ fun InsnList.toOpcodeStrings(highlight: AbstractInsnNode? = null, info: Map<Abst
 	}
 }
 
-fun InsnList.contains(insn: AbstractInsnNode): Boolean {
-	for (it in this) {
-		if (it == insn) return true
-	}
-	return false
-}
-
 fun ClassNode.getVersion(): Pair<Int, Int> {
 	return (this.version and 0xFFFF) to (this.version shr 16)
 }
@@ -220,9 +212,7 @@ fun Stack<Type>.typesEqual(other: Stack<Type>): Boolean {
 	return false
 }
 
-fun <T> fixedSizeList(size: Int): List<T>? {
-	return Arrays.asList(*arrayOfNulls<Any>(size)) as List<T>
-}
+inline fun <reified T> fixedSizeList(size: Int): List<T?> = listOf(*arrayOfNulls<T>(size))
 
 inline fun <T> block(block: () -> T): T = block()
 
@@ -240,9 +230,4 @@ fun InsnList.populateWithLineNumbers() {
 			})
 		}
 	}
-}
-
-fun InsnList.replace(op: AbstractInsnNode, list: InsnList) {
-	insert(op, list)
-	remove(op)
 }
