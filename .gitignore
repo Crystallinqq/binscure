@@ -1,5 +1,7 @@
 build/
 .gradle/
+.idea/workspace.xml
+.idea/discord.xml
 .idea/gradle.xml
 .idea/compiler.xml
 

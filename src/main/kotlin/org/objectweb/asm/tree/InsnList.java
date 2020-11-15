@@ -53,10 +53,11 @@ public class InsnList {
 	AbstractInsnNode[] cache;
 	
 	public void resetCache() { cache = null; }
-	public void checkCache() {
+	public AbstractInsnNode[] checkCache() {
 		if (cache == null) {
 			cache = toArray();
 		}
+		return cache;
 	}
 	
 	/**
