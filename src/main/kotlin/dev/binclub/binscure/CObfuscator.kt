@@ -18,6 +18,7 @@ import dev.binclub.binscure.processors.exploit.BadIndyConstant
 import dev.binclub.binscure.processors.flow.CfgFucker
 import dev.binclub.binscure.processors.flow.MethodParameterObfuscator
 import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
+import dev.binclub.binscure.processors.flow.loop.LoopUnroller
 import dev.binclub.binscure.utils.whenNotNull
 import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
 import dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication
@@ -96,6 +97,7 @@ object CObfuscator {
 			BadIndyConstant,
 			MbaTransformer,
 			
+			//LoopUnroller,
 			//AbstractMethodImplementor, this is dumb
 
 			ManifestResourceProcessor

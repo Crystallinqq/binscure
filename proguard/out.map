@@ -2935,23 +2935,23 @@ dev.binclub.binscure.CObfuscator -> dev.binclub.binscure.a:
     boolean randomWeight(int) -> a
     void <init>() -> <init>
     void <clinit>() -> <clinit>
-dev.binclub.binscure.EntryPoint -> dev.binclub.binscure.EntryPoint:
-    java.util.List license -> a
-    dev.binclub.binscure.EntryPoint$Companion Companion -> a
-    java.lang.Class loadClass(java.lang.String,boolean) -> loadClass
-    java.lang.Class findClass(java.lang.String) -> findClass
-    void <init>() -> <init>
-    void <clinit>() -> <clinit>
-    void main(java.lang.String[]) -> main
-dev.binclub.binscure.EntryPoint$Companion -> dev.binclub.binscure.b:
-    void <init>() -> <init>
-    void <init>(byte) -> <init>
+dev.binclub.binscure.IClassProcessor -> dev.binclub.binscure.b:
+    java.lang.String getProgressDescription() -> a
+    dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
+    void process(java.util.Collection,java.util.Map) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+dev.binclub.binscure.IClassProcessor$DefaultImpls -> dev.binclub.binscure.c:
+    org.objectweb.asm.tree.InsnList list -> a
+    boolean isExcluded(dev.binclub.binscure.IClassProcessor,org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(dev.binclub.binscure.IClassProcessor,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(dev.binclub.binscure.IClassProcessor,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(java.util.Collection,java.lang.String) -> a
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(java.util.Collection,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(java.util.Collection,java.lang.String,java.lang.String,java.lang.String) -> a
-    java.lang.Object getOrPutLazy(java.util.Map,java.lang.Object,kotlin.jvm.functions.Function0) -> a
     java.lang.Object random(java.lang.Object[],java.security.SecureRandom) -> a
     void add(org.objectweb.asm.tree.InsnList,int) -> a
     boolean hasAccess(int,int) -> a
@@ -2960,20 +2960,8 @@ dev.binclub.binscure.EntryPoint$Companion -> dev.binclub.binscure.b:
     java.lang.String toOpcodeStrings(org.objectweb.asm.tree.InsnList,org.objectweb.asm.tree.AbstractInsnNode,java.util.Map) -> a
     boolean versionAtLeast(org.objectweb.asm.tree.ClassNode,int) -> a
     boolean getDoubleSize(org.objectweb.asm.Type) -> a
-    org.objectweb.asm.tree.InsnList insnBuilder(kotlin.jvm.functions.Function1) -> a
-dev.binclub.binscure.IClassProcessor -> dev.binclub.binscure.c:
-    java.lang.String getProgressDescription() -> a
-    dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
-    void process(java.util.Collection,java.util.Map) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
-dev.binclub.binscure.IClassProcessor$DefaultImpls -> dev.binclub.binscure.d:
-    org.objectweb.asm.tree.InsnList list -> a
-    boolean isExcluded(dev.binclub.binscure.IClassProcessor,org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(dev.binclub.binscure.IClassProcessor,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
-    boolean isExcluded(dev.binclub.binscure.IClassProcessor,org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     void <init>() -> <init>
+    org.objectweb.asm.tree.InsnList insnBuilder(kotlin.jvm.functions.Function1) -> a
 dev.binclub.binscure.annotations.ExcludeAll -> dev.binclub.binscure.annotations.ExcludeAll:
 dev.binclub.binscure.api.Binscure -> dev.binclub.binscure.api.Binscure:
     dev.binclub.binscure.api.Binscure INSTANCE -> INSTANCE
@@ -2999,6 +2987,7 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     dev.binclub.binscure.api.transformers.IndirectionConfiguration indirection -> indirection
     dev.binclub.binscure.api.transformers.StringObfuscationConfiguration stringObfuscation -> stringObfuscation
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration flowObfuscation -> flowObfuscation
+    dev.binclub.binscure.api.transformers.MethodParameterConfiguration methodParameter -> methodParameter
     dev.binclub.binscure.api.transformers.OptimisationConfiguration optimisation -> optimisation
     dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration numberObfuscation -> numberObfuscation
     boolean ignoreClassPathNotFound -> ignoreClassPathNotFound
@@ -3026,6 +3015,7 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     dev.binclub.binscure.api.transformers.IndirectionConfiguration getIndirection() -> getIndirection
     dev.binclub.binscure.api.transformers.StringObfuscationConfiguration getStringObfuscation() -> getStringObfuscation
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration getFlowObfuscation() -> getFlowObfuscation
+    dev.binclub.binscure.api.transformers.MethodParameterConfiguration getMethodParameter() -> getMethodParameter
     dev.binclub.binscure.api.transformers.OptimisationConfiguration getOptimisation() -> getOptimisation
     dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration getNumberObfuscation() -> getNumberObfuscation
     boolean getIgnoreClassPathNotFound() -> getIgnoreClassPathNotFound
@@ -3038,8 +3028,8 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     boolean getWatermark() -> getWatermark
     boolean getLazyLibraryLoading() -> getLazyLibraryLoading
     boolean getUpgradeVersions() -> getUpgradeVersions
-    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> <init>
-    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
+    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.MethodParameterConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> <init>
+    void <init>(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.MethodParameterConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
     java.io.File component1() -> component1
     java.io.File component2() -> component2
     java.io.File component3() -> component3
@@ -3054,9 +3044,9 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     dev.binclub.binscure.api.transformers.IndirectionConfiguration component12() -> component12
     dev.binclub.binscure.api.transformers.StringObfuscationConfiguration component13() -> component13
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration component14() -> component14
-    dev.binclub.binscure.api.transformers.OptimisationConfiguration component15() -> component15
-    dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration component16() -> component16
-    boolean component17() -> component17
+    dev.binclub.binscure.api.transformers.MethodParameterConfiguration component15() -> component15
+    dev.binclub.binscure.api.transformers.OptimisationConfiguration component16() -> component16
+    dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration component17() -> component17
     boolean component18() -> component18
     boolean component19() -> component19
     boolean component20() -> component20
@@ -3066,8 +3056,9 @@ dev.binclub.binscure.api.RootConfiguration -> dev.binclub.binscure.api.RootConfi
     boolean component24() -> component24
     boolean component25() -> component25
     boolean component26() -> component26
-    dev.binclub.binscure.api.RootConfiguration copy(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> copy
-    dev.binclub.binscure.api.RootConfiguration copy$default(dev.binclub.binscure.api.RootConfiguration,java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,java.lang.Object) -> copy$default
+    boolean component27() -> component27
+    dev.binclub.binscure.api.RootConfiguration copy(java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.MethodParameterConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean) -> copy
+    dev.binclub.binscure.api.RootConfiguration copy$default(dev.binclub.binscure.api.RootConfiguration,java.io.File,java.io.File,java.io.File,java.util.List,java.util.List,java.util.List,dev.binclub.binscure.api.transformers.ArithmeticObfuscationConfiguration,dev.binclub.binscure.api.transformers.RemapConfiguration,dev.binclub.binscure.api.transformers.SourceStripConfiguration,dev.binclub.binscure.api.transformers.KotlinMetadataConfiguration,dev.binclub.binscure.api.transformers.CrasherConfiguration,dev.binclub.binscure.api.transformers.IndirectionConfiguration,dev.binclub.binscure.api.transformers.StringObfuscationConfiguration,dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration,dev.binclub.binscure.api.transformers.MethodParameterConfiguration,dev.binclub.binscure.api.transformers.OptimisationConfiguration,dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,int,java.lang.Object) -> copy$default
     int hashCode() -> hashCode
     boolean equals(java.lang.Object) -> equals
 dev.binclub.binscure.api.TransformerConfiguration -> dev.binclub.binscure.api.TransformerConfiguration:
@@ -3240,6 +3231,20 @@ dev.binclub.binscure.api.transformers.MergeMethods -> dev.binclub.binscure.api.t
     void <init>(java.lang.String,int) -> <init>
     dev.binclub.binscure.api.transformers.MergeMethods[] values() -> values
     dev.binclub.binscure.api.transformers.MergeMethods valueOf(java.lang.String) -> valueOf
+dev.binclub.binscure.api.transformers.MethodParameterConfiguration -> dev.binclub.binscure.api.transformers.MethodParameterConfiguration:
+    boolean enabled -> enabled
+    java.util.List exclusions -> exclusions
+    boolean getEnabled() -> getEnabled
+    void <init>(boolean,java.util.List) -> <init>
+    void <init>(boolean,java.util.List,int,kotlin.jvm.internal.DefaultConstructorMarker) -> <init>
+    void <init>() -> <init>
+    boolean component1() -> component1
+    java.util.List component2() -> component2
+    dev.binclub.binscure.api.transformers.MethodParameterConfiguration copy(boolean,java.util.List) -> copy
+    dev.binclub.binscure.api.transformers.MethodParameterConfiguration copy$default(dev.binclub.binscure.api.transformers.MethodParameterConfiguration,boolean,java.util.List,int,java.lang.Object) -> copy$default
+    java.lang.String toString() -> toString
+    int hashCode() -> hashCode
+    boolean equals(java.lang.Object) -> equals
 dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration -> dev.binclub.binscure.api.transformers.NumberObfuscationConfiguration:
     boolean enabled -> enabled
     java.util.List exclusions -> exclusions
@@ -3538,8 +3543,8 @@ dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer -> 
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer$process$1$1$1$1 -> dev.binclub.binscure.c.a.b:
     dev.binclub.binscure.processors.arithmetic.ArithmeticSubstitutionTransformer$process$1$1$1$1 INSTANCE -> a
     java.lang.Object invoke(java.lang.Object) -> invoke
@@ -3595,8 +3600,8 @@ dev.binclub.binscure.processors.arithmetic.MbaTransformer -> dev.binclub.binscur
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$1 -> dev.binclub.binscure.c.a.l:
     dev.binclub.binscure.processors.arithmetic.MbaTransformer$substitute$1 INSTANCE -> a
     java.lang.Object invoke(java.lang.Object) -> invoke
@@ -3716,11 +3721,6 @@ dev.binclub.binscure.processors.classmerge.StaticMethodMerger -> dev.binclub.bin
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
-dev.binclub.binscure.processors.classmerge.StaticMethodMerger$process$1 -> dev.binclub.binscure.c.b.b:
-    dev.binclub.binscure.processors.classmerge.StaticMethodMerger$process$1 INSTANCE -> a
-    java.lang.Object invoke() -> invoke
-    void <init>() -> <init>
-    void <clinit>() -> <clinit>
 dev.binclub.binscure.processors.constants.FieldInitialiser -> dev.binclub.binscure.c.c.a:
     dev.binclub.binscure.processors.constants.FieldInitialiser INSTANCE -> a
     java.lang.String getProgressDescription() -> a
@@ -3729,8 +3729,8 @@ dev.binclub.binscure.processors.constants.FieldInitialiser -> dev.binclub.binscu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.constants.NumberObfuscation -> dev.binclub.binscure.c.c.b:
     dev.binclub.binscure.processors.constants.NumberObfuscation INSTANCE -> a
     java.lang.String getProgressDescription() -> a
@@ -3739,8 +3739,8 @@ dev.binclub.binscure.processors.constants.NumberObfuscation -> dev.binclub.binsc
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.constants.string.StringDecryptGenerator -> dev.binclub.binscure.c.c.a.a:
     dev.binclub.binscure.processors.constants.string.StringDecryptGenerator INSTANCE -> a
     org.objectweb.asm.tree.MethodNode generateDecrypterMethod(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode,java.util.ArrayList) -> a
@@ -3751,8 +3751,8 @@ dev.binclub.binscure.processors.constants.string.StringObfuscator -> dev.binclub
     int key -> a
     java.lang.Integer[] keys -> a
     org.objectweb.asm.tree.ClassNode decryptNode -> a
-    kotlin.properties.ReadWriteProperty decryptMethod$delegate -> a
-    kotlin.properties.ReadWriteProperty fastDecryptMethod$delegate -> b
+    kotlin.properties.ReadWriteProperty decryptMethod$delegate -> b
+    kotlin.properties.ReadWriteProperty fastDecryptMethod$delegate -> a
     kotlin.properties.ReadWriteProperty keysField$delegate -> c
     dev.binclub.binscure.api.transformers.StringObfuscationConfiguration config -> a
     dev.binclub.binscure.processors.constants.string.StringObfuscator INSTANCE -> a
@@ -3760,6 +3760,7 @@ dev.binclub.binscure.processors.constants.string.StringObfuscator -> dev.binclub
     int getKey() -> a
     java.lang.Integer[] getKeys() -> a
     org.objectweb.asm.tree.ClassNode getDecryptNode() -> a
+    org.objectweb.asm.tree.MethodNode getDecryptMethod() -> a
     org.objectweb.asm.tree.FieldNode getKeysField() -> a
     java.lang.String getProgressDescription() -> a
     void process(java.util.Collection,java.util.Map) -> a
@@ -3769,8 +3770,8 @@ dev.binclub.binscure.processors.constants.string.StringObfuscator -> dev.binclub
     dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
     void <init>() -> <init>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.constants.string.StringObfuscator$EncryptedString -> dev.binclub.binscure.c.c.a.c:
     java.lang.String original -> b
     java.lang.String encrypted -> a
@@ -3812,8 +3813,8 @@ dev.binclub.binscure.processors.debug.AccessStripper -> dev.binclub.binscure.c.d
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.debug.KotlinMetadataStripper -> dev.binclub.binscure.c.d.b:
     dev.binclub.binscure.processors.debug.KotlinMetadataStripper INSTANCE -> a
     java.lang.String getProgressDescription() -> a
@@ -3822,8 +3823,8 @@ dev.binclub.binscure.processors.debug.KotlinMetadataStripper -> dev.binclub.bins
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.debug.KotlinMetadataStripper$process$1$2$1 -> dev.binclub.binscure.c.d.c:
     dev.binclub.binscure.processors.debug.KotlinMetadataStripper$process$1$2$1 INSTANCE -> a
     java.lang.Object invoke(java.lang.Object) -> invoke
@@ -3843,8 +3844,8 @@ dev.binclub.binscure.processors.debug.SourceStripper -> dev.binclub.binscure.c.d
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.exploit.BadAttributeExploit -> dev.binclub.binscure.c.e.a:
     dev.binclub.binscure.api.transformers.CrasherConfiguration config -> a
     dev.binclub.binscure.processors.exploit.BadAttributeExploit INSTANCE -> a
@@ -3854,8 +3855,8 @@ dev.binclub.binscure.processors.exploit.BadAttributeExploit -> dev.binclub.binsc
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.exploit.BadAttributeExploit$DummyAttribute -> dev.binclub.binscure.c.e.b:
     void <init>(java.lang.String,byte[]) -> <init>
     void <init>(java.lang.String) -> <init>
@@ -3869,8 +3870,8 @@ dev.binclub.binscure.processors.exploit.BadIndyConstant -> dev.binclub.binscure.
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.flow.CfgFucker -> dev.binclub.binscure.c.f.a:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
     dev.binclub.binscure.processors.flow.CfgFucker INSTANCE -> a
@@ -3880,8 +3881,32 @@ dev.binclub.binscure.processors.flow.CfgFucker -> dev.binclub.binscure.c.f.a:
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+dev.binclub.binscure.processors.flow.MethodParameterObfuscator -> dev.binclub.binscure.c.f.b:
+    java.lang.String progressDescription -> a
+    dev.binclub.binscure.api.transformers.MethodParameterConfiguration config -> a
+    java.util.Map methodSecrets -> a
+    dev.binclub.binscure.processors.flow.MethodParameterObfuscator INSTANCE -> a
+    java.lang.String getProgressDescription() -> a
+    dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
+    java.util.Map getMethodSecrets() -> a
+    void process(java.util.Collection,java.util.Map) -> a
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+dev.binclub.binscure.processors.flow.MethodParameterObfuscator$$special$$inlined$let$lambda$2 -> dev.binclub.binscure.c.f.c:
+    int $otherSecret -> a
+    java.lang.Integer $thisSecret$inlined -> a
+    java.lang.Integer $secretIndex$inlined -> b
+    void <init>(int,java.lang.Integer,java.lang.Integer) -> <init>
+    java.lang.Object invoke(java.lang.Object) -> invoke
+dev.binclub.binscure.processors.flow.MethodParameterObfuscator$process$2$1$2$1$prepend$2 -> dev.binclub.binscure.c.f.d:
+    int $otherSecret -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>(int) -> <init>
 dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor -> dev.binclub.binscure.c.f.a.a:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
     dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor INSTANCE -> a
@@ -3891,8 +3916,8 @@ dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor -> dev.binclub.b
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch -> dev.binclub.binscure.c.f.b.a:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
     dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch INSTANCE -> a
@@ -3914,22 +3939,24 @@ dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication -> dev.binclub
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication$$special$$inlined$Array$lambda$1 -> dev.binclub.binscure.c.f.b.c:
     int $i$inlined -> a
     int $key$inlined -> b
     org.objectweb.asm.tree.LabelNode $switch$inlined -> a
     void <init>(int,int,org.objectweb.asm.tree.LabelNode) -> <init>
     java.lang.Object invoke(java.lang.Object) -> invoke
-dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication$process$1$1$1$2 -> dev.binclub.binscure.c.f.b.d:
+dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication$$special$$inlined$forMethod$lambda$1 -> dev.binclub.binscure.c.f.b.d:
     java.util.ArrayList $blocks -> a
     org.objectweb.asm.tree.LabelNode $switch -> a
     int $key -> a
     org.objectweb.asm.tree.LabelNode[] $labels -> a
     org.objectweb.asm.tree.LabelNode $handlerLabel -> b
+    org.objectweb.asm.tree.MethodNode $mn$inlined -> a
+    org.objectweb.asm.tree.ClassNode $cn$inlined -> a
+    void <init>(java.util.ArrayList,org.objectweb.asm.tree.LabelNode,int,org.objectweb.asm.tree.LabelNode[],org.objectweb.asm.tree.LabelNode,org.objectweb.asm.tree.MethodNode,org.objectweb.asm.tree.ClassNode) -> <init>
     java.lang.Object invoke(java.lang.Object) -> invoke
-    void <init>(java.util.ArrayList,org.objectweb.asm.tree.LabelNode,int,org.objectweb.asm.tree.LabelNode[],org.objectweb.asm.tree.LabelNode) -> <init>
 dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch -> dev.binclub.binscure.c.f.b.e:
     dev.binclub.binscure.api.transformers.FlowObfuscationConfiguration config -> a
     dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch INSTANCE -> a
@@ -3939,8 +3966,8 @@ dev.binclub.binscure.processors.flow.trycatch.UselessTryCatch -> dev.binclub.bin
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.indirection.DynamicCallObfuscation -> dev.binclub.binscure.c.g.a:
     java.lang.Integer[] targetOps -> a
     boolean isInit -> a
@@ -3959,8 +3986,8 @@ dev.binclub.binscure.processors.indirection.DynamicCallObfuscation -> dev.binclu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     void access$setInit$p$2db51c99() -> a
     org.objectweb.asm.tree.ClassNode access$getDecryptNode$p$2bb9cf96() -> a
     org.objectweb.asm.tree.MethodNode access$getStringDecryptMethod$p$48fa0103() -> a
@@ -3994,8 +4021,8 @@ dev.binclub.binscure.processors.optimisers.EnumValuesOptimiser -> dev.binclub.bi
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.renaming.AbstractRenamer -> dev.binclub.binscure.c.i.a:
     dev.binclub.binscure.api.transformers.RemapConfiguration config -> a
     dev.binclub.binscure.api.transformers.RemapConfiguration getConfig() -> a
@@ -4050,8 +4077,8 @@ dev.binclub.binscure.processors.renaming.impl.LocalVariableRenamer -> dev.binclu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.renaming.impl.MethodRenamer -> dev.binclub.binscure.c.i.b.d:
     dev.binclub.binscure.processors.renaming.impl.MethodRenamer INSTANCE -> a
     boolean isEnabled() -> a
@@ -4061,11 +4088,6 @@ dev.binclub.binscure.processors.renaming.impl.MethodRenamer -> dev.binclub.binsc
     void remapChildren(dev.binclub.binscure.processors.renaming.utils.CustomRemapper,dev.binclub.binscure.classpath.ClassTree,java.lang.String,java.lang.String,java.lang.String) -> a
     boolean parentsHaveMethod(dev.binclub.binscure.classpath.ClassTree,org.objectweb.asm.tree.MethodNode) -> a
     boolean hasMethod(dev.binclub.binscure.classpath.ClassTree,org.objectweb.asm.tree.MethodNode) -> b
-    void <init>() -> <init>
-    void <clinit>() -> <clinit>
-dev.binclub.binscure.processors.renaming.impl.MethodRenamer$remap$generator$1 -> dev.binclub.binscure.c.i.b.e:
-    dev.binclub.binscure.processors.renaming.impl.MethodRenamer$remap$generator$1 INSTANCE -> a
-    java.lang.Object invoke() -> invoke
     void <init>() -> <init>
     void <clinit>() -> <clinit>
 dev.binclub.binscure.processors.renaming.utils.CustomRemapper -> dev.binclub.binscure.c.i.c.a:
@@ -4095,8 +4117,8 @@ dev.binclub.binscure.processors.resources.ManifestResourceProcessor -> dev.bincl
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
 dev.binclub.binscure.processors.resources.ManifestResourceProcessor$process$$inlined$sortedByDescending$1 -> dev.binclub.binscure.c.j.b:
     void <init>() -> <init>
     int compare(java.lang.Object,java.lang.Object) -> compare
@@ -4113,6 +4135,7 @@ dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager -> dev.binclub.bins
     kotlin.Lazy fields$delegate -> d
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager INSTANCE -> a
     org.objectweb.asm.tree.ClassNode getClassNode() -> a
+    org.objectweb.asm.tree.ClassNode getClassNodeSafe() -> b
     org.objectweb.asm.tree.MethodNode getClinit() -> a
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager$FieldInfo[] getFields() -> a
     void <init>() -> <init>
@@ -4144,8 +4167,9 @@ dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager$fields$2 -> dev.bin
 dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt -> dev.binclub.binscure.c.k.f:
     byte[] data -> a
     int length -> a
-    org.objectweb.asm.tree.InsnList randomOpaqueJump(org.objectweb.asm.tree.LabelNode,boolean) -> a
-    kotlin.Pair opaqueSwitchJump(kotlin.jvm.functions.Function1) -> a
+    org.objectweb.asm.tree.InsnList randomOpaqueJump(org.objectweb.asm.tree.LabelNode,boolean,java.lang.String) -> a
+    org.objectweb.asm.tree.InsnList randomOpaqueJump$default$70759f82(org.objectweb.asm.tree.LabelNode,boolean,java.lang.String,int) -> a
+    kotlin.Pair opaqueSwitchJump$6bfb9ad2(kotlin.jvm.functions.Function1) -> a
     void <init>() -> <init>
     void <init>(int) -> <init>
     void <init>(byte[]) -> <init>
@@ -4162,10 +4186,16 @@ dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt -> dev.binclub.bi
     dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt putByteArray$1f1bbea5(byte[],int,int) -> a
     void enlarge(int) -> a
 dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt$opaqueSwitchJump$1 -> dev.binclub.binscure.c.k.g:
-    dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt$opaqueSwitchJump$1 INSTANCE -> a
+    java.lang.String $mnStr -> a
     java.lang.Object invoke(java.lang.Object) -> invoke
-    void <init>() -> <init>
-    void <clinit>() -> <clinit>
+    void <init>(java.lang.String) -> <init>
+dev.binclub.binscure.processors.runtime.OpaqueRuntimeManagerKt$randomOpaqueJump$1 -> dev.binclub.binscure.c.k.h:
+    java.lang.String $mnStr -> a
+    boolean $jumpOver -> a
+    org.objectweb.asm.tree.LabelNode $target -> a
+    dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager$FieldInfo $field -> a
+    java.lang.Object invoke(java.lang.Object) -> invoke
+    void <init>(java.lang.String,boolean,org.objectweb.asm.tree.LabelNode,dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager$FieldInfo) -> <init>
 dev.binclub.binscure.utils.AnnotationFieldRemapper -> dev.binclub.binscure.d.a:
     dev.binclub.binscure.utils.AnnotationFieldRemapper INSTANCE -> a
     void remap(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.commons.Remapper) -> a
@@ -33015,13 +33045,13 @@ org.objectweb.asm.tree.InsnList -> org.objectweb.asm.c.i:
     org.objectweb.asm.tree.AbstractInsnNode lastInsn -> b
     org.objectweb.asm.tree.AbstractInsnNode[] cache -> a
     void <init>() -> <init>
-    void checkCache() -> a
+    org.objectweb.asm.tree.AbstractInsnNode[] checkCache() -> a
     int size() -> a
     org.objectweb.asm.tree.AbstractInsnNode get(int) -> a
     int indexOf(org.objectweb.asm.tree.AbstractInsnNode) -> a
     void accept(org.objectweb.asm.MethodVisitor) -> a
     java.util.ListIterator iterator$5225d18b() -> a
-    org.objectweb.asm.tree.AbstractInsnNode[] toArray() -> a
+    org.objectweb.asm.tree.AbstractInsnNode[] toArray() -> b
     void add(org.objectweb.asm.tree.AbstractInsnNode) -> a
     void add(org.objectweb.asm.tree.InsnList) -> a
     void insert(org.objectweb.asm.tree.AbstractInsnNode) -> b
@@ -33029,8 +33059,8 @@ org.objectweb.asm.tree.InsnList -> org.objectweb.asm.c.i:
     void insert(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.AbstractInsnNode) -> a
     void insert(org.objectweb.asm.tree.AbstractInsnNode,org.objectweb.asm.tree.InsnList) -> a
     void remove(org.objectweb.asm.tree.AbstractInsnNode) -> c
-    void removeAll$1385ff() -> b
-    void resetLabels() -> c
+    void removeAll$1385ff() -> a
+    void resetLabels() -> b
 org.objectweb.asm.tree.InsnList$InsnListIterator -> org.objectweb.asm.c.j:
     org.objectweb.asm.tree.AbstractInsnNode nextInsn -> a
     org.objectweb.asm.tree.AbstractInsnNode previousInsn -> b
@@ -33056,8 +33086,8 @@ org.objectweb.asm.tree.IntInsnNode -> org.objectweb.asm.c.l:
     int getType() -> b
     void accept(org.objectweb.asm.MethodVisitor) -> a
 org.objectweb.asm.tree.InvokeDynamicInsnNode -> org.objectweb.asm.c.m:
-    java.lang.String name -> b
-    java.lang.String desc -> a
+    java.lang.String name -> a
+    java.lang.String desc -> b
     org.objectweb.asm.Handle bsm -> a
     java.lang.Object[] bsmArgs -> a
     void <init>(java.lang.String,java.lang.String,org.objectweb.asm.Handle,java.lang.Object[]) -> <init>
