@@ -4,6 +4,7 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
+import dev.binclub.binscure.processors.flow.MethodParameterObfuscator
 import dev.binclub.binscure.utils.isStatic
 import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.InstructionModifier
@@ -65,7 +66,7 @@ object TableSwitchJump: IClassProcessor {
 							add(proxyTrue)
 							
 							val al = newLabel()
-							add(randomOpaqueJump(al))
+							add(randomOpaqueJump(al, mnStr = MethodParameterObfuscator.mnToStr(classNode, method)))
 							if (!method.isStatic()) {
 								add(VarInsnNode(ALOAD, 0))
 								add(InsnNode(MONITORENTER))

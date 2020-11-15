@@ -4,6 +4,7 @@ import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.forClass
 import dev.binclub.binscure.forMethod
+import dev.binclub.binscure.processors.flow.MethodParameterObfuscator
 import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.Opcodes
@@ -107,7 +108,7 @@ object TryCatchDuplication: IClassProcessor {
 											
 											+handlerLabel
 											val fakeJmpLbl = newLabel()
-											+randomOpaqueJump(fakeJmpLbl, false)
+											+randomOpaqueJump(fakeJmpLbl, false, mnStr = MethodParameterObfuscator.mnToStr(cn, mn))
 											athrow()
 											+fakeJmpLbl
 											aconst_null()

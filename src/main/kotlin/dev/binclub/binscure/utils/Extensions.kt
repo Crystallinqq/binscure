@@ -137,6 +137,16 @@ fun AbstractInsnNode.opcodeString(): String {
 		is FieldInsnNode -> return "${implOpToStr(opcode)} $owner.$name$desc"
 		is MethodInsnNode -> return "${implOpToStr(opcode)} $owner.$name$desc"
 		is TypeInsnNode -> return "${implOpToStr(opcode)} $desc"
+		is InvokeDynamicInsnNode -> {
+			return buildString {
+				append("$name.$desc -> ${bsm.owner}.${bsm.name}${bsm.desc}")
+				append(" : (")
+				for (arg in bsmArgs) {
+					append("$arg, ")
+				}
+				append(")")
+			}
+		}
 		else -> {
 			if (opcode == -1) return this::class.java.simpleName ?: this::class.java.name!!
 			return implOpToStr(opcode)
@@ -152,7 +162,10 @@ fun InsnList.toOpcodeStrings(highlight: AbstractInsnNode? = null, info: Map<Abst
 	val insnList = this
 	return buildString {
 		for ((i, insn) in insnList.iterator().withIndex()) {
-			append("\t $i: ${insn.opcodeString()} (${info?.get(insn)})")
+			append("\t $i: ${insn.opcodeString()}")
+			info?.get(insn)?.let {
+				append(" ($it)")
+			}
 			if (highlight == insn) {
 				append(" <---------------------- HERE")
 			}

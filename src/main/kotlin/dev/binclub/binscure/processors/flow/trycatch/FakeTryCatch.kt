@@ -2,8 +2,8 @@ package dev.binclub.binscure.processors.flow.trycatch
 
 import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
-import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
+import dev.binclub.binscure.processors.flow.MethodParameterObfuscator
 import dev.binclub.binscure.utils.add
 import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.newLabel
@@ -30,20 +30,20 @@ object FakeTryCatch: IClassProcessor {
 					if (method.name.startsWith('<') || isExcluded(classNode, method) || CObfuscator.noMethodInsns(method))
 						continue
 					
-					addFakeTryCatches(method)
+					addFakeTryCatches(classNode, method)
 				}
 			}
 		}
 	}
 	
-	private fun addFakeTryCatches(methodNode: MethodNode) {
+	private fun addFakeTryCatches(cn: ClassNode, methodNode: MethodNode) {
 		methodNode.tryCatchBlocks = methodNode.tryCatchBlocks ?: arrayListOf()
 		methodNode.tryCatchBlocks.addAll(
-			addFakeTryCatches(methodNode.tryCatchBlocks, methodNode.instructions)
+			addFakeTryCatches(cn, methodNode, methodNode.instructions)
 		)
 	}
 	
-	private fun addFakeTryCatches(existing: List<TryCatchBlockNode>, insnList: InsnList): Array<TryCatchBlockNode> {
+	private fun addFakeTryCatches(cn: ClassNode, mn: MethodNode, insnList: InsnList): Array<TryCatchBlockNode> {
 		val switchStart = newLabel()
 		val fakeEnd = newLabel()
 		val start = newLabel()
@@ -58,7 +58,7 @@ object FakeTryCatch: IClassProcessor {
 				.apply {
 					add(start)
 					add(ACONST_NULL)
-					add(randomOpaqueJump(handler, false))
+					add(randomOpaqueJump(handler, false, mnStr = MethodParameterObfuscator.mnToStr(cn, mn)))
 					if (rootConfig.crasher.enabled) {
 						add(TypeInsnNode(CHECKCAST, "a"))
 					}
@@ -76,7 +76,7 @@ object FakeTryCatch: IClassProcessor {
 				add(switchStart)
 				add(start)
 				add(InsnNode(ACONST_NULL))
-				add(randomOpaqueJump(secondCatch, false))
+				add(randomOpaqueJump(secondCatch, false, mnStr = MethodParameterObfuscator.mnToStr(cn, mn)))
 				add(InsnNode(POP))
 				add(InsnNode(ACONST_NULL))
 				if (rootConfig.crasher.enabled) {

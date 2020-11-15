@@ -84,8 +84,6 @@ object JumpRearranger: IClassProcessor {
 					}
 					
 					method.instructions.add(append)
-					
-					println("Added to ${classNode.name}.${method.name}")
 				}
 			}
 		}

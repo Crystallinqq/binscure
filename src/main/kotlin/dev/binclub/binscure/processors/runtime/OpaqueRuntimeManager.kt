@@ -4,6 +4,7 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.CObfuscator.random
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.classpath.ClassPath
+import dev.binclub.binscure.processors.flow.MethodParameterObfuscator
 import dev.binclub.binscure.utils.add
 import dev.binclub.binscure.utils.random
 import dev.binclub.binscure.processors.renaming.generation.NameGenerator
@@ -110,19 +111,43 @@ object OpaqueRuntimeManager {
 	)
 }
 
-fun randomOpaqueJump(target: LabelNode, jumpOver: Boolean = true): InsnList {
-	val field = OpaqueRuntimeManager.fields.random(CObfuscator.random)
-	return InsnList().apply {
-		add(FieldInsnNode(GETSTATIC, OpaqueRuntimeManager.classNode.name, field.fieldNode.name, field.fieldNode.desc))
-		add(JumpInsnNode(
+fun randomOpaqueJump(target: LabelNode, jumpOver: Boolean = true, mnStr: String? = null): InsnList {
+	val field = OpaqueRuntimeManager.fields.random(random)
+	return insnBuilder {
+		if (mnStr != null) {
+			val secret = MethodParameterObfuscator.methodSecrets[mnStr]
+			if (secret != null) {
+				iload(secret.second)
+				randomBranch(random, {
+					ldc(secret.first xor 0)
+					ixor()
+					if (jumpOver)
+						ifeq(target)
+					else
+						ifne(target)
+				}, {
+					var key = randomInt()
+					if (key == 0) key = 1
+					ldc(secret.first xor key)
+					ixor()
+					if (jumpOver)
+						ifne(target)
+					else
+						ifeq(target)
+				})
+				return@insnBuilder
+			}
+		}
+		getstatic(OpaqueRuntimeManager.classNode.name, field.fieldNode.name, field.fieldNode.desc)
+		+JumpInsnNode(
 			if (jumpOver) field.trueOpcode else field.falseOpcode,
 			target
-		))
+		)
 	}
 }
 
-fun opaqueSwitchJump(jumpSupplier: (LabelNode) -> InsnList = {
-	randomOpaqueJump(it)
+fun opaqueSwitchJump(mnStr: String? = null, jumpSupplier: (LabelNode) -> InsnList = {
+	randomOpaqueJump(it, true, mnStr)
 }): Pair<InsnList, InsnList> {
 	val trueNum = randomInt()
 	val falseNum = randomInt()

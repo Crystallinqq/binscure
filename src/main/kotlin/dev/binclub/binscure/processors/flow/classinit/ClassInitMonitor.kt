@@ -4,6 +4,7 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.TransformerConfiguration
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
+import dev.binclub.binscure.processors.flow.MethodParameterObfuscator
 import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.InstructionModifier
 import dev.binclub.binscure.utils.newLabel
@@ -54,7 +55,7 @@ object ClassInitMonitor: IClassProcessor {
 								add(InsnNode(DUP))
 								add(InsnNode(MONITORENTER))
 							}
-							add(randomOpaqueJump(fakeJump))
+							add(randomOpaqueJump(fakeJump, mnStr = MethodParameterObfuscator.mnToStr(classNode, method)))
 							add(InsnNode(DUP))
 							add(InsnNode(MONITORENTER))
 							add(fakeJump)

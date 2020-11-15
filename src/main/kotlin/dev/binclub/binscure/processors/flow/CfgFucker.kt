@@ -43,7 +43,7 @@ object CfgFucker: IClassProcessor {
 						random.nextInt(aggresiveness) == 0
 					) {
 						if (insn is MethodInsnNode || insn is FieldInsnNode || insn is VarInsnNode) {
-							val (list, ending) = opaqueSwitchJump()
+							val (list, ending) = opaqueSwitchJump(mnStr = MethodParameterObfuscator.mnToStr(classNode, method))
 							modifier.prepend(insn, list)
 							endings.add(ending)
 						} else if (insn is JumpInsnNode && insn.opcode != GOTO) {
