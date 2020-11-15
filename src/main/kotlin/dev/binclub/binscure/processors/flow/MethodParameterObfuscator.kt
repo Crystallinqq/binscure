@@ -60,7 +60,7 @@ object MethodParameterObfuscator : IClassProcessor {
 				val newDesc = mn.desc.replace(")", "I)")
 				
 				// if any of the classes other methods occupy the new desc then cancel, we cant do it
-				if (cn.methods.any { it.desc == newDesc })
+				if (cn.methods.any { it.name == mn.name && it.desc == newDesc })
 					return@forMethod
 				
 				// take the secret as a parameter
