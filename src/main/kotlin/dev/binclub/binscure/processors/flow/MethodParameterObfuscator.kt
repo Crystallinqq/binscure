@@ -120,7 +120,7 @@ object MethodParameterObfuscator : IClassProcessor {
                                     // if this method also takes in a secret we can use it to derive the other secret
                                     val prepend = if (thisSecret != null) {
                                         insnBuilder {
-                                            aload(secretIndex!!)
+                                            iload(secretIndex!!)
                                             ldc(thisSecret xor otherSecret)
                                             ixor()
                                         }
