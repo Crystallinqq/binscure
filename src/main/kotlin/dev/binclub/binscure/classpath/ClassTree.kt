@@ -13,10 +13,10 @@ class ClassTree(val thisClass: ClassTreeEntry) {
 	
 	val allParents: Set<String> by lazy {
 		val out = HashSet<String>()
-		val toProcess = Stack<ClassTreeEntry>()
+		val toProcess = arrayListOf<ClassTreeEntry>()
 		toProcess.addAll(this.parents)
-		while (!toProcess.isEmpty()) {
-			val parent = toProcess.pop()
+		while (toProcess.isNotEmpty()) {
+			val parent = toProcess.removeLast()
 			if (out.add(parent.getName())) {
 				val tempTree = ClassPath.getHierarchy(parent.getName())
 				if (tempTree != null) {
