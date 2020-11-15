@@ -71,7 +71,7 @@ object CObfuscator {
 			
 			SourceStripper,
 			KotlinMetadataStripper,
-
+			
 			MethodParameterObfuscator,
 			
 			LocalVariableRenamer,
