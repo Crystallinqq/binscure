@@ -1,5 +1,6 @@
 build/
 .gradle/
+.idea/misc.xml
 .idea/workspace.xml
 .idea/discord.xml
 .idea/gradle.xml
