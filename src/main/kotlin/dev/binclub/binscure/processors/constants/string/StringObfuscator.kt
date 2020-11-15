@@ -4,17 +4,12 @@ import dev.binclub.binscure.CObfuscator
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.api.transformers.StringObfuscationConfiguration
 import dev.binclub.binscure.classpath.ClassPath
-import dev.binclub.binscure.classpath.CustomClassWriter
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.processors.exploit.BadAttributeExploit
-import dev.binclub.binscure.processors.exploit.BadClinitExploit
 import dev.binclub.binscure.processors.renaming.impl.ClassRenamer
 import dev.binclub.binscure.processors.runtime.OpaqueRuntimeManager
-import dev.binclub.binscure.processors.runtime.randomOpaqueJump
 import dev.binclub.binscure.utils.*
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Handle
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.util.*
@@ -317,7 +312,7 @@ object StringObfuscator: IClassProcessor {
 		val new = CharArray(original.length)
 		
 		for ((index, char) in old.withIndex()) {
-			new[index] = when (index % 6) {
+			new[index] = when (index % 5) {
 				0 -> char xor (4 + classHash)
 				1 -> char xor (key)
 				2 -> char xor (classHash)
@@ -355,7 +350,7 @@ object StringObfuscator: IClassProcessor {
 		val new = CharArray(first.length)
 		
 		for (i in 0 until (old.size)) {
-			new[i] = when (i % 6) {
+			new[i] = when (i % 5) {
 				0 -> old[i] xor (4 + classHash)
 				1 -> old[i] xor key
 				2 -> old[i] xor classHash
