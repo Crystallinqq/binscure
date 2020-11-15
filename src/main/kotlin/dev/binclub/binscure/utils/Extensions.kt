@@ -1,8 +1,7 @@
 package dev.binclub.binscure.utils
 
-import dev.binclub.binscure.classpath.ClassPath
 import org.objectweb.asm.Handle
-import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import java.lang.reflect.Modifier
@@ -229,5 +228,32 @@ fun InsnList.populateWithLineNumbers() {
 				addLineNumber(i)
 			})
 		}
+	}
+}
+
+fun AbstractInsnNode.constantValue() : Any? {
+	return when (this) {
+		is LdcInsnNode -> this.cst
+		is InsnNode -> {
+			when (this.opcode) {
+				ICONST_0 -> 0
+				ICONST_M1 -> -1
+				ICONST_1 -> 1
+				ICONST_2 -> 2
+				ICONST_3 -> 3
+				ICONST_4 -> 4
+				ICONST_5 -> 5
+				LCONST_0 -> 0L
+				LCONST_1 -> 1L
+				FCONST_0 -> 0.0f
+				FCONST_1 -> 1.0f
+				FCONST_2 -> 2.0f
+				DCONST_0 -> 0.0
+				DCONST_1 -> 1.0
+
+				else -> null
+			}
+		}
+		else -> null
 	}
 }

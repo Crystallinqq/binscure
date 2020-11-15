@@ -2,7 +2,6 @@
 
 package dev.binclub.binscure.utils
 
-import org.objectweb.asm.ConstantDynamic
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
@@ -10,7 +9,6 @@ import org.objectweb.asm.tree.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
-import kotlin.reflect.jvm.jvmName
 
 /**
  * @author cookiedragon234 18/May/2020
@@ -31,6 +29,10 @@ class InsnBuilder {
 	
 	inline fun _return() = insn(RETURN)
 	inline fun areturn() = insn(ARETURN)
+	inline fun ireturn() = insn(IRETURN)
+	inline fun lreturn() = insn(LRETURN)
+	inline fun freturn() = insn(FRETURN)
+	inline fun dreturn() = insn(DRETURN)
 	
 	inline fun aconst_null() = insn(ACONST_NULL)
 	
@@ -41,6 +43,7 @@ class InsnBuilder {
 	inline fun isub() = insn(ISUB)
 	inline fun iadd() = insn(IADD)
 	inline fun imul() = insn(IMUL)
+	inline fun idiv() = insn(IDIV)
 	inline fun ior() = insn(IOR)
 	inline fun iand() = insn(IAND)
 	inline fun ixor() = insn(IXOR)
@@ -86,6 +89,10 @@ class InsnBuilder {
 	inline fun istore(`var`: Int) = +VarInsnNode(ISTORE, `var`)
 	inline fun fload(`var`: Int) = +VarInsnNode(FLOAD, `var`)
 	inline fun fstore(`var`: Int) = +VarInsnNode(FSTORE, `var`)
+	inline fun lload(`var`: Int) = +VarInsnNode(LLOAD, `var`)
+	inline fun lstore(`var`: Int) = +VarInsnNode(LSTORE, `var`)
+	inline fun dload(`var`: Int) = +VarInsnNode(DLOAD, `var`)
+	inline fun dstore(`var`: Int) = +VarInsnNode(DSTORE, `var`)
 	
 	inline fun aastore() = insn(AASTORE)
 	inline fun aaload() = insn(AALOAD)
@@ -140,5 +147,5 @@ class InsnBuilder {
 	
 	inline fun tableswitch(baseNumber: Int, dflt: LabelNode, vararg targets: LabelNode) = +constructTableSwitch(baseNumber, dflt, *targets)
 	inline fun lookupswitch(defaultLabel: LabelNode, lookup: Array<Pair<Int, LabelNode>>) = +constructLookupSwitch(defaultLabel, lookup)
-	
+
 }

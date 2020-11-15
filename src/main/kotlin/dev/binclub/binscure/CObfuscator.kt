@@ -16,6 +16,7 @@ import dev.binclub.binscure.processors.debug.SourceStripper
 import dev.binclub.binscure.processors.exploit.BadAttributeExploit
 import dev.binclub.binscure.processors.exploit.BadIndyConstant
 import dev.binclub.binscure.processors.flow.CfgFucker
+import dev.binclub.binscure.processors.flow.MethodParameterObfuscator
 import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
 import dev.binclub.binscure.utils.whenNotNull
 import dev.binclub.binscure.processors.flow.trycatch.FakeTryCatch
@@ -70,6 +71,8 @@ object CObfuscator {
 			
 			SourceStripper,
 			KotlinMetadataStripper,
+
+			MethodParameterObfuscator,
 			
 			LocalVariableRenamer,
 			MethodRenamer,
@@ -94,7 +97,7 @@ object CObfuscator {
 			MbaTransformer,
 			
 			//AbstractMethodImplementor, this is dumb
-			
+
 			ManifestResourceProcessor
 		)
 		
@@ -146,7 +149,8 @@ object CObfuscator {
 	fun randomWeight(weight: Int): Boolean {
 		return random.nextInt(weight) == 0
 	}
-	
+
+	@Suppress("NOTHING_TO_INLINE", "ConstantConditionIf")
 	inline fun debug(message: Any) {
 		if (false) {
 			println(message)
