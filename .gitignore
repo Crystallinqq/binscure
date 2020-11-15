@@ -1,6 +1,7 @@
 build/
 .gradle/
-.idea/
+.idea/gradle.xml
+.idea/compiler.xml
 
 testing/
 
@@ -18,3 +19,6 @@ rustinter/Cargo.lock
 rustinter/target/
 rustinter/debug/
 **/*.rs.bk
+*.iml
+*.ipr
+*.ips
