@@ -52,6 +52,31 @@ object CObfuscator {
 	operator fun invoke() {
 		disableIllegalAccessWarning()
 		
+		val license = Licenser.license
+		if (license == null) {
+			println("Invalid License File. Please email x4e_x4e@protonmail.com for assistance.")
+			return
+		} else {
+			println("Found valid username and password at ${Licenser.licenseFile}")
+		}
+		val parts = license.hashParts
+		
+		/*fun assertEq(a: Int, b: Int) {
+			if (a != b) {
+				error("Mismatch $a vs $b")
+			}
+		}
+		assertEq(parts[0], 0x9122)
+		assertEq(parts[1], 0x423)
+		assertEq(parts[2], 0x9219)
+		assertEq(parts[3], 0)
+		assertEq(parts[4], 0x721AB)
+		assertEq(parts[5], 0xFFFF)
+		assertEq(parts[6], -0xFFF)
+		assertEq(parts[7], 0x912ED)
+		assertEq(parts[8], 0x91BCD)
+		assertEq(parts[9], -0x128D)*/
+		
 		val start = Instant.now()
 		if (!rootConfig.input.exists())
 			throw FileNotFoundException("File ${rootConfig.input} does not exist")

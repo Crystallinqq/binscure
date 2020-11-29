@@ -83,6 +83,7 @@ fun <T> Array<T>.random(random: SecureRandom): T {
 
 inline fun <reified T: Any> Any?.cast(type: KClass<T>): T = this as T
 inline fun <reified T: Any> Any?.cast(type: Class<T>): T = this as T
+inline fun <reified T: Any> Any?.cast(): T = this as T
 
 inline val <T: Any> KClass<T>.internalName: String
 	inline get() = Type.getInternalName(this.java)

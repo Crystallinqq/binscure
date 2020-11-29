@@ -440,7 +440,7 @@ fun disableIllegalAccessWarning() {
 		val cls = Class.forName("jdk.internal.module.IllegalAccessLogger")
 		val logger = cls.getDeclaredField("logger")
 		u.putObjectVolatile(cls, u.staticFieldOffset(logger), null)
-	} catch (e: Exception) {
+	} catch (t: Throwable) {
 		// ignore
 	}
 }
