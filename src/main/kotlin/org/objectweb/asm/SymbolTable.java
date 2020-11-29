@@ -484,12 +484,6 @@ public final class SymbolTable {
 			}
 		} else if (value instanceof Handle) {
 			Handle handle = (Handle) value;
-			if (handle.getOwner().equals("java/lang/Integer")) {
-				return addConstantMethodref(handle.getOwner(),
-						handle.getName(),
-						handle.getDesc(),
-						handle.isInterface());
-			}
 			return addConstantMethodHandle(
 					handle.getTag(),
 					handle.getOwner(),
