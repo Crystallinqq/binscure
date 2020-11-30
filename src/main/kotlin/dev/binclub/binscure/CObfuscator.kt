@@ -48,6 +48,7 @@ import java.time.Instant
 object CObfuscator {
 	val random = SecureRandom()
 	val mappings = mutableMapOf<String, String>()
+	lateinit var hashParts: IntArray
 	
 	operator fun invoke() {
 		disableIllegalAccessWarning()
@@ -59,9 +60,10 @@ object CObfuscator {
 		} else {
 			println("Found valid username and password at ${Licenser.licenseFile}")
 		}
-		val parts = license.hashParts
+		hashParts = license.hashParts
 		
-		/*fun assertEq(a: Int, b: Int) {
+		/*val parts = license.hashParts
+		fun assertEq(a: Int, b: Int) {
 			if (a != b) {
 				error("Mismatch $a vs $b")
 			}
@@ -140,7 +142,9 @@ object CObfuscator {
 						val percentStr = ((progress / processors.size) * 100).toInt().toString().padStart(3, ' ')
 						print("$percentStr% - ${processor.progressDescription}".padEnd(100, ' '))
 					}
-					processor.process(classes, passThrough)
+					for (i in 0 until (hashParts[0] - 0x9121)) { // for i in 0 until 1
+						processor.process(classes, passThrough)
+					}
 				} catch (t: Throwable) {
 					println("\rException while processing [${processor.progressDescription}]:")
 					t.printStackTrace()
@@ -156,8 +160,10 @@ object CObfuscator {
 		
 		ClassPathIO.writeOutput(rootConfig.output)
 		
-		val duration = Duration.between(start, Instant.now())
-		println("Finished processing ${classes.size} classes and ${passThrough.size} resources in ${duration.toMillis() / 1000f}s")
+		for (i in 0..(hashParts[8] - 0x91BCD)) { // for i in 0..0
+			val duration = Duration.between(start, Instant.now())
+			println("Finished processing ${classes.size} classes and ${passThrough.size} resources in ${duration.toMillis() / 1000f}s")
+		}
 		
 		rootConfig.mappingFile.whenNotNull {file ->
 			if (mappings.isNotEmpty()) {
