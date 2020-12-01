@@ -2927,9 +2927,11 @@ com.sksamuel.hoplite.yaml.YamlParserKt -> com.sksamuel.hoplite.yaml.YamlParserKt
 dev.binclub.binscure.CObfuscator -> dev.binclub.binscure.a:
     java.security.SecureRandom random -> a
     java.util.Map mappings -> a
+    int[] hashParts -> a
     dev.binclub.binscure.CObfuscator INSTANCE -> a
     java.security.SecureRandom getRandom() -> a
     java.util.Map getMappings() -> a
+    int[] getHashParts() -> a
     void invoke() -> a
     boolean noMethodInsns(org.objectweb.asm.tree.MethodNode) -> a
     boolean randomWeight(int) -> a
@@ -2962,6 +2964,28 @@ dev.binclub.binscure.IClassProcessor$DefaultImpls -> dev.binclub.binscure.c:
     boolean getDoubleSize(org.objectweb.asm.Type) -> a
     void <init>() -> <init>
     org.objectweb.asm.tree.InsnList insnBuilder(kotlin.jvm.functions.Function1) -> a
+dev.binclub.binscure.Licenser -> dev.binclub.binscure.d:
+    long currentTime -> a
+    java.io.File home -> a
+    java.io.File config -> b
+    java.io.File binscure -> c
+    java.io.File licenseFile -> d
+    dev.binclub.binscure.Licenser$LicenseFile license -> a
+    dev.binclub.binscure.Licenser INSTANCE -> a
+    java.io.File getLicenseFile() -> a
+    dev.binclub.binscure.Licenser$LicenseFile getLicense() -> a
+    void <init>() -> <init>
+    void <clinit>() -> <clinit>
+dev.binclub.binscure.Licenser$LicenseFile -> dev.binclub.binscure.e:
+    int version -> a
+    java.lang.String username -> a
+    java.lang.String password -> b
+    long timestamp -> a
+    int[] hashParts -> a
+    boolean equals(java.lang.Object) -> equals
+    int hashCode() -> hashCode
+    void <init>(int,java.lang.String,java.lang.String,long,int[]) -> <init>
+    java.lang.String toString() -> toString
 dev.binclub.binscure.annotations.ExcludeAll -> dev.binclub.binscure.annotations.ExcludeAll:
 dev.binclub.binscure.api.Binscure -> dev.binclub.binscure.api.Binscure:
     dev.binclub.binscure.api.Binscure INSTANCE -> INSTANCE
@@ -3739,8 +3763,8 @@ dev.binclub.binscure.processors.constants.NumberObfuscation -> dev.binclub.binsc
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.constants.string.StringDecryptGenerator -> dev.binclub.binscure.c.c.a.a:
     dev.binclub.binscure.processors.constants.string.StringDecryptGenerator INSTANCE -> a
     org.objectweb.asm.tree.MethodNode generateDecrypterMethod(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode,java.util.ArrayList) -> a
@@ -3754,6 +3778,7 @@ dev.binclub.binscure.processors.constants.string.StringObfuscator -> dev.binclub
     kotlin.properties.ReadWriteProperty decryptMethod$delegate -> b
     kotlin.properties.ReadWriteProperty fastDecryptMethod$delegate -> a
     kotlin.properties.ReadWriteProperty keysField$delegate -> c
+    int[] hashParts -> a
     dev.binclub.binscure.api.transformers.StringObfuscationConfiguration config -> a
     dev.binclub.binscure.processors.constants.string.StringObfuscator INSTANCE -> a
     void <clinit>() -> <clinit>
@@ -3770,8 +3795,8 @@ dev.binclub.binscure.processors.constants.string.StringObfuscator -> dev.binclub
     dev.binclub.binscure.api.TransformerConfiguration getConfig() -> a
     void <init>() -> <init>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.constants.string.StringObfuscator$EncryptedString -> dev.binclub.binscure.c.c.a.c:
     java.lang.String original -> b
     java.lang.String encrypted -> a
@@ -3939,8 +3964,8 @@ dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication -> dev.binclub
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
 dev.binclub.binscure.processors.flow.trycatch.TryCatchDuplication$$special$$inlined$Array$lambda$1 -> dev.binclub.binscure.c.f.b.c:
     int $i$inlined -> a
     int $key$inlined -> b
@@ -3986,8 +4011,8 @@ dev.binclub.binscure.processors.indirection.DynamicCallObfuscation -> dev.binclu
     void <init>() -> <init>
     void <clinit>() -> <clinit>
     boolean isExcluded(org.objectweb.asm.tree.ClassNode) -> a
-    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.FieldNode) -> a
+    boolean isExcluded(org.objectweb.asm.tree.ClassNode,org.objectweb.asm.tree.MethodNode) -> a
     void access$setInit$p$2db51c99() -> a
     org.objectweb.asm.tree.ClassNode access$getDecryptNode$p$2bb9cf96() -> a
     org.objectweb.asm.tree.MethodNode access$getStringDecryptMethod$p$48fa0103() -> a

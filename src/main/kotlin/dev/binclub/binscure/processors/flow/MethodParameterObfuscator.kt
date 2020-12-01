@@ -2,11 +2,16 @@
 
 package dev.binclub.binscure.processors.flow
 
+import arrow.core.Tuple3
+import arrow.core.Tuple4
 import dev.binclub.binscure.IClassProcessor
 import dev.binclub.binscure.configuration.ConfigurationManager.rootConfig
 import dev.binclub.binscure.forClass
 import dev.binclub.binscure.forMethod
-import dev.binclub.binscure.utils.*
+import dev.binclub.binscure.utils.InstructionModifier
+import dev.binclub.binscure.utils.doubleSize
+import dev.binclub.binscure.utils.insnBuilder
+import dev.binclub.binscure.utils.randomInt
 import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
@@ -17,6 +22,22 @@ import java.util.*
 object MethodParameterObfuscator : IClassProcessor {
 	override val progressDescription: String = "Obfuscating method parameters"
 	override val config = rootConfig.methodParameter
+	
+	private val META_FACTORY = Handle(
+		H_INVOKESTATIC,
+		"java/lang/invoke/LambdaMetafactory",
+		"metafactory",
+		"(Ljava/lang/invoke/MethodHandles\$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+		false
+	)
+	private val ALT_META_FACTORY = Handle(
+		H_INVOKESTATIC,
+		"java/lang/invoke/LambdaMetafactory",
+		"altMetafactory",
+		"(Ljava/lang/invoke/MethodHandles\$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;",
+		false
+	)
+	
 	
 	val methodSecrets: MutableMap<String, Pair<Int, Int>> = HashMap()
 	
@@ -45,6 +66,42 @@ object MethodParameterObfuscator : IClassProcessor {
 			return
 		}
 		
+		val methodNodesToRemap = ArrayList<Tuple4<Int?, Int?, InsnList, MethodInsnNode>>()
+		classes.forEach { cn ->
+			cn.methods.forEach { mn ->
+				// this methods secret
+				val (thisSecret, secretIndex) = methodSecrets[mnToStr(cn, mn)].let {
+					(it?.first to it?.second)
+				}
+				
+				mn.instructions?.let { list ->
+					for (insn in list) {
+						when (insn) {
+							// Exclude methods that are referenced by indys
+							is InvokeDynamicInsnNode -> {
+								val bsm = insn.bsm
+								if (bsm == META_FACTORY || bsm == ALT_META_FACTORY) {
+									val handle = insn.bsmArgs[1] as Handle
+									methodSecrets[mnToStr(handle, true)] = (-1) to (-1)
+								}
+							}
+							is MethodInsnNode -> {
+								if (
+									insn.opcode == INVOKESTATIC
+									&&
+									insn.name[0] != '<'
+									&&
+									insn.name != "main"
+								) {
+									methodNodesToRemap.add(Tuple4(thisSecret, secretIndex, list, insn))
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		forClass(classes) { cn ->
 			if ((cn.access and ACC_ENUM) != 0)
 				return@forClass
@@ -62,6 +119,12 @@ object MethodParameterObfuscator : IClassProcessor {
 				// if any of the classes other methods occupy the new desc then cancel, we cant do it
 				if (cn.methods.any { it.name == mn.name && it.desc == newDesc })
 					return@forMethod
+				
+				val mnStr = mnToStr(cn, mn)
+				if (methodSecrets.containsKey(mnStr)) {
+					// skip, possibly excluded by above loop
+					println("\rSkipped $mnStr as its referenced by an indy")
+				}
 				
 				// take the secret as a parameter
 				mn.desc = newDesc
@@ -84,67 +147,45 @@ object MethodParameterObfuscator : IClassProcessor {
 				// increment local variable references
 				for (insn in mn.instructions) {
 					when (insn) {
-                        is VarInsnNode -> {
-                            if (insn.`var` >= ourParamIndex) {
-                                insn.`var` += 1
-                            }
-                        }
-                        is IincInsnNode -> {
-                            if (insn.`var` >= ourParamIndex) {
-                                insn.`var` += 1
-                            }
-                        }
+						is VarInsnNode -> {
+							if (insn.`var` >= ourParamIndex) {
+								insn.`var` += 1
+							}
+						}
+						is IincInsnNode -> {
+							if (insn.`var` >= ourParamIndex) {
+								insn.`var` += 1
+							}
+						}
 					}
 				}
 			}
 		}
 		
-		classes.forEach { cn ->
-			cn.methods.forEach { mn ->
-				// this methods secret
-                val (thisSecret, secretIndex) = methodSecrets[mnToStr(cn, mn)].let {
-                    (it?.first to it?.second)
-                }
+		methodNodesToRemap.forEach {
+			val thisSecret = it.a
+			val secretIndex = it.b
+			val list = it.c
+			val insn = it.d
+			
+			methodSecrets[mnToStr(insn, true)]?.let { (otherSecret, _) ->
+				// need to add the parameter
+				insn.desc = insn.desc.replace(")", "I)")
 				
-				// if this method calls any methods with secret parameters we need to pass that parameter to it
-				
-				mn.instructions?.let { list ->
-					val mod = InstructionModifier()
-					for (insn in list) {
-						when (insn) {
-                            is MethodInsnNode -> {
-                                methodSecrets[mnToStr(insn, true)]?.let { (otherSecret, _) ->
-                                    // need to add the parameter
-                                    insn.desc = insn.desc.replace(")", "I)")
-                                    
-                                    // if this method also takes in a secret we can use it to derive the other secret
-                                    val prepend = if (thisSecret != null) {
-                                        insnBuilder {
-                                            iload(secretIndex!!)
-                                            ldc(thisSecret xor otherSecret)
-                                            ixor()
-                                        }
-                                    } else {
-                                        insnBuilder {
-                                            ldc(otherSecret)
-                                        }
-                                    }
-                                    mod.prepend(insn, prepend)
-                                }
-                            }
-                            is InvokeDynamicInsnNode -> {
-                                val bsm = insn.bsm
-                                if (bsm.owner == "java/lang/invoke/LambdaMetafactory" && bsm.name == "metafactory") {
-                                    val handle = insn.bsmArgs[1] as Handle
-                                    methodSecrets[mnToStr(handle, true)]?.let { _ ->
-                                        println("\rWARNING: ${handle.owner}.${handle.name} is referenced by an indy, please exclude this method from the method parameter obfuscator")
-                                    }
-                                }
-                            }
-						}
+				// if this method also takes in a secret we can use it to derive the other secret
+				val prepend = if (thisSecret != null) {
+					insnBuilder {
+						iload(secretIndex!!)
+						ldc(thisSecret xor otherSecret)
+						ixor()
 					}
-					mod.apply(list)
+				} else {
+					insnBuilder {
+						ldc(otherSecret)
+					}
 				}
+				
+				list.insertBefore(insn, prepend)
 			}
 		}
 	}
