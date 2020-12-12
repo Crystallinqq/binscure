@@ -15,6 +15,7 @@ import dev.binclub.binscure.processors.debug.KotlinMetadataStripper
 import dev.binclub.binscure.processors.debug.SourceStripper
 import dev.binclub.binscure.processors.exploit.BadAttributeExploit
 import dev.binclub.binscure.processors.exploit.BadIndyConstant
+import dev.binclub.binscure.processors.exploit.BadRecafAttributeExploit
 import dev.binclub.binscure.processors.flow.CfgFucker
 import dev.binclub.binscure.processors.flow.MethodParameterObfuscator
 import dev.binclub.binscure.processors.flow.classinit.ClassInitMonitor
@@ -121,6 +122,7 @@ object CObfuscator {
 			NumberObfuscation,
 			
 			BadAttributeExploit,
+			BadRecafAttributeExploit,
 			BadIndyConstant,
 			MbaTransformer,
 			
@@ -137,7 +139,7 @@ object CObfuscator {
 			for (processor in processors) {
 				try {
 					debug(processor::class.java.simpleName)
-					if (rootConfig.printProgress) {
+					if (rootConfig.printProgress && processor.config.enabled) {
 						print(rootConfig.getLineChar())
 						val percentStr = ((progress / processors.size) * 100).toInt().toString().padStart(3, ' ')
 						print("$percentStr% - ${processor.progressDescription}".padEnd(100, ' '))
