@@ -167,14 +167,18 @@ object CObfuscator {
 			println("Finished processing ${classes.size} classes and ${passThrough.size} resources in ${duration.toMillis() / 1000f}s")
 		}
 		
-		rootConfig.mappingFile.whenNotNull {file ->
-			if (mappings.isNotEmpty()) {
-				PrintWriter(FileOutputStream(file)).use {
-					for ((key, value) in mappings) {
-						it.println(key.replace(",", "\\,") + "," + value.replace(",", "\\,"))
+		try {
+			rootConfig.mappingFile.whenNotNull { file ->
+				if (mappings.isNotEmpty()) {
+					PrintWriter(FileOutputStream(file)).use {
+						for ((key, value) in mappings) {
+							it.println(key.replace(",", "\\,") + "," + value.replace(",", "\\,"))
+						}
 					}
 				}
 			}
+		} catch (t: Throwable) {
+			Exception("Error writing mapping file", t).printStackTrace()
 		}
 	}
 	
